@@ -21,6 +21,12 @@ public class BookingDTO {
     private LocalDateTime completedAt;
     private BigDecimal amount;
     private int quantity;
+    private String location;
+    private Double latitude;
+    private Double longitude;
+    private String serviceLocation;
+    private Double serviceLatitude;
+    private Double serviceLongitude;
     private String notes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

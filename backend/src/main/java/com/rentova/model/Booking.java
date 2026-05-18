@@ -58,6 +58,13 @@ public class Booking {
     @Column(length = 1000)
     private String notes;
 
+    @Column(length = 300)
+    private String location;
+
+    private Double latitude;
+
+    private Double longitude;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

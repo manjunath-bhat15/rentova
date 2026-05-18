@@ -42,6 +42,12 @@ export function AuthProvider({ children }) {
 
   const register = useCallback(async (name, email, password, role) => {
     const res = await api.post('/api/auth/register', { name, email, password, role });
+    // Do not set token or user yet; wait for OTP verification
+    return res.data;
+  }, []);
+
+  const verifyOtp = useCallback(async (email, otp) => {
+    const res = await api.post('/api/auth/verify-otp', { email, otp });
     const { token: newToken, user: userData } = res.data;
     setToken(newToken);
     setUser(userData);
@@ -58,7 +64,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, isAuthenticated: !!token }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, verifyOtp, logout, isAuthenticated: !!token }}>
       {children}
     </AuthContext.Provider>
   );

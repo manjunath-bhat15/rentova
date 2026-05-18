@@ -41,7 +41,7 @@ public class WalletService {
     @Transactional
     public WalletDTO topUp(User user, BigDecimal amount) {
         if (amount.compareTo(BigDecimal.ONE) < 0) {
-            throw new RuntimeException("Minimum top-up is $1.00");
+            throw new RuntimeException("Minimum top-up is ₹1.00");
         }
 
         Wallet wallet = getOrCreateWallet(user);

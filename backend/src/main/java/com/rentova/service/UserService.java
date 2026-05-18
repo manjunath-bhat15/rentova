@@ -36,11 +36,18 @@ public class UserService {
             throw new RuntimeException("Invalid role. Must be CUSTOMER, VENDOR, or ADMIN");
         }
 
+        String otp = String.format("%06d", new java.util.Random().nextInt(999999));
+        System.out.println("========== OTP FOR " + request.getEmail() + " ==========");
+        System.out.println("OTP: " + otp);
+        System.out.println("==============================================");
+
         User user = User.builder()
                 .email(request.getEmail())
                 .name(request.getName())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(role)
+                .isVerified(false)
+                .otpCode(otp)
                 .build();
 
         user = userRepository.save(user);
@@ -52,10 +59,8 @@ public class UserService {
                 .build();
         walletRepository.save(wallet);
 
-        String token = tokenProvider.generateToken(user.getId(), user.getEmail(), user.getRole().name());
-
         return AuthResponse.builder()
-                .token(token)
+                .token(null) // Token is null until verified
                 .user(toDTO(user, BigDecimal.ZERO))
                 .build();
     }
@@ -66,6 +71,10 @@ public class UserService {
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid email or password");
+        }
+        
+        if (!user.isVerified()) {
+            throw new RuntimeException("UNVERIFIED");
         }
 
         String token = tokenProvider.generateToken(user.getId(), user.getEmail(), user.getRole().name());
@@ -80,7 +89,48 @@ public class UserService {
                 .build();
     }
 
+    @Transactional
+    public AuthResponse verifyOtp(VerifyOtpRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.isVerified()) {
+            throw new RuntimeException("User is already verified");
+        }
+
+        if (!request.getOtp().equals(user.getOtpCode())) {
+            throw new RuntimeException("Invalid OTP");
+        }
+
+        user.setVerified(true);
+        user.setOtpCode(null);
+        userRepository.save(user);
+
+        String token = tokenProvider.generateToken(user.getId(), user.getEmail(), user.getRole().name());
+
+        BigDecimal balance = walletRepository.findByUserId(user.getId())
+                .map(Wallet::getBalance)
+                .orElse(BigDecimal.ZERO);
+
+        return AuthResponse.builder()
+                .token(token)
+                .user(toDTO(user, balance))
+                .build();
+    }
+
     public UserDTO getCurrentUser(User user) {
+        BigDecimal balance = walletRepository.findByUserId(user.getId())
+                .map(Wallet::getBalance)
+                .orElse(BigDecimal.ZERO);
+        return toDTO(user, balance);
+    }
+
+    @Transactional
+    public UserDTO updateProfile(User user, ProfileUpdateRequest request) {
+        user.setName(request.getName());
+        user.setAvatar(request.getAvatar());
+        user = userRepository.save(user);
+
         BigDecimal balance = walletRepository.findByUserId(user.getId())
                 .map(Wallet::getBalance)
                 .orElse(BigDecimal.ZERO);

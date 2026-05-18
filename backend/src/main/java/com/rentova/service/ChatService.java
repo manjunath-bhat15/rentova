@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,34 +68,43 @@ public class ChatService {
     }
 
     public List<ConversationDTO> getConversations(User user) {
-        List<String> bookingIds = chatRepo.findDistinctBookingIdsByUserId(user.getId());
+        List<Booking> bookings;
+        switch (user.getRole()) {
+            case CUSTOMER -> bookings = bookingRepo.findByCustomerIdOrderByCreatedAtDesc(user.getId());
+            case VENDOR -> bookings = bookingRepo.findByVendorIdOrderByCreatedAtDesc(user.getId());
+            case ADMIN -> bookings = bookingRepo.findAll();
+            default -> bookings = List.of();
+        }
+
         List<ConversationDTO> conversations = new ArrayList<>();
 
-        for (String bookingId : bookingIds) {
-            Booking booking = bookingRepo.findById(bookingId).orElse(null);
-            if (booking == null) continue;
+        for (Booking booking : bookings) {
+            List<ChatMessage> messages = chatRepo.findByBookingIdOrderByCreatedAtAsc(booking.getId());
 
-            List<ChatMessage> messages = chatRepo.findByBookingIdOrderByCreatedAtAsc(bookingId);
-            if (messages.isEmpty()) continue;
-
-            ChatMessage lastMsg = messages.get(messages.size() - 1);
-            long unread = chatRepo.countByRecipientIdAndIsReadFalse(user.getId());
+            ChatMessage lastMsg = messages.isEmpty() ? null : messages.get(messages.size() - 1);
+            long unread = chatRepo.countByBookingIdAndRecipientIdAndIsReadFalse(booking.getId(), user.getId());
 
             boolean isCustomer = booking.getCustomer().getId().equals(user.getId());
-            String otherName = isCustomer ? booking.getVendor().getName() : booking.getCustomer().getName();
+            boolean isVendor = booking.getVendor().getId().equals(user.getId());
+            String otherName = isCustomer
+                    ? booking.getVendor().getName()
+                    : isVendor
+                        ? booking.getCustomer().getName()
+                        : booking.getCustomer().getName() + " / " + booking.getVendor().getName();
             String otherId = isCustomer ? booking.getVendor().getId() : booking.getCustomer().getId();
 
             conversations.add(ConversationDTO.builder()
-                    .bookingId(bookingId)
+                    .bookingId(booking.getId())
                     .serviceTitle(booking.getService().getTitle())
                     .otherPartyName(otherName)
                     .otherPartyId(otherId)
-                    .lastMessage(lastMsg.getContent())
-                    .lastMessageTime(lastMsg.getCreatedAt().toString())
+                    .lastMessage(lastMsg == null ? "Start the conversation" : lastMsg.getContent())
+                    .lastMessageTime((lastMsg == null ? booking.getCreatedAt() : lastMsg.getCreatedAt()).toString())
                     .unreadCount(unread)
                     .build());
         }
 
+        conversations.sort(Comparator.comparing(ConversationDTO::getLastMessageTime).reversed());
         return conversations;
     }
 

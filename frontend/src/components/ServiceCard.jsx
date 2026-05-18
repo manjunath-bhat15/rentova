@@ -25,7 +25,7 @@ export default function ServiceCard({ service, onBook, isVendor }) {
     <div
       className="bento-card"
       style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}
-      onClick={() => !onBook && navigate(`/dashboard/services/${service.id}`)}
+      onClick={() => !onBook && navigate('/dashboard/services')}
     >
       {/* Category Tag */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -74,6 +74,16 @@ export default function ServiceCard({ service, onBook, isVendor }) {
           {service.vendorName?.[0]?.toUpperCase()}
         </span>
         {service.vendorName}
+        {service.distanceKm != null && (
+          <span style={{ marginLeft: 'auto', color: 'var(--accent-success)', fontWeight: 700 }}>
+            {service.distanceKm} km
+          </span>
+        )}
+        {service.distanceKm == null && service.location && (
+          <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            📍 {service.location}
+          </span>
+        )}
       </div>
 
       {/* Price & Action */}
@@ -84,7 +94,7 @@ export default function ServiceCard({ service, onBook, isVendor }) {
       }}>
         <div>
           <span style={{ fontSize: 'var(--font-xl)', fontWeight: 800, color: 'var(--accent-secondary)' }}>
-            ${service.pricePerUnit}
+            ₹{service.pricePerUnit}
           </span>
           <span style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>
             {unitLabels[service.unit] || ''}
@@ -101,7 +111,7 @@ export default function ServiceCard({ service, onBook, isVendor }) {
         {isVendor && (
           <button
             className="btn btn-secondary btn-sm"
-            onClick={(e) => { e.stopPropagation(); navigate(`/dashboard/services/edit/${service.id}`); }}
+            onClick={(e) => { e.stopPropagation(); navigate('/dashboard/services/create'); }}
           >
             Edit
           </button>

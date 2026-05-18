@@ -15,7 +15,7 @@ export default function Services() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
-  const [bookingForm, setBookingForm] = useState({ quantity: 1, scheduledAt: '', notes: '' });
+  const [bookingForm, setBookingForm] = useState({ quantity: 1, scheduledAt: '', notes: '', location: '', latitude: null, longitude: null });
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingError, setBookingError] = useState('');  
   const [walletBalance, setWalletBalance] = useState(null);
@@ -30,7 +30,14 @@ export default function Services() {
       const params = {};
       if (search) params.search = search;
       if (activeCategory !== 'All') params.category = activeCategory;
-      const res = await api.get('/api/services', { params });
+      
+      const endpoint = user?.role === 'VENDOR'
+        ? '/api/vendor/services'
+        : user?.role === 'ADMIN'
+          ? '/api/admin/services'
+          : '/api/services';
+      const res = await api.get(endpoint, { params });
+      
       setServices(res.data);
     } catch (err) {
       console.error('Failed to load services', err);
@@ -41,7 +48,7 @@ export default function Services() {
 
   const handleBook = async (service) => {
     setSelectedService(service);
-    setBookingForm({ quantity: 1, scheduledAt: '', notes: '' });
+    setBookingForm({ quantity: 1, scheduledAt: '', notes: '', location: '', latitude: null, longitude: null });
     setBookingError('');
     setShowBookingModal(true);
     // Fetch wallet balance
@@ -62,6 +69,9 @@ export default function Services() {
         quantity: bookingForm.quantity,
         scheduledAt: bookingForm.scheduledAt || null,
         notes: bookingForm.notes || null,
+        location: bookingForm.location || null,
+        latitude: bookingForm.latitude,
+        longitude: bookingForm.longitude,
       });
       setShowBookingModal(false);
       navigate('/dashboard/bookings');
@@ -76,6 +86,7 @@ export default function Services() {
   };
 
   const isVendor = user?.role === 'VENDOR';
+  const isAdmin = user?.role === 'ADMIN';
 
   return (
     <div className="animate-fade-in">
@@ -144,7 +155,7 @@ export default function Services() {
             <ServiceCard
               key={s.id}
               service={s}
-              onBook={!isVendor ? handleBook : null}
+              onBook={!isVendor && !isAdmin ? handleBook : null}
               isVendor={isVendor}
             />
           ))}
@@ -169,7 +180,7 @@ export default function Services() {
               Book Service
             </h2>
             <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-lg)', fontSize: 'var(--font-sm)' }}>
-              {selectedService.title} — ${selectedService.pricePerUnit}/{selectedService.unit.toLowerCase()}
+              {selectedService.title} — ₹{selectedService.pricePerUnit}/{selectedService.unit.toLowerCase()}
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
@@ -203,12 +214,45 @@ export default function Services() {
                   style={{ resize: 'vertical' }}
                 />
               </div>
+              <div className="input-group">
+                <label>Delivery/Service Location</label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    className="input-field"
+                    placeholder="e.g., Address or GPS coordinates"
+                    value={bookingForm.location}
+                    onChange={(e) => setBookingForm(f => ({ ...f, location: e.target.value }))}
+                    style={{ flex: 1 }}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      if (!navigator.geolocation) {
+                        setBookingError('Geolocation not supported by browser.');
+                        return;
+                      }
+                      navigator.geolocation.getCurrentPosition(
+                        (pos) => setBookingForm(f => ({
+                          ...f,
+                          location: `${pos.coords.latitude}, ${pos.coords.longitude}`,
+                          latitude: pos.coords.latitude,
+                          longitude: pos.coords.longitude,
+                        })),
+                        () => setBookingError('Unable to fetch location.')
+                      );
+                    }}
+                  >
+                    📍 Get Location
+                  </button>
+                </div>
+              </div>
 
               {bookingError && (
                 <div className="error-message" style={{ marginBottom: 'var(--space-sm)' }}>
                   {bookingError}{' '}
                   {bookingError.includes('wallet') && (
-                    <a href="/dashboard/wallet" style={{ fontWeight: 600 }}>Go to Wallet →</a>
+                    <a href="/dashboard/wallet" style={{ fontWeight: 600 }}>Go to Wallet</a>
                   )}
                 </div>
               )}
@@ -221,12 +265,12 @@ export default function Services() {
                   <span style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-sm)' }}>Total</span>
                   {walletBalance !== null && (
                     <p style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)', marginTop: '2px' }}>
-                      Wallet: ${parseFloat(walletBalance).toFixed(2)}
+                      Wallet: ₹{parseFloat(walletBalance).toFixed(2)}
                     </p>
                   )}
                 </div>
                 <span style={{ fontSize: 'var(--font-xl)', fontWeight: 800, color: 'var(--accent-secondary)' }}>
-                  ${(selectedService.pricePerUnit * bookingForm.quantity).toFixed(2)}
+                  ₹{(selectedService.pricePerUnit * bookingForm.quantity).toFixed(2)}
                 </span>
               </div>
 

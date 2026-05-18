@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
@@ -6,157 +6,193 @@ import api from '../services/api';
 export default function Overview() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [stats, setStats] = useState(null);
   const [bookings, setBookings] = useState([]);
-  const [services, setServices] = useState([]);
+  const [nearby, setNearby] = useState([]);
+  const [nearbyPopup, setNearbyPopup] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    loadDashboard();
+  }, [user?.role]);
 
-  const loadData = async () => {
+  useEffect(() => {
+    if (user?.role === 'CUSTOMER') loadNearbyListings();
+  }, [user?.role]);
+
+  const loadDashboard = async () => {
+    setLoading(true);
     try {
-      const [bookingsRes, servicesRes] = await Promise.all([
-        api.get('/api/bookings'),
-        api.get('/api/services'),
+      const endpoint = user?.role === 'VENDOR' ? '/api/vendor/dashboard' : '/api/customer/dashboard';
+      const bookingsEndpoint = user?.role === 'VENDOR' ? '/api/vendor/bookings' : '/api/customer/bookings';
+      const [statsRes, bookingsRes] = await Promise.all([
+        api.get(endpoint),
+        api.get(bookingsEndpoint),
       ]);
+      setStats(statsRes.data);
       setBookings(bookingsRes.data);
-      setServices(servicesRes.data);
-    } catch (err) {
-      console.error('Failed to load dashboard data', err);
+    } catch {
+      try {
+        const res = await api.get('/api/bookings');
+        setBookings(res.data);
+      } finally {
+        setStats({});
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const roleGreeting = {
-    CUSTOMER: 'Ready to book your next service?',
-    VENDOR: 'Manage your services and bookings',
-    ADMIN: 'Platform overview and management',
+  const loadNearbyListings = () => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      try {
+        const res = await api.get('/api/customer/services/nearby', {
+          params: {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            radiusKm: 10,
+          },
+        });
+        setNearby(res.data);
+        const seen = JSON.parse(localStorage.getItem('rentova_seen_nearby') || '[]');
+        const newest = res.data.find((service) => !seen.includes(service.id));
+        if (newest) setNearbyPopup(newest);
+      } catch {
+        setNearby([]);
+      }
+    });
   };
 
-  const activeBookings = bookings.filter(b => !['COMPLETED', 'CANCELLED'].includes(b.status)).length;
-  const completedBookings = bookings.filter(b => b.status === 'COMPLETED').length;
-  const pendingBookings = bookings.filter(b => b.status === 'PENDING').length;
-  const totalRevenue = bookings
-    .filter(b => b.status === 'COMPLETED')
-    .reduce((sum, b) => sum + parseFloat(b.amount || 0), 0);
+  const dismissNearby = () => {
+    if (nearbyPopup) {
+      const seen = JSON.parse(localStorage.getItem('rentova_seen_nearby') || '[]');
+      localStorage.setItem('rentova_seen_nearby', JSON.stringify([...new Set([...seen, nearbyPopup.id])]));
+    }
+    setNearbyPopup(null);
+  };
 
-  const stats = user?.role === 'VENDOR' ? [
-    { label: 'Active Bookings', value: activeBookings, icon: '📋', color: 'var(--accent-primary)' },
-    { label: 'Revenue', value: `$${totalRevenue.toFixed(2)}`, icon: '💰', color: 'var(--accent-secondary)' },
-    { label: 'My Services', value: services.length, icon: '🛒', color: 'var(--accent-warning)' },
-    { label: 'Completed', value: completedBookings, icon: '🎉', color: 'var(--accent-success)' },
+  const recentBookings = useMemo(() => bookings.slice(0, 5), [bookings]);
+  const isVendor = user?.role === 'VENDOR';
+
+  const metricCards = isVendor ? [
+    { label: 'Active bookings', value: stats?.activeBookings || 0, detail: `${stats?.pendingBookings || 0} pending` },
+    { label: 'Listings', value: stats?.totalServices || 0, detail: `${stats?.activeServices || 0} active` },
+    { label: 'Revenue', value: `Rs ${Number(stats?.totalRevenue || 0).toFixed(2)}`, detail: 'Completed bookings' },
   ] : [
-    { label: 'Active Bookings', value: activeBookings, icon: '📋', color: 'var(--accent-primary)' },
-    { label: 'Wallet Balance', value: `$${user?.walletBalance || '0.00'}`, icon: '💰', color: 'var(--accent-secondary)' },
-    { label: 'Pending', value: pendingBookings, icon: '⏳', color: 'var(--accent-warning)' },
-    { label: 'Completed', value: completedBookings, icon: '🎉', color: 'var(--accent-success)' },
+    { label: 'Active bookings', value: stats?.activeBookings || 0, detail: `${stats?.pendingBookings || 0} pending` },
+    { label: 'Wallet balance', value: `Rs ${Number(stats?.walletBalance || 0).toFixed(2)}`, detail: 'Ready for booking' },
+    { label: 'Nearby vendors', value: nearby.length, detail: 'Within 10 km' },
   ];
 
-  // Recent bookings for activity feed
-  const recentBookings = bookings.slice(0, 5);
+  if (loading) {
+    return (
+      <div className="center-loader">
+        <div className="loading-spinner" />
+      </div>
+    );
+  }
 
   return (
     <div className="animate-fade-in">
-      <div style={{ marginBottom: 'var(--space-xl)' }}>
-        <h1 style={{ fontSize: 'var(--font-2xl)', fontWeight: 800, marginBottom: 'var(--space-xs)' }}>
-          Welcome, {user?.name?.split(' ')[0]} 👋
-        </h1>
-        <p style={{ color: 'var(--text-secondary)' }}>{roleGreeting[user?.role] || 'Welcome to Rentova'}</p>
+      <div className="workspace-hero">
+        <div>
+          <p className="eyebrow">{isVendor ? 'Vendor operations' : 'Customer dashboard'}</p>
+          <h1>Welcome, {user?.name?.split(' ')[0]}</h1>
+          <p>
+            {isVendor
+              ? 'Manage listings, orders, customer messages, and wallet payouts from one workspace.'
+              : 'Find nearby vendors, manage bookings, and keep service conversations in sync.'}
+          </p>
+        </div>
+        <div className="hero-actions">
+          <button className="btn btn-primary" onClick={() => navigate(isVendor ? '/dashboard/services/create' : '/dashboard/nearby')}>
+            {isVendor ? 'Add Listing' : 'Find Nearby'}
+          </button>
+          <button className="btn btn-secondary" onClick={() => navigate('/dashboard/bookings')}>View Bookings</button>
+        </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="bento-grid stagger" style={{ marginBottom: 'var(--space-2xl)' }}>
-        {stats.map((stat) => (
-          <div key={stat.label} className="bento-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div>
-                <div className="stat-value" style={{ color: stat.color }}>{loading ? '—' : stat.value}</div>
-                <div className="stat-label">{stat.label}</div>
-              </div>
-              <span style={{ fontSize: '32px' }}>{stat.icon}</span>
-            </div>
+      <div className="metric-grid">
+        {metricCards.map((metric) => (
+          <div className="metric-card" key={metric.label}>
+            <span>{metric.label}</span>
+            <strong>{metric.value}</strong>
+            <small>{metric.detail}</small>
           </div>
         ))}
       </div>
 
-      {/* Quick Actions */}
-      <div style={{ marginBottom: 'var(--space-2xl)' }}>
-        <h2 style={{ fontSize: 'var(--font-xl)', fontWeight: 600, marginBottom: 'var(--space-md)' }}>Quick Actions</h2>
-        <div style={{ display: 'flex', gap: 'var(--space-md)', flexWrap: 'wrap' }}>
-          {user?.role === 'CUSTOMER' && (
-            <button className="btn btn-primary" onClick={() => navigate('/dashboard/services')}>
-              🛒 Browse Services
-            </button>
-          )}
-          {user?.role === 'VENDOR' && (
-            <button className="btn btn-primary" onClick={() => navigate('/dashboard/services/create')}>
-              ➕ Create Service
-            </button>
-          )}
-          <button className="btn btn-secondary" onClick={() => navigate('/dashboard/bookings')}>
-            📋 View Bookings
-          </button>
-          {user?.role === 'VENDOR' && (
-            <button className="btn btn-secondary" onClick={() => navigate('/dashboard/services')}>
-              🛒 My Services
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Recent Activity */}
-      <div>
-        <h2 style={{ fontSize: 'var(--font-xl)', fontWeight: 600, marginBottom: 'var(--space-md)' }}>Recent Activity</h2>
-        {recentBookings.length === 0 ? (
-          <div className="glass-card" style={{ padding: 'var(--space-xl)', textAlign: 'center' }}>
-            <p style={{ color: 'var(--text-muted)' }}>
-              No activity yet. {user?.role === 'CUSTOMER' ? 'Browse services to create your first booking!' : 'Create a service to start receiving bookings.'}
-            </p>
+      <div className="split-panels">
+        <section className="panel-block">
+          <div className="panel-heading">
+            <div>
+              <h2>Recent bookings</h2>
+              <p>Latest operational activity</p>
+            </div>
+            <button className="btn btn-ghost btn-sm" onClick={() => navigate('/dashboard/bookings')}>Open all</button>
           </div>
-        ) : (
-          <div className="glass-card" style={{ overflow: 'hidden' }}>
-            {recentBookings.map((b, i) => (
-              <div
-                key={b.id}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: 'var(--space-md) var(--space-lg)',
-                  borderBottom: i < recentBookings.length - 1 ? '1px solid var(--glass-border)' : 'none',
-                  cursor: 'pointer',
-                  transition: 'background var(--transition-fast)',
-                }}
-                onClick={() => navigate(`/dashboard/bookings/${b.id}`)}
-                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--glass-bg)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
-                  <div style={{
-                    width: 40, height: 40, borderRadius: 'var(--radius-md)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    background: 'var(--glass-bg)', fontSize: '18px',
-                  }}>
-                    {b.status === 'PENDING' ? '⏳' : b.status === 'CONFIRMED' ? '✅' : b.status === 'IN_PROGRESS' ? '🔄' : b.status === 'COMPLETED' ? '🎉' : '❌'}
-                  </div>
-                  <div>
-                    <p style={{ fontWeight: 600, fontSize: 'var(--font-sm)' }}>{b.serviceTitle}</p>
-                    <p style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>
-                      {user?.role === 'CUSTOMER' ? `Vendor: ${b.vendorName}` : `Customer: ${b.customerName}`}
-                    </p>
-                  </div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontWeight: 700, color: 'var(--accent-secondary)', fontSize: 'var(--font-sm)' }}>${b.amount}</p>
-                  <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-                    {new Date(b.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  </p>
-                </div>
-              </div>
+          <div className="recent-list">
+            {recentBookings.map((booking) => (
+              <button key={booking.id} onClick={() => navigate(`/dashboard/bookings/${booking.id}`)}>
+                <span>
+                  <strong>{booking.serviceTitle}</strong>
+                  <small>{isVendor ? booking.customerName : booking.vendorName}</small>
+                </span>
+                <span>{booking.status}</span>
+              </button>
             ))}
+            {recentBookings.length === 0 && (
+              <div className="empty-state">
+                <strong>No bookings yet</strong>
+                <p>{isVendor ? 'Create a listing to start receiving orders.' : 'Browse nearby services to create your first booking.'}</p>
+              </div>
+            )}
           </div>
+        </section>
+
+        {!isVendor && (
+          <section className="panel-block">
+            <div className="panel-heading">
+              <div>
+                <h2>Nearby inventory</h2>
+                <p>Fresh services around your current location</p>
+              </div>
+              <button className="btn btn-ghost btn-sm" onClick={() => navigate('/dashboard/nearby')}>Map view</button>
+            </div>
+            <div className="recent-list">
+              {nearby.slice(0, 5).map((service) => (
+                <button key={service.id} onClick={() => navigate('/dashboard/nearby')}>
+                  <span>
+                    <strong>{service.title}</strong>
+                    <small>{service.vendorName}</small>
+                  </span>
+                  <span>{service.distanceKm} km</span>
+                </button>
+              ))}
+              {nearby.length === 0 && (
+                <div className="empty-state">
+                  <strong>No nearby listings yet</strong>
+                  <p>Allow location access or expand your radius in the Nearby Vendors tab.</p>
+                </div>
+              )}
+            </div>
+          </section>
         )}
       </div>
+
+      {nearbyPopup && (
+        <div className="nearby-toast">
+          <div>
+            <strong>New nearby listing</strong>
+            <p>{nearbyPopup.title} by {nearbyPopup.vendorName}, {nearbyPopup.distanceKm} km away.</p>
+          </div>
+          <div>
+            <button className="btn btn-primary btn-sm" onClick={() => navigate('/dashboard/nearby')}>View</button>
+            <button className="btn btn-ghost btn-sm" onClick={dismissNearby}>Dismiss</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

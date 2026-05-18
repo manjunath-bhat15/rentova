@@ -67,7 +67,7 @@ export default function BookingCard({ booking, userRole }) {
       }}>
         <div>
           <span style={{ fontSize: 'var(--font-lg)', fontWeight: 800, color: 'var(--accent-secondary)' }}>
-            ${booking.amount}
+            ₹{booking.amount}
           </span>
           <span style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)', marginLeft: '4px' }}>
             × {booking.quantity}

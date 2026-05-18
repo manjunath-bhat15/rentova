@@ -18,6 +18,11 @@ public class ServiceDTO {
     private BigDecimal pricePerUnit;
     private String unit;
     private boolean active;
+    private String location;
+    private Double latitude;
+    private Double longitude;
+    private Double serviceRadiusKm;
+    private Double distanceKm;
     private String images;
     private LocalDateTime createdAt;
 }

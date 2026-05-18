@@ -37,7 +37,7 @@ export default function WalletPage() {
   const handleTopUp = async () => {
     const amount = parseFloat(topUpAmount);
     if (!amount || amount < 1) {
-      setError('Minimum top-up is $1.00');
+      setError('Minimum top-up is ₹1.00');
       return;
     }
     setError('');
@@ -94,7 +94,7 @@ export default function WalletPage() {
             Available Balance
           </p>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: 'var(--space-lg)' }}>
-            <span style={{ fontSize: '14px', color: 'var(--text-secondary)', fontWeight: 500 }}>$</span>
+            <span style={{ fontSize: '14px', color: 'var(--text-secondary)', fontWeight: 500 }}>₹</span>
             <span style={{
               fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 800,
               background: 'var(--accent-gradient)',
@@ -147,7 +147,7 @@ export default function WalletPage() {
                   className={`btn btn-sm ${parseFloat(topUpAmount) === amt ? 'btn-primary' : 'btn-secondary'}`}
                   onClick={() => setTopUpAmount(String(amt))}
                 >
-                  ${amt}
+                  ₹{amt}
                 </button>
               ))}
             </div>
@@ -158,7 +158,7 @@ export default function WalletPage() {
                 <span style={{
                   position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)',
                   color: 'var(--text-muted)', fontWeight: 600,
-                }}>$</span>
+                }}>₹</span>
                 <input
                   type="number"
                   className="input-field"
@@ -177,7 +177,7 @@ export default function WalletPage() {
                 Cancel
               </button>
               <button className="btn btn-primary" style={{ flex: 1 }} disabled={topUpLoading} onClick={handleTopUp}>
-                {topUpLoading ? 'Processing...' : `Add $${topUpAmount || '0'}`}
+                {topUpLoading ? 'Processing...' : `Add ₹${topUpAmount || '0'}`}
               </button>
             </div>
           </div>
@@ -239,10 +239,10 @@ export default function WalletPage() {
                       fontWeight: 700, fontSize: 'var(--font-sm)',
                       color: isPositive ? 'var(--accent-success)' : 'var(--accent-danger)',
                     }}>
-                      {isPositive ? '+' : ''}${Math.abs(parseFloat(txn.amount)).toFixed(2)}
+                      {isPositive ? '+' : ''}₹{Math.abs(parseFloat(txn.amount)).toFixed(2)}
                     </p>
                     <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-                      Bal: ${parseFloat(txn.balanceAfter).toFixed(2)}
+                      Bal: ₹{parseFloat(txn.balanceAfter).toFixed(2)}
                     </p>
                     <p style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
                       {new Date(txn.createdAt).toLocaleDateString('en-US', {

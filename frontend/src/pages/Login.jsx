@@ -18,7 +18,11 @@ export default function Login() {
       await login(email, password);
       navigate('/dashboard');
     } catch (err) {
-      setError('Invalid email or password. Please try again.');
+      if (err.response?.data?.message === 'UNVERIFIED' || err.response?.data === 'UNVERIFIED') {
+        setError('Your account is not verified. Please register again to receive a new OTP.');
+      } else {
+        setError('Invalid email or password. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

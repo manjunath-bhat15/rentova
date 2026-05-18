@@ -18,11 +18,35 @@ export default function CreateService() {
     category: 'Equipment',
     pricePerUnit: '',
     unit: 'HOUR',
+    location: '',
+    latitude: null,
+    longitude: null,
+    serviceRadiusKm: 10,
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const updateField = (field, value) => setForm(f => ({ ...f, [field]: value }));
+
+  const fetchLocation = () => {
+    if (!navigator.geolocation) {
+      setError('Geolocation is not supported by your browser');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setForm((current) => ({
+          ...current,
+          location: `${position.coords.latitude}, ${position.coords.longitude}`,
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        }));
+      },
+      () => {
+        setError('Unable to retrieve your location');
+      }
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -102,7 +126,7 @@ export default function CreateService() {
           </div>
 
           <div className="input-group">
-            <label>Price (USD)</label>
+            <label>Price (INR)</label>
             <input
               type="number"
               className="input-field"
@@ -112,6 +136,34 @@ export default function CreateService() {
               value={form.pricePerUnit}
               onChange={(e) => updateField('pricePerUnit', e.target.value)}
               required
+            />
+          </div>
+
+          <div className="input-group">
+            <label>Location</label>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <input
+                className="input-field"
+                placeholder="e.g., City, Address or GPS coordinates"
+                value={form.location}
+                onChange={(e) => updateField('location', e.target.value)}
+                style={{ flex: 1 }}
+              />
+              <button type="button" className="btn btn-secondary" onClick={fetchLocation}>
+                📍 Get Location
+              </button>
+            </div>
+          </div>
+
+          <div className="input-group">
+            <label>Service Radius (km)</label>
+            <input
+              type="number"
+              className="input-field"
+              min="1"
+              max="100"
+              value={form.serviceRadiusKm}
+              onChange={(e) => updateField('serviceRadiusKm', Number(e.target.value) || 10)}
             />
           </div>
 
@@ -125,9 +177,14 @@ export default function CreateService() {
               <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-sm)', marginTop: '4px' }}>
                 {form.description || 'No description'}
               </p>
+              {form.location && (
+                <p style={{ color: 'var(--accent-primary)', fontSize: 'var(--font-xs)', marginTop: '4px', fontWeight: 600 }}>
+                  📍 {form.location}
+                </p>
+              )}
               <div style={{ marginTop: 'var(--space-md)', display: 'flex', gap: 'var(--space-sm)', alignItems: 'baseline' }}>
                 <span style={{ fontSize: 'var(--font-xl)', fontWeight: 800, color: 'var(--accent-secondary)' }}>
-                  ${form.pricePerUnit || '0.00'}
+                  ₹{form.pricePerUnit || '0.00'}
                 </span>
                 <span style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>
                   /{form.unit.toLowerCase()}

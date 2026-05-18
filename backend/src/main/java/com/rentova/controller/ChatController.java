@@ -2,7 +2,9 @@ package com.rentova.controller;
 
 import com.rentova.dto.*;
 import com.rentova.model.User;
+import com.rentova.model.NotificationType;
 import com.rentova.service.ChatService;
+import com.rentova.service.NotificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ public class ChatController {
 
     private final ChatService chatService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final NotificationService notificationService;
 
     @GetMapping("/conversations")
     public ResponseEntity<List<ConversationDTO>> getConversations(@AuthenticationPrincipal User user) {
@@ -42,6 +45,13 @@ public class ChatController {
             @AuthenticationPrincipal User user) {
         try {
             ChatMessageDTO msg = chatService.sendMessage(request.getBookingId(), request.getContent(), user);
+
+            notificationService.createNotification(
+                    msg.getRecipientId(),
+                    NotificationType.CHAT_MESSAGE,
+                    "New message from " + msg.getSenderName(),
+                    msg.getContent(),
+                    msg.getBookingId());
 
             // Push to recipient via WebSocket
             try {

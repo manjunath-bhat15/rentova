@@ -1,0 +1,54 @@
+package com.rentova.config;
+
+import com.rentova.model.Role;
+import com.rentova.model.User;
+import com.rentova.model.Wallet;
+import com.rentova.repository.UserRepository;
+import com.rentova.repository.WalletRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+
+@Component
+@Profile("!prod")
+@RequiredArgsConstructor
+public class DevDataSeeder implements CommandLineRunner {
+
+    private final UserRepository userRepository;
+    private final WalletRepository walletRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    @Override
+    public void run(String... args) {
+        seedUser("customer@rentova.local", "Customer Demo", Role.CUSTOMER, new BigDecimal("5000.00"));
+        seedUser("vendor@rentova.local", "Vendor Demo", Role.VENDOR, BigDecimal.ZERO);
+        seedUser("admin@rentova.local", "Admin Demo", Role.ADMIN, BigDecimal.ZERO);
+    }
+
+    private void seedUser(String email, String name, Role role, BigDecimal balance) {
+        userRepository.findByEmail(email).ifPresentOrElse(
+                user -> ensureWallet(user, balance),
+                () -> {
+                    User user = User.builder()
+                            .email(email)
+                            .name(name)
+                            .password(passwordEncoder.encode("password123"))
+                            .role(role)
+                            .isVerified(true)
+                            .build();
+                    ensureWallet(userRepository.save(user), balance);
+                });
+    }
+
+    private void ensureWallet(User user, BigDecimal balance) {
+        walletRepository.findByUserId(user.getId()).orElseGet(() -> walletRepository.save(
+                Wallet.builder()
+                        .user(user)
+                        .balance(balance)
+                        .build()));
+    }
+}

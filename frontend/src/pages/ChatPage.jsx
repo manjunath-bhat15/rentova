@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useSocket } from '../contexts/SocketContext';
 import api from '../services/api';
@@ -6,6 +7,7 @@ import api from '../services/api';
 export default function ChatPage() {
   const { user } = useAuth();
   const { subscribe } = useSocket();
+  const [searchParams] = useSearchParams();
   const [conversations, setConversations] = useState([]);
   const [activeBookingId, setActiveBookingId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -49,8 +51,10 @@ export default function ChatPage() {
     try {
       const res = await api.get('/api/chat/conversations');
       setConversations(res.data);
+      const requestedBookingId = searchParams.get('bookingId');
       if (res.data.length > 0 && !activeBookingId) {
-        setActiveBookingId(res.data[0].bookingId);
+        const requested = res.data.find((conv) => conv.bookingId === requestedBookingId);
+        setActiveBookingId((requested || res.data[0]).bookingId);
       }
     } catch (err) {
       console.error('Failed to load conversations', err);
@@ -77,6 +81,9 @@ export default function ChatPage() {
         content: newMessage.trim(),
       });
       setMessages(prev => [...prev, res.data]);
+      setConversations(prev => prev.map(conv => conv.bookingId === activeBookingId
+        ? { ...conv, lastMessage: res.data.content, lastMessageTime: res.data.createdAt }
+        : conv));
       setNewMessage('');
     } catch (err) {
       console.error('Failed to send message', err);
@@ -115,12 +122,7 @@ export default function ChatPage() {
   const activeConvo = conversations.find(c => c.bookingId === activeBookingId);
 
   return (
-    <div className="animate-fade-in" style={{
-      display: 'grid', gridTemplateColumns: '300px 1fr',
-      gap: 0, height: 'calc(100vh - 140px)',
-      borderRadius: 'var(--radius-lg)', overflow: 'hidden',
-      border: '1px solid var(--glass-border)',
-    }}>
+    <div className="chat-shell animate-fade-in">
       {/* Conversation List */}
       <div style={{
         background: 'var(--glass-bg)', borderRight: '1px solid var(--glass-border)',

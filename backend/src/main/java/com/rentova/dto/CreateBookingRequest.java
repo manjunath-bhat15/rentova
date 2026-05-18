@@ -14,6 +14,13 @@ public class CreateBookingRequest {
     @Min(value = 1, message = "Quantity must be at least 1")
     private int quantity = 1;
 
+    @Size(max = 200)
+    private String location;
+
+    private Double latitude;
+
+    private Double longitude;
+
     @Size(max = 1000)
     private String notes;
 }

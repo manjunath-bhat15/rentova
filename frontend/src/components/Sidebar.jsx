@@ -1,34 +1,53 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-const navItems = {
-  common: [
-    { path: '/dashboard', icon: '🏠', label: 'Overview' },
-    { path: '/dashboard/services', icon: '🛒', label: 'Services' },
-    { path: '/dashboard/bookings', icon: '📋', label: 'Bookings' },
-    { path: '/dashboard/wallet', icon: '💰', label: 'Wallet' },
-    { path: '/dashboard/chat', icon: '💬', label: 'Chat' },
-    { path: '/dashboard/notifications', icon: '🔔', label: 'Notifications' },
+const roleNav = {
+  CUSTOMER: [
+    { path: '/dashboard', icon: 'OV', label: 'Overview' },
+    { path: '/dashboard/nearby', icon: 'NB', label: 'Nearby Vendors' },
+    { path: '/dashboard/services', icon: 'SV', label: 'Marketplace' },
+    { path: '/dashboard/bookings', icon: 'BK', label: 'My Bookings' },
+    { path: '/dashboard/wallet', icon: 'WA', label: 'Wallet' },
+    { path: '/dashboard/chat', icon: 'CH', label: 'Messages' },
+    { path: '/dashboard/notifications', icon: 'NT', label: 'Notifications' },
   ],
-  admin: [
-    { path: '/dashboard/admin', icon: '📊', label: 'Admin Panel' },
-    { path: '/dashboard/admin/users', icon: '👥', label: 'Users' },
+  VENDOR: [
+    { path: '/dashboard', icon: 'OV', label: 'Overview' },
+    { path: '/dashboard/services', icon: 'SV', label: 'My Listings' },
+    { path: '/dashboard/services/create', icon: 'AD', label: 'Add Listing' },
+    { path: '/dashboard/bookings', icon: 'BK', label: 'Orders' },
+    { path: '/dashboard/wallet', icon: 'WA', label: 'Payouts' },
+    { path: '/dashboard/chat', icon: 'CH', label: 'Messages' },
+    { path: '/dashboard/notifications', icon: 'NT', label: 'Notifications' },
+  ],
+  ADMIN: [
+    { path: '/dashboard', icon: 'HQ', label: 'Command Center' },
+    { path: '/dashboard/admin/users', icon: 'US', label: 'Users' },
+    { path: '/dashboard/bookings', icon: 'BK', label: 'Bookings' },
+    { path: '/dashboard/services', icon: 'SV', label: 'Listings' },
+    { path: '/dashboard/chat', icon: 'CH', label: 'Messages' },
+    { path: '/dashboard/notifications', icon: 'NT', label: 'Notifications' },
   ],
 };
 
 export default function Sidebar() {
   const { user } = useAuth();
+  const role = user?.role || 'CUSTOMER';
+  const items = roleNav[role] || roleNav.CUSTOMER;
 
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
         <div className="logo-icon">R</div>
-        <div className="logo-text">Rentova</div>
+        <div>
+          <div className="logo-text">Rentova</div>
+          <div className="sidebar-role">{role.toLowerCase()} workspace</div>
+        </div>
       </div>
 
       <nav className="sidebar-nav">
-        <div className="sidebar-section-title">Main</div>
-        {navItems.common.map((item) => (
+        <div className="sidebar-section-title">Workspace</div>
+        {items.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
@@ -36,25 +55,9 @@ export default function Sidebar() {
             className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
           >
             <span className="nav-icon">{item.icon}</span>
-            {item.label}
+            <span>{item.label}</span>
           </NavLink>
         ))}
-
-        {user?.role === 'ADMIN' && (
-          <>
-            <div className="sidebar-section-title">Administration</div>
-            {navItems.admin.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-              >
-                <span className="nav-icon">{item.icon}</span>
-                {item.label}
-              </NavLink>
-            ))}
-          </>
-        )}
       </nav>
     </aside>
   );

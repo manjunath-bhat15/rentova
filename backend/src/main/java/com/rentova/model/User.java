@@ -40,6 +40,13 @@ public class User {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+    
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isVerified = false;
+    
+    @JsonIgnore
+    private String otpCode;
 
     @JsonIgnore
     @ToString.Exclude

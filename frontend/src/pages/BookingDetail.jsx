@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import StatusBadge from '../components/StatusBadge';
+import MapPanel, { mapsDirectionsUrl } from '../components/MapPanel';
 import api from '../services/api';
 
 const statusFlow = ['PENDING', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED'];
@@ -85,7 +86,7 @@ export default function BookingDetail() {
     <div className="animate-fade-in" style={{ maxWidth: '800px' }}>
       {/* Back + Status */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-xl)' }}>
-        <button className="btn btn-ghost" onClick={() => navigate('/dashboard/bookings')}>← Back</button>
+        <button className="btn btn-ghost" onClick={() => navigate('/dashboard/bookings')}>Back</button>
         <StatusBadge status={booking.status} />
       </div>
 
@@ -107,7 +108,7 @@ export default function BookingDetail() {
           <div>
             <p style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)', marginBottom: '4px' }}>Amount</p>
             <p style={{ fontWeight: 800, fontSize: 'var(--font-lg)', color: 'var(--accent-secondary)' }}>
-              ${booking.amount}
+              ₹{booking.amount}
               <span style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)', fontWeight: 400, marginLeft: '4px' }}>
                 × {booking.quantity}
               </span>
@@ -121,6 +122,12 @@ export default function BookingDetail() {
               })}
             </p>
           </div>
+          {booking.location && (
+            <div style={{ gridColumn: '1 / -1' }}>
+              <p style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)', marginBottom: '4px' }}>Location</p>
+              <p style={{ fontWeight: 600, color: 'var(--accent-primary)' }}>📍 {booking.location}</p>
+            </div>
+          )}
         </div>
 
         {booking.scheduledAt && (
@@ -150,6 +157,35 @@ export default function BookingDetail() {
           </div>
         )}
       </div>
+
+      {(booking.serviceLatitude || booking.latitude) && (
+        <div className="glass-card" style={{ padding: 'var(--space-xl)', marginBottom: 'var(--space-lg)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 'var(--space-md)', alignItems: 'center', marginBottom: 'var(--space-md)' }}>
+            <div>
+              <h3 style={{ fontSize: 'var(--font-md)', fontWeight: 700 }}>Service Map</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-sm)' }}>
+                Vendor and customer locations for this booking.
+              </p>
+            </div>
+            {booking.serviceLatitude && (
+              <a
+                className="btn btn-secondary btn-sm"
+                href={mapsDirectionsUrl(booking.latitude, booking.longitude, booking.serviceLatitude, booking.serviceLongitude)}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Directions
+              </a>
+            )}
+          </div>
+          <MapPanel
+            latitude={booking.serviceLatitude || booking.latitude}
+            longitude={booking.serviceLongitude || booking.longitude}
+            label={booking.serviceLocation || booking.serviceTitle}
+            height={300}
+          />
+        </div>
+      )}
 
       {/* Status Timeline */}
       <div className="glass-card" style={{ padding: 'var(--space-xl)', marginBottom: 'var(--space-lg)' }}>
@@ -217,7 +253,7 @@ export default function BookingDetail() {
         }}>
           <button
             className="btn btn-secondary"
-            onClick={() => navigate('/dashboard/chat')}
+            onClick={() => navigate(`/dashboard/chat?bookingId=${booking.id}`)}
             style={{ marginRight: 'auto' }}
           >
             💬 Message

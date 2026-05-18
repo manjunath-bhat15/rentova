@@ -47,6 +47,9 @@ public class BookingService {
                 .scheduledAt(request.getScheduledAt())
                 .amount(amount)
                 .quantity(request.getQuantity())
+                .location(request.getLocation())
+                .latitude(request.getLatitude())
+                .longitude(request.getLongitude())
                 .notes(request.getNotes())
                 .build();
 
@@ -60,7 +63,7 @@ public class BookingService {
                 service.getVendor().getId(),
                 NotificationType.BOOKING_CREATED,
                 "New Booking Request",
-                customer.getName() + " booked \"" + service.getTitle() + "\" — $" + amount,
+                customer.getName() + " booked \"" + service.getTitle() + "\" — ₹" + amount,
                 booking.getId());
 
         return toDTO(booking);
@@ -141,7 +144,7 @@ public class BookingService {
                     booking.getVendor().getId(),
                     NotificationType.WALLET_PAYOUT,
                     "Payment Received",
-                    "$" + booking.getAmount() + " payout for \"" + booking.getService().getTitle() + "\"",
+                    "₹" + booking.getAmount() + " payout for \"" + booking.getService().getTitle() + "\"",
                     booking.getId());
         }
 
@@ -153,7 +156,7 @@ public class BookingService {
                     booking.getCustomer().getId(),
                     NotificationType.BOOKING_CANCELLED,
                     "Booking Cancelled",
-                    "Your booking for \"" + booking.getService().getTitle() + "\" was cancelled. $" + booking.getAmount() + " refunded.",
+                    "Your booking for \"" + booking.getService().getTitle() + "\" was cancelled. ₹" + booking.getAmount() + " refunded.",
                     booking.getId());
             notificationService.createNotification(
                     booking.getVendor().getId(),
@@ -217,6 +220,12 @@ public class BookingService {
                 .completedAt(b.getCompletedAt())
                 .amount(b.getAmount())
                 .quantity(b.getQuantity())
+                .location(b.getLocation())
+                .latitude(b.getLatitude())
+                .longitude(b.getLongitude())
+                .serviceLocation(b.getService().getLocation())
+                .serviceLatitude(b.getService().getLatitude())
+                .serviceLongitude(b.getService().getLongitude())
                 .notes(b.getNotes())
                 .createdAt(b.getCreatedAt())
                 .updatedAt(b.getUpdatedAt())

@@ -11,7 +11,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, String
     @Query("SELECT DISTINCT c.bookingId FROM ChatMessage c WHERE c.senderId = ?1 OR c.recipientId = ?1")
     List<String> findDistinctBookingIdsByUserId(String userId);
 
-    long countByRecipientIdAndIsReadFalse(String recipientId);
+    long countByBookingIdAndRecipientIdAndIsReadFalse(String bookingId, String recipientId);
 
     List<ChatMessage> findByBookingIdAndRecipientIdAndIsReadFalse(String bookingId, String recipientId);
 }

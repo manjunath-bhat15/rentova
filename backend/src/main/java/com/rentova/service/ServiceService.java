@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,12 +24,7 @@ public class ServiceService {
             throw new RuntimeException("Only vendors can create services");
         }
 
-        ServiceUnit unit;
-        try {
-            unit = ServiceUnit.valueOf(request.getUnit().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Invalid unit. Must be HOUR, DAY, PIECE, or SESSION");
-        }
+        ServiceUnit unit = parseUnit(request.getUnit());
 
         ServiceEntity service = ServiceEntity.builder()
                 .vendor(vendor)
@@ -36,6 +33,10 @@ public class ServiceService {
                 .category(request.getCategory())
                 .pricePerUnit(request.getPricePerUnit())
                 .unit(unit)
+                .location(request.getLocation())
+                .latitude(request.getLatitude())
+                .longitude(request.getLongitude())
+                .serviceRadiusKm(request.getServiceRadiusKm() == null ? 10.0 : request.getServiceRadiusKm())
                 .images(request.getImages())
                 .isActive(true)
                 .build();
@@ -54,6 +55,11 @@ public class ServiceService {
                 .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
+    public List<ServiceDTO> getAllServicesForAdmin() {
+        return serviceRepository.findAll()
+                .stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
     public List<ServiceDTO> searchServices(String keyword) {
         return serviceRepository.findByTitleContainingIgnoreCaseAndIsActiveTrue(keyword)
                 .stream().map(this::toDTO).collect(Collectors.toList());
@@ -62,6 +68,23 @@ public class ServiceService {
     public List<ServiceDTO> getServicesByCategory(String category) {
         return serviceRepository.findByCategoryAndIsActiveTrue(category)
                 .stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    public List<ServiceDTO> getNearbyServices(double latitude, double longitude, double radiusKm,
+                                              String search, String category) {
+        double normalizedRadius = radiusKm <= 0 ? 10.0 : radiusKm;
+        return serviceRepository.findByIsActiveTrue()
+                .stream()
+                .filter(service -> service.getLatitude() != null && service.getLongitude() != null)
+                .filter(service -> search == null || search.isBlank()
+                        || service.getTitle().toLowerCase().contains(search.toLowerCase()))
+                .filter(service -> category == null || category.isBlank()
+                        || "All".equalsIgnoreCase(category)
+                        || service.getCategory().equalsIgnoreCase(category))
+                .map(service -> toDTO(service, distanceKm(latitude, longitude, service.getLatitude(), service.getLongitude())))
+                .filter(service -> service.getDistanceKm() != null && service.getDistanceKm() <= normalizedRadius)
+                .sorted((a, b) -> Double.compare(a.getDistanceKm(), b.getDistanceKm()))
+                .collect(Collectors.toList());
     }
 
     public ServiceDTO getServiceById(String id) {
@@ -83,7 +106,11 @@ public class ServiceService {
         service.setDescription(request.getDescription());
         service.setCategory(request.getCategory());
         service.setPricePerUnit(request.getPricePerUnit());
-        service.setUnit(ServiceUnit.valueOf(request.getUnit().toUpperCase()));
+        service.setUnit(parseUnit(request.getUnit()));
+        if (request.getLocation() != null) service.setLocation(request.getLocation());
+        if (request.getLatitude() != null) service.setLatitude(request.getLatitude());
+        if (request.getLongitude() != null) service.setLongitude(request.getLongitude());
+        if (request.getServiceRadiusKm() != null) service.setServiceRadiusKm(request.getServiceRadiusKm());
         if (request.getImages() != null) service.setImages(request.getImages());
 
         service = serviceRepository.save(service);
@@ -101,7 +128,32 @@ public class ServiceService {
         serviceRepository.save(service);
     }
 
+    private ServiceUnit parseUnit(String unit) {
+        try {
+            return ServiceUnit.valueOf(unit.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid unit. Must be HOUR, DAY, PIECE, or SESSION");
+        }
+    }
+
+    private double distanceKm(double lat1, double lon1, double lat2, double lon2) {
+        final int earthRadiusKm = 6371;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return BigDecimal.valueOf(earthRadiusKm * c)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
+    }
+
     private ServiceDTO toDTO(ServiceEntity s) {
+        return toDTO(s, null);
+    }
+
+    private ServiceDTO toDTO(ServiceEntity s, Double distanceKm) {
         return ServiceDTO.builder()
                 .id(s.getId())
                 .vendorId(s.getVendor().getId())
@@ -111,6 +163,11 @@ public class ServiceService {
                 .category(s.getCategory())
                 .pricePerUnit(s.getPricePerUnit())
                 .unit(s.getUnit().name())
+                .location(s.getLocation())
+                .latitude(s.getLatitude())
+                .longitude(s.getLongitude())
+                .serviceRadiusKm(s.getServiceRadiusKm())
+                .distanceKm(distanceKm)
                 .active(s.isActive())
                 .images(s.getImages())
                 .createdAt(s.getCreatedAt())

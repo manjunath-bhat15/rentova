@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Sidebar from '../components/Sidebar';
@@ -10,14 +11,19 @@ const pageTitles = {
   '/dashboard/bookings': 'Bookings',
   '/dashboard/wallet': 'Wallet',
   '/dashboard/chat': 'Chat',
+  '/dashboard/nearby': 'Nearby Vendors',
   '/dashboard/notifications': 'Notifications',
-  '/dashboard/admin': 'Admin Dashboard',
+  '/dashboard/admin': 'Admin Command Center',
   '/dashboard/admin/users': 'User Management',
 };
 
 export default function DashboardLayout() {
   const { isAuthenticated, loading } = useAuth();
   const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   if (loading) {
     return (

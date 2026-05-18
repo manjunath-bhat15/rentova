@@ -23,5 +23,15 @@ public class CreateServiceRequest {
     @NotBlank(message = "Unit is required")
     private String unit;  // HOUR, DAY, PIECE, SESSION
 
+    @Size(max = 200)
+    private String location;
+
+    private Double latitude;
+
+    private Double longitude;
+
+    @DecimalMin(value = "1.0", message = "Service radius must be at least 1 km")
+    private Double serviceRadiusKm = 10.0;
+
     private String images;
 }

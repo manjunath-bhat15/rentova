@@ -40,6 +40,16 @@ public class ServiceController {
         return ResponseEntity.ok(serviceService.getServicesByVendor(user.getId()));
     }
 
+    @GetMapping("/nearby")
+    public ResponseEntity<List<ServiceDTO>> getNearbyServices(
+            @RequestParam double latitude,
+            @RequestParam double longitude,
+            @RequestParam(defaultValue = "10") double radiusKm,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String category) {
+        return ResponseEntity.ok(serviceService.getNearbyServices(latitude, longitude, radiusKm, search, category));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ServiceDTO> getService(@PathVariable String id) {
         return ResponseEntity.ok(serviceService.getServiceById(id));

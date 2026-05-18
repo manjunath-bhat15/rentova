@@ -46,6 +46,15 @@ public class ServiceEntity {
     @Builder.Default
     private boolean isActive = true;
 
+    private String location;
+
+    private Double latitude;
+
+    private Double longitude;
+
+    @Builder.Default
+    private Double serviceRadiusKm = 10.0;
+    
     private String images;
 
     @Column(nullable = false, updatable = false)

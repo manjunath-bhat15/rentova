@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useSocket } from '../contexts/SocketContext';
-import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
 export default function Header({ title }) {
@@ -11,13 +11,18 @@ export default function Header({ title }) {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) return undefined;
     loadUnreadCount();
     const sub = subscribe('/user/queue/notifications', () => {
-      setUnreadCount(prev => prev + 1);
+      setUnreadCount((prev) => prev + 1);
     });
+
+    const handleSync = () => loadUnreadCount();
+    window.addEventListener('notificationSync', handleSync);
+
     return () => {
       if (sub) sub.unsubscribe();
+      window.removeEventListener('notificationSync', handleSync);
     };
   }, [user, subscribe]);
 
@@ -25,14 +30,14 @@ export default function Header({ title }) {
     try {
       const res = await api.get('/api/notifications/unread-count');
       setUnreadCount(res.data.count || 0);
-    } catch (err) {
-      // Silently fail
+    } catch {
+      setUnreadCount(0);
     }
   };
 
   const initials = user?.name
     ?.split(' ')
-    .map((n) => n[0])
+    .map((name) => name[0])
     .join('')
     .toUpperCase()
     .slice(0, 2) || '?';
@@ -45,41 +50,32 @@ export default function Header({ title }) {
   return (
     <header className="header">
       <div className="header-left">
-        <h2>{title || 'Dashboard'}</h2>
-        {connected && (
-          <span className="badge badge-green" style={{ fontSize: '10px', gap: '4px', display: 'flex', alignItems: 'center' }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00b894', display: 'inline-block' }}></span>
-            Live
-          </span>
-        )}
+        <div>
+          <p className="header-kicker">{user?.role || 'Workspace'}</p>
+          <h2>{title || 'Dashboard'}</h2>
+        </div>
+        <span className={`live-pill ${connected ? 'online' : ''}`}>
+          {connected ? 'Live' : 'Offline'}
+        </span>
       </div>
+
       <div className="header-right">
         <button
           className="notification-bell"
           onClick={() => navigate('/dashboard/notifications')}
-          style={{ position: 'relative' }}
+          aria-label="Open notifications"
         >
-          🔔
-          {unreadCount > 0 && (
-            <span style={{
-              position: 'absolute', top: -4, right: -4,
-              background: 'var(--accent-danger)', color: 'white',
-              borderRadius: '50%', width: 18, height: 18,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '10px', fontWeight: 800,
-              boxShadow: '0 0 8px rgba(255,107,107,0.5)',
-              animation: 'pulse 2s infinite',
-            }}>
-              {unreadCount > 9 ? '9+' : unreadCount}
-            </span>
-          )}
+          NT
+          {unreadCount > 0 && <span className="badge-count">{unreadCount > 9 ? '9+' : unreadCount}</span>}
         </button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 'var(--font-sm)', fontWeight: 600 }}>{user?.name}</div>
-            <div style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>{user?.role}</div>
+        <div className="user-chip">
+          <div className="header-avatar">
+            {user?.avatar ? <img src={user.avatar} alt="Avatar" /> : initials}
           </div>
-          <div className="header-avatar">{initials}</div>
+          <div>
+            <div className="user-chip-name">{user?.name}</div>
+            <div className="user-chip-role">{user?.email}</div>
+          </div>
         </div>
         <button className="btn btn-ghost btn-sm" onClick={handleLogout}>Logout</button>
       </div>
