@@ -26,28 +26,11 @@ jobs:
           cache: maven
 
       - name: Build and Test
-        run: ./mvnw clean package -DskipTests
+        run: |
+          chmod +x mvnw
+          ./mvnw clean package -DskipTests
 
       - name: Run Tests
         run: ./mvnw test
 
-  deploy:
-    needs: build-and-test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Deploy to Render
-        uses: sws2apps/render-deployment@main
-        with:
-          serviceId: ${{ secrets.RENDER_SERVICE_ID }}
-          apiKey: ${{ secrets.RENDER_API_KEY }}
-          waitDeploy: true
-
-  # Keep Render free tier alive (prevent spin-down)
-  keepalive:
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Ping health endpoint
-        run: curl -s ${{ secrets.RENDER_HEALTH_URL }}/api/health || true
+  # Deployment is handled automatically by Render Blueprint (render.yaml)
