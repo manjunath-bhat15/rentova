@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { useRef } from 'react';
 
 const metrics = [
   { label: 'Verified Vendors', value: '1.8k+', trend: '+12% this week' },
@@ -9,6 +11,25 @@ const metrics = [
 
 export default function LandingPage() {
   const { isAuthenticated, user } = useAuth();
+
+  // Scroll animations for Hero
+  const { scrollY } = useScroll();
+  const heroY = useTransform(scrollY, [0, 600], [0, 200]);
+  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
+  const heroScale = useTransform(scrollY, [0, 500], [1, 0.9]);
+
+  // Scroll animations for Bento Architecture Section
+  const bentoRef = useRef(null);
+  const { scrollYProgress: bentoProgress } = useScroll({
+    target: bentoRef,
+    offset: ["start end", "center center"]
+  });
+  
+  // 3D Transforms mapped to scroll
+  const bentoRotateX = useTransform(bentoProgress, [0, 1], [30, 0]);
+  const bentoScale = useTransform(bentoProgress, [0, 1], [0.8, 1]);
+  const bentoOpacity = useTransform(bentoProgress, [0, 1], [0, 1]);
+  const bentoY = useTransform(bentoProgress, [0, 1], [100, 0]);
 
   return (
     <div className="landing" style={{ 
@@ -88,47 +109,107 @@ export default function LandingPage() {
       </nav>
 
       {/* --- HERO SECTION --- */}
-      <section style={{ position: 'relative', minHeight: '90vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 20px', zIndex: 2 }}>
+      <motion.section 
+        style={{ 
+          position: 'relative', minHeight: '90vh', display: 'flex', flexDirection: 'column', 
+          alignItems: 'center', justifyContent: 'center', padding: '0 20px', zIndex: 2,
+          y: heroY, opacity: heroOpacity, scale: heroScale
+        }}
+      >
         
         {/* Decorative subtle ambient pattern token */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(255,255,255,0.03)', borderRadius: '100px', border: '1px solid rgba(255,255,255,0.08)', marginBottom: '32px', backdropFilter: 'blur(10px)' }}>
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(255,255,255,0.03)', borderRadius: '100px', border: '1px solid rgba(255,255,255,0.08)', marginBottom: '32px', backdropFilter: 'blur(10px)' }}
+        >
           <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#00cec9', boxShadow: '0 0 10px #00cec9' }}></span>
-          <span style={{ fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.05em', uppercase: 'true', color: '#a29bfe' }}>RENTOVA 2.0 PROTOCOL IS LIVE</span>
-        </div>
+          <span style={{ fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#a29bfe' }}>RENTOVA 2.0 PROTOCOL IS LIVE</span>
+        </motion.div>
 
         {/* Master Copy */}
-        <h1 style={{ fontSize: 'clamp(2.8rem, 7vw, 5.5rem)', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.05, textAlign: 'center', maxWidth: '1100px', marginBottom: '32px' }}>
+        <motion.h1 
+          initial={{ y: 30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
+          style={{ fontSize: 'clamp(2.8rem, 7vw, 5.5rem)', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.05, textAlign: 'center', maxWidth: '1100px', marginBottom: '32px' }}
+        >
           The infrastructure for <br />
           <span style={{ background: 'linear-gradient(180deg, #ffffff 30%, #a29bfe 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Modern Marketplaces.</span>
-        </h1>
+        </motion.h1>
 
-        <p style={{ fontSize: 'clamp(1.05rem, 1.8vw, 1.25rem)', color: 'rgba(255,255,255,0.5)', textAlign: 'center', maxWidth: '640px', marginBottom: '48px', lineHeight: 1.6, fontWeight: 400 }}>
+        <motion.p 
+          initial={{ y: 30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          style={{ fontSize: 'clamp(1.05rem, 1.8vw, 1.25rem)', color: 'rgba(255,255,255,0.5)', textAlign: 'center', maxWidth: '640px', marginBottom: '48px', lineHeight: 1.6, fontWeight: 400 }}
+        >
           Whether booking elite services or scaling high-volume rental networks, Rentova processes decentralized assets with zero friction.
-        </p>
+        </motion.p>
 
         {/* Interactive Luxury CTAs */}
-        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '80px' }}>
+        <motion.div 
+          initial={{ y: 30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+          style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '80px' }}
+        >
           <Link to="/register" style={{ background: 'linear-gradient(135deg, #6c5ce7, #4834d4)', color: '#fff', padding: '16px 40px', borderRadius: '12px', fontWeight: 600, fontSize: '1.05rem', textDecoration: 'none', boxShadow: '0 20px 40px rgba(108, 92, 231, 0.25)', border: '1px solid rgba(255,255,255,0.1)' }}>
             Deploy Engine Free
           </Link>
           <Link to="/login" style={{ background: 'rgba(255,255,255,0.02)', color: '#fff', padding: '16px 40px', borderRadius: '12px', fontWeight: 600, fontSize: '1.05rem', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(10px)' }}>
             Explore Sandbox
           </Link>
-        </div>
+        </motion.div>
 
         {/* --- FLOATING DECENTRALIZED UI HUD ELEMENTS --- */}
         {/* Left Floating Component */}
-        <div style={{ position: 'absolute', top: '20%', left: '4%', width: '260px', background: 'rgba(10, 10, 15, 0.6)', backdropFilter: 'blur(30px)', borderRadius: '16px', padding: '20px', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 30px 60px rgba(0,0,0,0.4)', transform: 'perspective(1000px) rotateY(15deg) rotateX(5deg)', pointerEvents: 'none', display: 'none', '@media (minWidth: 1024px)': { display: 'block' } }}>
+        <motion.div 
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ 
+            opacity: 1, 
+            x: 0,
+            y: [0, -20, 0],
+            rotateY: [15, 25, 15],
+            rotateX: [5, -5, 5]
+          }}
+          transition={{ 
+            opacity: { duration: 1, delay: 0.5 },
+            x: { duration: 1, delay: 0.5 },
+            y: { duration: 6, repeat: Infinity, ease: "easeInOut" },
+            rotateY: { duration: 8, repeat: Infinity, ease: "easeInOut" },
+            rotateX: { duration: 7, repeat: Infinity, ease: "easeInOut" }
+          }}
+          style={{ position: 'absolute', top: '20%', left: '4%', width: '260px', background: 'rgba(10, 10, 15, 0.6)', backdropFilter: 'blur(30px)', borderRadius: '16px', padding: '20px', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 30px 60px rgba(0,0,0,0.4)', transformPerspective: 1000, pointerEvents: 'none', display: 'none', '@media (minWidth: 1024px)': { display: 'block' } }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#00cec9', boxShadow: '0 0 10px #00cec9' }} />
             <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.05em' }}>LEDGER TRANSACTION</span>
           </div>
           <div style={{ marginTop: '16px', fontSize: '1.5rem', fontWeight: 700, color: '#fff' }}>+ ₹2,500.00</div>
           <div style={{ fontSize: '0.8rem', color: '#00cec9', marginTop: '4px', fontWeight: 500 }}>Escrow Settled Instantly</div>
-        </div>
+        </motion.div>
 
         {/* Right Floating Component */}
-        <div style={{ position: 'absolute', bottom: '15%', right: '4%', width: '280px', background: 'rgba(10, 10, 15, 0.6)', backdropFilter: 'blur(30px)', borderRadius: '16px', padding: '20px', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 30px 60px rgba(0,0,0,0.4)', transform: 'perspective(1000px) rotateY(-15deg) rotateX(5deg)', pointerEvents: 'none', display: 'none', '@media (minWidth: 1024px)': { display: 'block' } }}>
+        <motion.div 
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ 
+            opacity: 1, 
+            x: 0,
+            y: [0, 20, 0],
+            rotateY: [-15, -25, -15],
+            rotateX: [5, 15, 5]
+          }}
+          transition={{ 
+            opacity: { duration: 1, delay: 0.7 },
+            x: { duration: 1, delay: 0.7 },
+            y: { duration: 7, repeat: Infinity, ease: "easeInOut" },
+            rotateY: { duration: 9, repeat: Infinity, ease: "easeInOut" },
+            rotateX: { duration: 6, repeat: Infinity, ease: "easeInOut" }
+          }}
+          style={{ position: 'absolute', bottom: '15%', right: '4%', width: '280px', background: 'rgba(10, 10, 15, 0.6)', backdropFilter: 'blur(30px)', borderRadius: '16px', padding: '20px', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 30px 60px rgba(0,0,0,0.4)', transformPerspective: 1000, pointerEvents: 'none', display: 'none', '@media (minWidth: 1024px)': { display: 'block' } }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
             <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)' }}>CLUSTER NODE</span>
             <span style={{ fontSize: '0.75rem', background: 'rgba(108,92,231,0.1)', color: '#a29bfe', padding: '2px 8px', borderRadius: '4px', fontWeight: 600 }}>DELHI_09</span>
@@ -137,30 +218,51 @@ export default function LandingPage() {
           <div style={{ marginTop: '12px', height: '2px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
             <div style={{ width: '100%', height: '100%', background: 'linear-gradient(90deg, #6c5ce7, #00cec9)' }}></div>
           </div>
-        </div>
-      </section>
+        </motion.div>
+      </motion.section>
 
       {/* --- PREMIUM DATA METRICS TICKER --- */}
       <section style={{ borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.01)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', padding: '40px 20px', gap: '30px' }}>
           {metrics.map((m, idx) => (
-            <div key={idx} style={{ textAlign: 'center', borderRight: idx !== metrics.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+            <motion.div 
+              key={idx} 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: idx * 0.1 }}
+              style={{ textAlign: 'center', borderRight: idx !== metrics.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}
+            >
               <div style={{ fontSize: '2.5rem', fontWeight: 800, letterSpacing: '-0.02em', background: 'linear-gradient(180deg, #ffffff, #a29bfe)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{m.value}</div>
               <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)', fontWeight: 500, marginTop: '4px' }}>{m.label}</div>
               <div style={{ fontSize: '0.7rem', color: '#00cec9', marginTop: '4px', letterSpacing: '0.02em' }}>{m.trend}</div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
 
       {/* --- BENTO CARD ARCHITECTURE SECTION --- */}
-      <section style={{ padding: '140px 20px', maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
-        <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+      <section ref={bentoRef} style={{ padding: '140px 20px', maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
+        <motion.div 
+          style={{ 
+            textAlign: 'center', marginBottom: '80px',
+            opacity: bentoOpacity,
+            y: bentoY
+          }}
+        >
           <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: '16px' }}>Dual-Engine Architectures</h2>
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.1rem', maxWidth: '500px', margin: '0 auto' }}>Synchronized, segregated execution setups built for distinct end-user flows.</p>
-        </div>
+        </motion.div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: '32px' }}>
+        <motion.div 
+          style={{ 
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: '32px',
+            rotateX: bentoRotateX,
+            scale: bentoScale,
+            opacity: bentoOpacity,
+            perspective: 1000
+          }}
+        >
           
           {/* Bento Experience One: Customer Workspace */}
           <div style={{ 
@@ -171,7 +273,8 @@ export default function LandingPage() {
             boxShadow: '0 40px 80px rgba(0,0,0,0.5)',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            transformStyle: 'preserve-3d'
           }}>
             <div>
               <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(108, 92, 231, 0.1)', border: '1px solid rgba(108, 92, 231, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', marginBottom: '40px' }}>⚡</div>
@@ -202,7 +305,8 @@ export default function LandingPage() {
             boxShadow: '0 40px 80px rgba(0,0,0,0.5)',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            transformStyle: 'preserve-3d'
           }}>
             <div>
               <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(0, 206, 201, 0.1)', border: '1px solid rgba(0, 206, 201, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', marginBottom: '40px' }}>🪐</div>
@@ -224,7 +328,7 @@ export default function LandingPage() {
             </div>
           </div>
           
-        </div>
+        </motion.div>
       </section>
 
       {/* --- FOOTER --- */}
