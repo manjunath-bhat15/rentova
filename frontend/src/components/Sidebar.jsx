@@ -1,33 +1,34 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useThemeLanguage } from '../contexts/ThemeLanguageContext';
+import { Icon } from './Icon';
 
 const roleNav = {
   CUSTOMER: [
-    { path: '/dashboard', icon: 'OV', labelKey: 'overview' },
-    { path: '/dashboard/nearby', icon: 'NB', labelKey: 'nearbyVendors' },
-    { path: '/dashboard/services', icon: 'SV', labelKey: 'myListings' },
-    { path: '/dashboard/bookings', icon: 'BK', labelKey: 'myBookings' },
-    { path: '/dashboard/wallet', icon: 'WA', labelKey: 'wallet' },
-    { path: '/dashboard/chat', icon: 'CH', labelKey: 'messages' },
-    { path: '/dashboard/notifications', icon: 'NT', labelKey: 'notifications' },
+    { path: '/dashboard', iconName: 'overview', labelKey: 'overview' },
+    { path: '/dashboard/nearby', iconName: 'nearby', labelKey: 'nearbyVendors' },
+    { path: '/dashboard/services', iconName: 'listings', labelKey: 'myListings' },
+    { path: '/dashboard/bookings', iconName: 'bookings', labelKey: 'myBookings' },
+    { path: '/dashboard/wallet', iconName: 'wallet', labelKey: 'wallet' },
+    { path: '/dashboard/chat', iconName: 'chat', labelKey: 'messages' },
+    { path: '/dashboard/notifications', iconName: 'bell', labelKey: 'notifications' },
   ],
   VENDOR: [
-    { path: '/dashboard', icon: 'OV', labelKey: 'overview' },
-    { path: '/dashboard/services', icon: 'SV', labelKey: 'myListings' },
-    { path: '/dashboard/services/create', icon: 'AD', labelKey: 'addListing' },
-    { path: '/dashboard/bookings', icon: 'BK', labelKey: 'myBookings' },
-    { path: '/dashboard/wallet', icon: 'WA', labelKey: 'wallet' },
-    { path: '/dashboard/chat', icon: 'CH', labelKey: 'messages' },
-    { path: '/dashboard/notifications', icon: 'NT', labelKey: 'notifications' },
+    { path: '/dashboard', iconName: 'overview', labelKey: 'overview' },
+    { path: '/dashboard/services', iconName: 'listings', labelKey: 'myListings' },
+    { path: '/dashboard/services/create', iconName: 'add', labelKey: 'addListing' },
+    { path: '/dashboard/bookings', iconName: 'bookings', labelKey: 'myBookings' },
+    { path: '/dashboard/wallet', iconName: 'wallet', labelKey: 'wallet' },
+    { path: '/dashboard/chat', iconName: 'chat', labelKey: 'messages' },
+    { path: '/dashboard/notifications', iconName: 'bell', labelKey: 'notifications' },
   ],
   ADMIN: [
-    { path: '/dashboard', icon: 'HQ', labelKey: 'commandCenter' },
-    { path: '/dashboard/admin/users', icon: 'US', labelKey: 'users' },
-    { path: '/dashboard/bookings', icon: 'BK', labelKey: 'myBookings' },
-    { path: '/dashboard/services', icon: 'SV', labelKey: 'myListings' },
-    { path: '/dashboard/chat', icon: 'CH', labelKey: 'messages' },
-    { path: '/dashboard/notifications', icon: 'NT', labelKey: 'notifications' },
+    { path: '/dashboard', iconName: 'hq', labelKey: 'commandCenter' },
+    { path: '/dashboard/admin/users', iconName: 'users', labelKey: 'users' },
+    { path: '/dashboard/bookings', iconName: 'bookings', labelKey: 'myBookings' },
+    { path: '/dashboard/services', iconName: 'listings', labelKey: 'myListings' },
+    { path: '/dashboard/chat', iconName: 'chat', labelKey: 'messages' },
+    { path: '/dashboard/notifications', iconName: 'bell', labelKey: 'notifications' },
   ],
 };
 
@@ -46,7 +47,9 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <div className="logo-icon">R</div>
+        <div className="logo-icon">
+          <Icon name="logo" style={{ width: '20px', height: '20px' }} />
+        </div>
         <div>
           <div className="logo-text">Rentova</div>
           <div className="sidebar-role">{getWorkspaceTitle()}</div>
@@ -62,7 +65,9 @@ export default function Sidebar() {
             end={item.path === '/dashboard'}
             className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
           >
-            <span className="nav-icon">{item.icon}</span>
+            <span className="nav-icon">
+              <Icon name={item.iconName} />
+            </span>
             <span>{t(item.labelKey)}</span>
           </NavLink>
         ))}

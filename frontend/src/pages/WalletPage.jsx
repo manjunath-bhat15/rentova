@@ -1,14 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useThemeLanguage } from '../contexts/ThemeLanguageContext';
+import { Icon } from '../components/Icon';
 import api from '../services/api';
 
 const typeConfig = {
-  TOP_UP: { labelKey: 'topUp', icon: '💳', color: 'var(--accent-success)', sign: '+' },
-  BOOKING_PAYMENT: { labelKey: 'bookingPayment', icon: '🛒', color: 'var(--accent-danger)', sign: '' },
-  BOOKING_PAYOUT: { labelKey: 'bookingPayout', icon: '💰', color: 'var(--accent-success)', sign: '+' },
-  REFUND: { labelKey: 'refund', icon: '↩️', color: 'var(--accent-warning)', sign: '+' },
-  TRANSFER: { labelKey: 'transfer', icon: '↔️', color: 'var(--accent-primary)', sign: '' },
+  TOP_UP: { labelKey: 'topUp', iconName: 'TOP_UP', color: 'var(--accent-success)', sign: '+' },
+  BOOKING_PAYMENT: { labelKey: 'bookingPayment', iconName: 'BOOKING_PAYMENT', color: 'var(--accent-danger)', sign: '' },
+  BOOKING_PAYOUT: { labelKey: 'bookingPayout', iconName: 'BOOKING_PAYOUT', color: 'var(--accent-success)', sign: '+' },
+  REFUND: { labelKey: 'refund', iconName: 'REFUND', color: 'var(--accent-warning)', sign: '+' },
+  TRANSFER: { labelKey: 'transfer', iconName: 'TRANSFER', color: 'var(--accent-primary)', sign: '' },
 };
 
 export default function WalletPage() {
@@ -215,7 +216,7 @@ export default function WalletPage() {
         ) : (
           <div className="glass-card" style={{ overflow: 'hidden' }}>
             {transactions.map((txn, i) => {
-              const config = typeConfig[txn.type] || { icon: '💲', color: 'var(--text-secondary)' };
+              const config = typeConfig[txn.type] || { iconName: 'wallet', color: 'var(--text-secondary)' };
               const isPositive = parseFloat(txn.amount) > 0;
 
               return (
@@ -241,10 +242,10 @@ export default function WalletPage() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       background: config.color + '15',
-                      fontSize: '20px',
+                      color: config.color,
                       flexShrink: 0,
                     }}>
-                      {config.icon}
+                      <Icon name={config.iconName} style={{ width: '18px', height: '18px' }} />
                     </div>
                     <div>
                       <p style={{ fontWeight: 600, fontSize: 'var(--font-sm)' }}>{getTxnLabel(txn.type)}</p>

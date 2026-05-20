@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useSocket } from '../contexts/SocketContext';
 import { useThemeLanguage } from '../contexts/ThemeLanguageContext';
+import { Icon } from './Icon';
 import api from '../services/api';
 
 export default function Header({ title }) {
@@ -108,7 +109,7 @@ export default function Header({ title }) {
           onClick={() => navigate('/dashboard/notifications')}
           aria-label="Open notifications"
         >
-          NT
+          <Icon name="bell" style={{ width: '18px', height: '18px' }} />
           {unreadCount > 0 && <span className="badge-count">{unreadCount > 9 ? '9+' : unreadCount}</span>}
         </button>
         
@@ -122,8 +123,9 @@ export default function Header({ title }) {
           </div>
         </div>
         
-        <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
-          {t('logout')}
+        <button className="btn btn-ghost btn-sm" onClick={handleLogout} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <Icon name="logout" style={{ width: '14px', height: '14px' }} />
+          <span>{t('logout')}</span>
         </button>
       </div>
     </header>

@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
-
 import { useSocket } from '../contexts/SocketContext';
+import { Icon } from '../components/Icon';
 
 const typeIcons = {
-  BOOKING_CREATED: '📋',
-  BOOKING_CONFIRMED: '✅',
-  BOOKING_IN_PROGRESS: '🔄',
-  BOOKING_COMPLETED: '🎉',
-  BOOKING_CANCELLED: '❌',
-  WALLET_TOPUP: '💳',
-  WALLET_PAYOUT: '💰',
-  WALLET_REFUND: '↩️',
-  CHAT_MESSAGE: '💬',
+  BOOKING_CREATED: 'BOOKING_CREATED',
+  BOOKING_CONFIRMED: 'BOOKING_CONFIRMED',
+  BOOKING_IN_PROGRESS: 'BOOKING_IN_PROGRESS',
+  BOOKING_COMPLETED: 'BOOKING_COMPLETED',
+  BOOKING_CANCELLED: 'BOOKING_CANCELLED',
+  WALLET_TOPUP: 'WALLET_TOPUP',
+  WALLET_PAYOUT: 'WALLET_PAYOUT',
+  WALLET_REFUND: 'WALLET_REFUND',
+  CHAT_MESSAGE: 'CHAT_MESSAGE',
 };
 
 const typeColors = {
@@ -113,8 +113,8 @@ export default function NotificationsPage() {
       </div>
 
       {notifications.length === 0 ? (
-        <div className="glass-card" style={{ padding: 'var(--space-2xl)', textAlign: 'center' }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔔</div>
+        <div className="glass-card" style={{ padding: 'var(--space-2xl)', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Icon name="bell" style={{ width: '48px', height: '48px', color: 'var(--text-muted)', marginBottom: '16px' }} />
           <h3 style={{ fontSize: 'var(--font-lg)', marginBottom: '8px' }}>No notifications</h3>
           <p style={{ color: 'var(--text-secondary)' }}>
             You'll receive notifications for bookings, payments, and messages.
@@ -123,7 +123,7 @@ export default function NotificationsPage() {
       ) : (
         <div className="glass-card" style={{ overflow: 'hidden' }}>
           {notifications.map((notif, i) => {
-            const icon = typeIcons[notif.type] || '🔔';
+            const iconName = typeIcons[notif.type] || 'bell';
             const color = typeColors[notif.type] || 'var(--text-secondary)';
 
             return (
@@ -144,9 +144,9 @@ export default function NotificationsPage() {
                 <div style={{
                   width: 44, height: 44, borderRadius: 'var(--radius-md)', flexShrink: 0,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: color + '15', fontSize: '20px',
+                  background: color + '15', color: color,
                 }}>
-                  {icon}
+                  <Icon name={iconName} style={{ width: '18px', height: '18px' }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
