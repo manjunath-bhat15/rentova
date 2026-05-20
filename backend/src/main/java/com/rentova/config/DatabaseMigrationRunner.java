@@ -25,6 +25,8 @@ public class DatabaseMigrationRunner implements CommandLineRunner {
             // Patch services and bookings tables to fill in null security deposits
             jdbcTemplate.execute("UPDATE services SET security_deposit = 0 WHERE security_deposit IS NULL");
             jdbcTemplate.execute("UPDATE bookings SET security_deposit = 0 WHERE security_deposit IS NULL");
+            jdbcTemplate.execute("UPDATE services SET allow_pickup = true WHERE allow_pickup IS NULL");
+            jdbcTemplate.execute("UPDATE services SET allow_delivery = false WHERE allow_delivery IS NULL");
             
             System.out.println("Database migrations successfully applied!");
         } catch (Exception e) {

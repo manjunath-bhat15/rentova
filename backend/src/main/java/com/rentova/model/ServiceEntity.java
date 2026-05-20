@@ -43,9 +43,11 @@ public class ServiceEntity {
     @Builder.Default
     private BigDecimal securityDeposit = BigDecimal.ZERO;
 
+    @Column(nullable = true)
     @Builder.Default
     private boolean allowPickup = true;
 
+    @Column(nullable = true)
     @Builder.Default
     private boolean allowDelivery = false;
 
