@@ -1844,3 +1844,170 @@ select.input-field {
   }
 }
 
+.theme-switcher-btn-class {
+  border-radius: 100px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all var(--transition-fast);
+}
+
+.theme-switcher-btn-class:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.premium-landing.light-theme .theme-switcher-btn-class {
+  color: #0f172a !important;
+  border-color: rgba(15, 23, 42, 0.15) !important;
+  background: rgba(15, 23, 42, 0.03) !important;
+}
+
+.premium-landing.light-theme .theme-switcher-btn-class:hover {
+  background: rgba(15, 23, 42, 0.08) !important;
+  border-color: rgba(15, 23, 42, 0.3) !important;
+}
+
+/* ===== Light Theme Overrides for Premium Landing ===== */
+.premium-landing.light-theme {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+.premium-landing.light-theme .premium-landing-nav {
+  background: rgba(248, 250, 252, 0.7);
+  border-bottom-color: rgba(15, 23, 42, 0.08);
+}
+
+.premium-landing.light-theme .premium-landing-nav span {
+  background: linear-gradient(to right, #0f172a, #4834d4) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+.premium-landing.light-theme .premium-landing-nav-install-btn {
+  background: rgba(108, 92, 231, 0.05) !important;
+  color: #6c5ce7 !important;
+  border-color: rgba(108, 92, 231, 0.3) !important;
+}
+
+.premium-landing.light-theme .premium-landing-nav-install-btn:hover {
+  background: rgba(108, 92, 231, 0.1) !important;
+}
+
+.premium-landing.light-theme .premium-landing-badge {
+  background: rgba(15, 23, 42, 0.03);
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+.premium-landing.light-theme .premium-landing-title {
+  color: #0f172a;
+}
+
+.premium-landing.light-theme .premium-landing-title span {
+  background: linear-gradient(180deg, #0f172a 30%, #4834d4 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+.premium-landing.light-theme .premium-landing-subtitle {
+  color: rgba(15, 23, 42, 0.6);
+}
+
+.premium-landing.light-theme .premium-landing-ctas button,
+.premium-landing.light-theme .premium-landing-ctas a:last-child {
+  background: rgba(15, 23, 42, 0.03) !important;
+  color: #0f172a !important;
+  border-color: rgba(15, 23, 42, 0.15) !important;
+}
+
+.premium-landing.light-theme .premium-landing-ctas button:hover,
+.premium-landing.light-theme .premium-landing-ctas a:last-child:hover {
+  background: rgba(15, 23, 42, 0.08) !important;
+}
+
+.premium-landing.light-theme .premium-landing-hud {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(15, 23, 42, 0.08);
+  box-shadow: 0 30px 60px rgba(15, 23, 42, 0.1);
+}
+
+.premium-landing.light-theme .premium-landing-hud span {
+  color: rgba(15, 23, 42, 0.5) !important;
+}
+
+.premium-landing.light-theme .premium-landing-hud div {
+  color: #0f172a !important;
+}
+
+.premium-landing.light-theme .premium-landing-metrics {
+  background: rgba(15, 23, 42, 0.01);
+  border-top-color: rgba(15, 23, 42, 0.08);
+  border-bottom-color: rgba(15, 23, 42, 0.08);
+}
+
+.premium-landing.light-theme .premium-landing-metric-item {
+  border-right-color: rgba(15, 23, 42, 0.08);
+}
+
+.premium-landing.light-theme .premium-landing-metric-item div:first-child {
+  background: linear-gradient(180deg, #0f172a, #4834d4) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+.premium-landing.light-theme .premium-landing-metric-item div {
+  color: rgba(15, 23, 42, 0.6) !important;
+}
+
+.premium-landing.light-theme .premium-landing-bento-section h2 {
+  color: #0f172a;
+}
+
+.premium-landing.light-theme .premium-landing-bento-section p {
+  color: rgba(15, 23, 42, 0.5) !important;
+}
+
+.premium-landing.light-theme .premium-landing-bento-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 100%);
+  border-color: rgba(15, 23, 42, 0.08);
+  box-shadow: 0 40px 80px rgba(15, 23, 42, 0.05);
+}
+
+.premium-landing.light-theme .premium-landing-bento-card h3 {
+  color: #0f172a;
+}
+
+.premium-landing.light-theme .premium-landing-bento-card p {
+  color: rgba(15, 23, 42, 0.6) !important;
+}
+
+.premium-landing.light-theme .premium-landing-bento-card div {
+  color: #0f172a !important;
+}
+
+.premium-landing.light-theme .premium-landing-bento-card div div {
+  color: rgba(15, 23, 42, 0.5) !important;
+}
+
+.premium-landing.light-theme .premium-landing-footer {
+  background: #f1f5f9;
+  border-top-color: rgba(15, 23, 42, 0.08);
+}
+
+.premium-landing.light-theme .premium-landing-footer span {
+  color: #0f172a !important;
+}
+
+.premium-landing.light-theme .premium-landing-footer p {
+  color: rgba(15, 23, 42, 0.4) !important;
+}
+
+

@@ -3,17 +3,131 @@ import { useAuth } from '../contexts/AuthContext';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 
-const metrics = [
-  { label: 'Verified Vendors', value: '1.8k+', trend: '+12% this week' },
-  { label: 'Bookings Routed', value: '42k+', trend: 'Real-time sync' },
-  { label: 'Avg. Response Time', value: '8m', trend: 'Ultra-fast latency' },
-];
+const translations = {
+  en: {
+    badge: "RENTOVA 2.0 PROTOCOL IS LIVE",
+    title: "The infrastructure for ",
+    titleSpan: "Modern Marketplaces.",
+    subtitle: "Whether booking elite services or scaling high-volume rental networks, Rentova processes decentralized assets with zero friction.",
+    ctaDeploy: "Deploy Engine Free",
+    ctaInstall: "Install Native App",
+    installApp: "Install App",
+    signIn: "Sign In",
+    getStarted: "Get Started",
+    goToDashboard: "Go to Dashboard",
+    verifiedVendors: "Verified Vendors",
+    bookingsRouted: "Bookings Routed",
+    avgResponseTime: "Avg. Response Time",
+    realtimeSync: "Real-time sync",
+    ultrafastLatency: "Ultra-fast latency",
+    avgResponseValue: "8m",
+    thisWeekTrend: "+12% this week",
+    dualEngineTitle: "Dual-Engine Architectures",
+    dualEngineSubtitle: "Synchronized, segregated execution setups built for distinct end-user flows.",
+    forCustomers: "For Customers",
+    customerBody: "Access global inventory endpoints instantly. Rentova delivers highly predictive routing pipelines mapping geolocation metrics directly to secure checkout flows.",
+    atomicCheckout: "Atomic Checkout",
+    atomicCheckoutDesc: "One-click smart wallet bindings.",
+    liveTopology: "Live Topology",
+    liveTopologyDesc: "Real-time high fidelity tracking.",
+    forVendors: "For Vendors",
+    vendorBody: "Turn physical inventory assets into yield generating pipelines. Access a comprehensive dashboard featuring enterprise configurations, programmatic liquidity, and global analytics.",
+    yieldAnalytics: "Yield Analytics",
+    yieldAnalyticsDesc: "Deep statistical insight frameworks.",
+    automatedPayouts: "Automated Payouts",
+    automatedPayoutsDesc: "Zero fee immediate ledger clearances.",
+    footerText: "© 2026 Rentova Technologies Inc. Architectural Engine Infrastructure Layer.",
+    ledgerTx: "LEDGER TRANSACTION",
+    escrowSettled: "Escrow Settled Instantly",
+    clusterNode: "CLUSTER NODE",
+    bookingSynced: "Booking Synced Successfully",
+    installRentova: "Install Rentova",
+    installDesc: "Add Rentova to your home screen or desktop for a native-app experience, faster load times, and instant notifications.",
+    iosStep1: "Tap the Share button in Safari.",
+    iosStep2: "Scroll down and select Add to Home Screen.",
+    iosStep3: "Tap Add in the top-right corner to confirm.",
+    otherStep1: "Click the Install button (➕/🖥️) in the browser address bar.",
+    otherStep2: "Or open the browser menu (⋮ / ⋯) and tap Install App or Add to Home Screen.",
+    gotIt: "Got it"
+  },
+  kn: {
+    badge: "ರೆಂಟೋವಾ ೨.೦ ಪ್ರೋಟೋಕಾಲ್ ಸಕ್ರಿಯವಾಗಿದೆ",
+    title: "ಆಧುನಿಕ ಮಾರುಕಟ್ಟೆಗಳಿಗಾಗಿ ",
+    titleSpan: "ಮೂಲಸೌಕರ್ಯ.",
+    subtitle: "ಎಲೈಟ್ ಸೇವೆಗಳನ್ನು ಕಾಯ್ದಿರಿಸುತ್ತಿರಲಿ ಅಥವಾ ಹೆಚ್ಚಿನ ಪ್ರಮಾಣದ ಬಾಡಿಗೆ ನೆಟ್‌ವರ್ಕ್‌ಗಳನ್ನು ಅಳೆಯುತ್ತಿರಲಿ, ರೆಂಟೋವಾ ವಿಕೇಂದ್ರೀಕೃತ ಸ್ವತ್ತುಗಳನ್ನು ಶೂನ್ಯ ಘರ್ಷಣೆಯೊಂದಿಗೆ ಪ್ರಕ್ರಿಯೆಗೊಳಿಸುತ್ತದೆ.",
+    ctaDeploy: "ಉಚಿತವಾಗಿ ಎಂಜಿನ್ ನಿಯೋಜಿಸಿ",
+    ctaInstall: "ನೇಟಿವ್ ಆಪ್ ಸ್ಥಾಪಿಸಿ",
+    installApp: "ಆಪ್ ಸ್ಥಾಪಿಸಿ",
+    signIn: "ಸೈನ್ ಇನ್",
+    getStarted: "ಪ್ರಾರಂಭಿಸಿ",
+    goToDashboard: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌ಗೆ ಹೋಗಿ",
+    verifiedVendors: "ಪರಿಶೀಲಿಸಿದ ಮಾರಾಟಗಾರರು",
+    bookingsRouted: "ಬುಕಿಂಗ್ಸ್ ರೂಟ್ ಮಾಡಲಾಗಿದೆ",
+    avgResponseTime: "ಸರಾಸರಿ ಪ್ರತಿಕ್ರಿಯೆ ಸಮಯ",
+    realtimeSync: "ನೈಜ-ಸಮಯದ ಸಿಂಕ್",
+    ultrafastLatency: "ಅಲ್ಟ್ರಾ-ಫಾಸ್ಟ್ ಲೇಟೆನ್ಸಿ",
+    avgResponseValue: "೮ನಿ",
+    thisWeekTrend: "ಈ ವಾರ +೧೨%",
+    dualEngineTitle: "ಡ್ಯುಯಲ್-ಎಂಜಿನ್ ಆರ್ಕಿಟೆಕ್ಚರ್ಸ್",
+    dualEngineSubtitle: "ವಿಭಿನ್ನ ಅಂತಿಮ ಬಳಕೆದಾರರ ಹರಿವುಗಳಿಗಾಗಿ ನಿರ್ಮಿಸಲಾದ ಸಿಂಕ್ರೊನೈಸ್ ಮಾಡಿದ, ಪ್ರತ್ಯೇಕಿಸಲಾದ ಮರಣದಂಡನೆ ಸೆಟಪ್‌ಗಳು.",
+    forCustomers: "ಗ್ರಾಹಕರಿಗಾಗಿ",
+    customerBody: "ಜಾಗತಿಕ ದಾಸ್ತಾನು ಅಂತಿಮ ಬಿಂದುಗಳನ್ನು ತಕ್ಷಣವೇ ಪ್ರವೇಶಿಸಿ. ಜಿಯೋಲೋಕಲೈಸೇಶನ್ ಮೆಟ್ರಿಕ್ಸ್‌ಗಳನ್ನು ನೇರವಾಗಿ ಸುರಕ್ಷಿತ ಚೆಕ್‌ಔಟ್ ಹರಿವುಗಳಿಗೆ ಮ್ಯಾಪಿಂಗ್ ಮಾಡುವ ಹೆಚ್ಚಿನ ಭವಿಷ್ಯಸೂಚಕ ರೂಟಿಂಗ್ ಪೈಪ್‌ಲೈನ್‌ಗಳನ್ನು ರೆಂಟೋವಾ ನೀಡುತ್ತದೆ.",
+    atomicCheckout: "ಅಟಾಮಿಕ್ ಚೆಕ್‌ಔಟ್",
+    atomicCheckoutDesc: "ಒಂದು ಕ್ಲಿಕ್ ಸ್ಮಾರ್ಟ್ ವಾಲೆಟ್ ಬೈಂಡಿಂಗ್ಸ್.",
+    liveTopology: "ಲೈವ್ ಟೋಪೋಲಜಿ",
+    liveTopologyDesc: "ನೈಜ-ಸಮಯದ ಹೈ ಫಿಡೆಲಿಟಿ ಟ್ರ್ಯಾಕಿಂಗ್.",
+    forVendors: "ಮಾರಾಟಗಾರರಿಗಾಗಿ",
+    vendorBody: "ಭೌತಿಕ ದಾಸ್ತಾನು ಸ್ವತ್ತುಗಳನ್ನು ಆದಾಯ ಗಳಿಸುವ ಪೈಪ್‌ಲೈನ್‌ಗಳಾಗಿ ಪರಿವರ್ತಿಸಿ. ಉದ್ಯಮ ಕಾನ್ಫಿಗರೇಶನ್‌ಗಳು, ಪ್ರೋಗ್ರಾಮ್ಯಾಟಿಕ್ ದ್ರವ್ಯತೆ ಮತ್ತು ಜಾಗತಿಕ ಅನಾಲಿಟಿಕ್ಸ್ ಒಳಗೊಂಡ ಸಮಗ್ರ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಅನ್ನು ಪ್ರವೇಶಿಸಿ.",
+    yieldAnalytics: "ಆದಾಯ ಅನಾಲಿಟಿಕ್ಸ್",
+    yieldAnalyticsDesc: "ಆಳವಾದ ಅಂಕಿಅಂಶಗಳ ಒಳನೋಟ ಚೌಕಟ್ಟುಗಳು.",
+    automatedPayouts: "ಸ್ವಯಂಚಾಲಿತ ಪಾವತಿಗಳು",
+    automatedPayoutsDesc: "ಶೂನ್ಯ ಶುಲ್ಕದ ತಕ್ಷಣದ ಲೆಡ್ಜರ್ ಕ್ಲಿಯರೆನ್ಸ್‌ಗಳು.",
+    footerText: "© ೨೦೨೬ ರೆಂಟೋವಾ ಟೆಕ್ನಾಲಜೀಸ್ ಇಂಕ್. ಆರ್ಕಿಟೆಕ್ಚರಲ್ ಎಂಜಿನ್ ಇನ್ಫ್ರಾಸ್ಟ್ರಕ್ಚರ್ ಲೇಯರ್.",
+    ledgerTx: "ಲೆಡ್ಜರ್ ವಹಿವಾಟು",
+    escrowSettled: "ಎಸ್ಕ್ರೊ ತಕ್ಷಣ ಇತ್ಯರ್ಥವಾಯಿತು",
+    clusterNode: "ಕ್ಲಸ್ಟರ್ ನೋಡ್",
+    bookingSynced: "ಬುಕಿಂಗ್ ಯಶಸ್ವಿಯಾಗಿ ಸಿಂಕ್ ಆಗಿದೆ",
+    installRentova: "ರೆಂಟೋವಾವನ್ನು ಸ್ಥಾಪಿಸಿ",
+    installDesc: "ನೇಟಿವ್-ಆಪ್ ಅನುಭವ, ವೇಗದ ಲೋಡ್ ಸಮಯ ಮತ್ತು ತ್ವರಿತ ಅಧಿಸೂಚನೆಗಳಿಗಾಗಿ ನಿಮ್ಮ ಹೋಮ್ ಸ್ಕ್ರೀನ್ ಅಥವಾ ಡೆಸ್ಕ್‌ಟಾಪ್‌ಗೆ ರೆಂಟೋವಾವನ್ನು ಸೇರಿಸಿ.",
+    iosStep1: "ಸಫಾರಿಯಲ್ಲಿ ಶೇರ್ ಬಟನ್ ಟ್ಯಾಪ್ ಮಾಡಿ.",
+    iosStep2: "ಕೆಳಗೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ ಮತ್ತು ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ಗೆ ಸೇರಿಸಿ ಆಯ್ಕೆಮಾಡಿ.",
+    iosStep3: "ದೃಢೀಕರಿಸಲು ಮೇಲಿನ ಬಲ ಮೂಲೆಯಲ್ಲಿ ಸೇರಿಸಿ ಟ್ಯಾಪ್ ಮಾಡಿ.",
+    otherStep1: "ಬ್ರೌಸರ್ ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ಸ್ಥಾಪಿಸು ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿ.",
+    otherStep2: "ಅಥವಾ ಬ್ರೌಸರ್ ಮೆನುವನ್ನು ತೆರೆದು ಆಪ್ ಸ್ಥಾಪಿಸಿ ಅಥವಾ ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ಗೆ ಸೇರಿಸಿ ಟ್ಯಾಪ್ ಮಾಡಿ.",
+    gotIt: "ತಿಳಿಯಿತು"
+  }
+};
 
 export default function LandingPage() {
   const { isAuthenticated, user } = useAuth();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallModal, setShowInstallModal] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+
+  // Theme & Language State with LocalStorage cache
+  const [lang, setLang] = useState(() => localStorage.getItem('rentova_lang') || 'en');
+  const [theme, setTheme] = useState(() => localStorage.getItem('rentova_theme') || 'dark');
+
+  const t = (key) => translations[lang][key];
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    localStorage.setItem('rentova_theme', nextTheme);
+  };
+
+  const toggleLanguage = () => {
+    const nextLang = lang === 'en' ? 'kn' : 'en';
+    setLang(nextLang);
+    localStorage.setItem('rentova_lang', nextLang);
+  };
+
+  // Metrics configurations
+  const metrics = [
+    { label: t('verifiedVendors'), value: '1.8k+', trend: t('thisWeekTrend') },
+    { label: t('bookingsRouted'), value: '42k+', trend: t('realtimeSync') },
+    { label: t('avgResponseTime'), value: t('avgResponseValue'), trend: t('ultrafastLatency') },
+  ];
 
   // PWA Install Event Handler
   useEffect(() => {
@@ -66,7 +180,7 @@ export default function LandingPage() {
   const bentoY = useTransform(bentoProgress, [0, 1], [100, 0]);
 
   return (
-    <div className="premium-landing">
+    <div className={`premium-landing ${theme === 'light' ? 'light-theme' : ''}`}>
       {/* Premium Ambient Background Glows */}
       <div style={{ position: 'absolute', top: '-10%', left: '20%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(108, 92, 231, 0.15) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
       <div style={{ position: 'absolute', top: '40%', right: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(0, 206, 201, 0.1) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
@@ -89,13 +203,31 @@ export default function LandingPage() {
           <span style={{ fontWeight: 700, fontSize: '1.25rem', letterSpacing: '-0.03em', background: 'linear-gradient(to right, #fff, #a29bfe)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Rentova</span>
         </div>
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Language Switcher */}
+          <button 
+            onClick={toggleLanguage}
+            className="theme-switcher-btn-class"
+            title="Switch Language"
+          >
+            🌐 {lang === 'en' ? 'ಕನ್ನಡ' : 'English'}
+          </button>
+
+          {/* Theme Switcher */}
+          <button 
+            onClick={toggleTheme}
+            className="theme-switcher-btn-class"
+            title="Toggle Theme"
+          >
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
+
           {/* Install App Button */}
           <button 
             onClick={handleInstallClick}
             className="premium-landing-nav-install-btn"
           >
-            Install App
+            {t('installApp')}
           </button>
 
           {isAuthenticated ? (
@@ -110,11 +242,11 @@ export default function LandingPage() {
               boxShadow: '0 4px 20px rgba(108, 92, 231, 0.3)',
               transition: 'transform 0.2s'
             }}>
-              Go to Dashboard
+              {t('goToDashboard')}
             </Link>
           ) : (
             <>
-              <Link to="/login" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem', padding: '10px 20px' }}>Sign In</Link>
+              <Link to="/login" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem', padding: '10px 20px' }} className="theme-switcher-btn-class">{t('signIn')}</Link>
               <Link to="/register" style={{ 
                 background: '#ffffff', 
                 color: '#030303', 
@@ -125,8 +257,8 @@ export default function LandingPage() {
                 textDecoration: 'none',
                 boxShadow: '0 4px 25px rgba(255,255,255,0.15)',
                 transition: 'all 0.2s'
-              }}>
-                Get Started
+              }} className="theme-switcher-btn-class">
+                {t('getStarted')}
               </Link>
             </>
           )}
@@ -150,7 +282,7 @@ export default function LandingPage() {
           className="premium-landing-badge"
         >
           <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#00cec9', boxShadow: '0 0 10px #00cec9' }}></span>
-          <span style={{ fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#a29bfe' }}>RENTOVA 2.0 PROTOCOL IS LIVE</span>
+          <span style={{ fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#a29bfe' }}>{t('badge')}</span>
         </motion.div>
 
         {/* Master Copy */}
@@ -160,8 +292,8 @@ export default function LandingPage() {
           transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
           className="premium-landing-title"
         >
-          The infrastructure for <br />
-          <span style={{ background: 'linear-gradient(180deg, #ffffff 30%, #a29bfe 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Modern Marketplaces.</span>
+          {t('title')}<br />
+          <span style={{ background: 'linear-gradient(180deg, #ffffff 30%, #a29bfe 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t('titleSpan')}</span>
         </motion.h1>
 
         <motion.p 
@@ -170,7 +302,7 @@ export default function LandingPage() {
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           className="premium-landing-subtitle"
         >
-          Whether booking elite services or scaling high-volume rental networks, Rentova processes decentralized assets with zero friction.
+          {t('subtitle')}
         </motion.p>
 
         {/* Interactive Luxury CTAs */}
@@ -181,10 +313,10 @@ export default function LandingPage() {
           className="premium-landing-ctas"
         >
           <Link to="/register" style={{ background: 'linear-gradient(135deg, #6c5ce7, #4834d4)', color: '#fff', padding: '16px 40px', borderRadius: '12px', fontWeight: 600, fontSize: '1.05rem', textDecoration: 'none', boxShadow: '0 20px 40px rgba(108, 92, 231, 0.25)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-            Deploy Engine Free
+            {t('ctaDeploy')}
           </Link>
           <button onClick={handleInstallClick} style={{ background: 'rgba(255,255,255,0.02)', color: '#fff', padding: '16px 40px', borderRadius: '12px', fontWeight: 600, fontSize: '1.05rem', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(10px)', cursor: 'pointer' }}>
-            Install Native App
+            {t('ctaInstall')}
           </button>
         </motion.div>
 
@@ -211,10 +343,10 @@ export default function LandingPage() {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#00cec9', boxShadow: '0 0 10px #00cec9' }} />
-            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.05em' }}>LEDGER TRANSACTION</span>
+            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.05em' }}>{t('ledgerTx')}</span>
           </div>
           <div style={{ marginTop: '16px', fontSize: '1.5rem', fontWeight: 700, color: '#fff' }}>+ ₹2,500.00</div>
-          <div style={{ fontSize: '0.8rem', color: '#00cec9', marginTop: '4px', fontWeight: 500 }}>Escrow Settled Instantly</div>
+          <div style={{ fontSize: '0.8rem', color: '#00cec9', marginTop: '4px', fontWeight: 500 }}>{t('escrowSettled')}</div>
         </motion.div>
 
         {/* Right Floating Component */}
@@ -238,10 +370,10 @@ export default function LandingPage() {
           style={{ transformPerspective: 1000 }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)' }}>CLUSTER NODE</span>
+            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)' }}>{t('clusterNode')}</span>
             <span style={{ fontSize: '0.75rem', background: 'rgba(108,92,231,0.1)', color: '#a29bfe', padding: '2px 8px', borderRadius: '4px', fontWeight: 600 }}>DELHI_09</span>
           </div>
-          <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>Booking Synced Successfully</div>
+          <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>{t('bookingSynced')}</div>
           <div style={{ marginTop: '12px', height: '2px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
             <div style={{ width: '100%', height: '100%', background: 'linear-gradient(90deg, #6c5ce7, #00cec9)' }}></div>
           </div>
@@ -277,8 +409,8 @@ export default function LandingPage() {
             y: bentoY
           }}
         >
-          <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: '16px' }}>Dual-Engine Architectures</h2>
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.1rem', maxWidth: '500px', margin: '0 auto' }}>Synchronized, segregated execution setups built for distinct end-user flows.</p>
+          <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: '16px' }}>{t('dualEngineTitle')}</h2>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.1rem', maxWidth: '500px', margin: '0 auto' }}>{t('dualEngineSubtitle')}</p>
         </motion.div>
 
         <motion.div 
@@ -293,20 +425,20 @@ export default function LandingPage() {
           <div className="premium-landing-bento-card">
             <div>
               <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(108, 92, 231, 0.1)', border: '1px solid rgba(108, 92, 231, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', marginBottom: '40px' }}>⚡</div>
-              <h3 style={{ fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '16px' }}>For Customers</h3>
+              <h3 style={{ fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '16px' }}>{t('forCustomers')}</h3>
               <p style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, fontSize: '1.05rem', marginBottom: '40px' }}>
-                Access global inventory endpoints instantly. Rentova delivers highly predictive routing pipelines mapping geolocation metrics directly to secure checkout flows.
+                {t('customerBody')}
               </p>
             </div>
             
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '32px' }}>
               <div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#fff' }}>Atomic Checkout</div>
-                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>One-click smart wallet bindings.</div>
+                <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#fff' }}>{t('atomicCheckout')}</div>
+                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>{t('atomicCheckoutDesc')}</div>
               </div>
               <div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#fff' }}>Live Topology</div>
-                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>Real-time high fidelity tracking.</div>
+                <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#fff' }}>{t('liveTopology')}</div>
+                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>{t('liveTopologyDesc')}</div>
               </div>
             </div>
           </div>
@@ -315,20 +447,20 @@ export default function LandingPage() {
           <div className="premium-landing-bento-card">
             <div>
               <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(0, 206, 201, 0.1)', border: '1px solid rgba(0, 206, 201, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', marginBottom: '40px' }}>🪐</div>
-              <h3 style={{ fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '16px' }}>For Vendors</h3>
+              <h3 style={{ fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '16px' }}>{t('forVendors')}</h3>
               <p style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, fontSize: '1.05rem', marginBottom: '40px' }}>
-                Turn physical inventory assets into yield generating pipelines. Access a comprehensive dashboard featuring enterprise configurations, programmatic liquidity, and global analytics.
+                {t('vendorBody')}
               </p>
             </div>
             
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '32px' }}>
               <div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#fff' }}>Yield Analytics</div>
-                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>Deep statistical insight frameworks.</div>
+                <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#fff' }}>{t('yieldAnalytics')}</div>
+                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>{t('yieldAnalyticsDesc')}</div>
               </div>
               <div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#fff' }}>Automated Payouts</div>
-                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>Zero fee immediate ledger clearances.</div>
+                <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#fff' }}>{t('automatedPayouts')}</div>
+                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>{t('automatedPayoutsDesc')}</div>
               </div>
             </div>
           </div>
@@ -342,7 +474,7 @@ export default function LandingPage() {
           <span style={{ fontWeight: 600, fontSize: '0.95rem', color: '#fff', letterSpacing: '-0.02em' }}>Rentova</span>
         </div>
         <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem', textAlign: 'center', letterSpacing: '0.02em' }}>
-          © 2026 Rentova Technologies Inc. Architectural Engine Infrastructure Layer.
+          {t('footerText')}
         </p>
       </footer>
 
@@ -361,8 +493,8 @@ export default function LandingPage() {
           WebkitBackdropFilter: 'blur(10px)'
         }}>
           <div style={{
-            background: 'rgba(20, 20, 30, 0.9)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            background: theme === 'light' ? '#ffffff' : 'rgba(20, 20, 30, 0.9)',
+            border: theme === 'light' ? '1px solid rgba(15, 23, 42, 0.08)' : '1px solid rgba(255, 255, 255, 0.1)',
             borderRadius: '24px',
             padding: '40px 32px',
             maxWidth: '440px',
@@ -371,36 +503,36 @@ export default function LandingPage() {
             textAlign: 'center',
             position: 'relative'
           }}>
-            <h3 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '16px', color: '#fff' }}>Install Rentova</h3>
-            <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '28px' }}>
-              Add Rentova to your home screen or desktop for a native-app experience, faster load times, and instant notifications.
+            <h3 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '16px', color: theme === 'light' ? '#0f172a' : '#fff' }}>{t('installRentova')}</h3>
+            <p style={{ color: theme === 'light' ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 255, 255, 0.6)', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '28px' }}>
+              {t('installDesc')}
             </p>
 
-            <div style={{ textAlign: 'left', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '16px', padding: '24px', marginBottom: '32px' }}>
+            <div style={{ textAlign: 'left', background: theme === 'light' ? 'rgba(15, 23, 42, 0.02)' : 'rgba(255, 255, 255, 0.03)', border: theme === 'light' ? '1px solid rgba(15, 23, 42, 0.05)' : '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '16px', padding: '24px', marginBottom: '32px' }}>
               {isIOS ? (
                 <>
                   <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
                     <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(108, 92, 231, 0.2)', color: '#a29bfe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>1</div>
-                    <span style={{ fontSize: '0.9rem', color: '#fff' }}>Tap the <strong>Share</strong> button in Safari.</span>
+                    <span style={{ fontSize: '0.9rem', color: theme === 'light' ? '#0f172a' : '#fff' }}>{t('iosStep1')}</span>
                   </div>
                   <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
                     <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(108, 92, 231, 0.2)', color: '#a29bfe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>2</div>
-                    <span style={{ fontSize: '0.9rem', color: '#fff' }}>Scroll down and select <strong>Add to Home Screen</strong>.</span>
+                    <span style={{ fontSize: '0.9rem', color: theme === 'light' ? '#0f172a' : '#fff' }}>{t('iosStep2')}</span>
                   </div>
                   <div style={{ display: 'flex', gap: '12px' }}>
                     <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(108, 92, 231, 0.2)', color: '#a29bfe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>3</div>
-                    <span style={{ fontSize: '0.9rem', color: '#fff' }}>Tap <strong>Add</strong> in the top-right corner to confirm.</span>
+                    <span style={{ fontSize: '0.9rem', color: theme === 'light' ? '#0f172a' : '#fff' }}>{t('iosStep3')}</span>
                   </div>
                 </>
               ) : (
                 <>
                   <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
                     <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(108, 92, 231, 0.2)', color: '#a29bfe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>1</div>
-                    <span style={{ fontSize: '0.9rem', color: '#fff' }}>Click the <strong>Install</strong> button (➕/🖥️) in the browser address bar.</span>
+                    <span style={{ fontSize: '0.9rem', color: theme === 'light' ? '#0f172a' : '#fff' }}>{t('otherStep1')}</span>
                   </div>
                   <div style={{ display: 'flex', gap: '12px' }}>
                     <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(108, 92, 231, 0.2)', color: '#a29bfe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>2</div>
-                    <span style={{ fontSize: '0.9rem', color: '#fff' }}>Or open the browser menu (⋮ / ⋯) and tap <strong>Install App</strong> or <strong>Add to Home Screen</strong>.</span>
+                    <span style={{ fontSize: '0.9rem', color: theme === 'light' ? '#0f172a' : '#fff' }}>{t('otherStep2')}</span>
                   </div>
                 </>
               )}
@@ -416,10 +548,12 @@ export default function LandingPage() {
                 fontSize: '0.95rem',
                 fontWeight: 600,
                 background: 'linear-gradient(135deg, #6c5ce7, #4834d4)',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                border: 'none',
+                color: '#fff'
               }}
             >
-              Got it
+              {t('gotIt')}
             </button>
           </div>
         </div>
