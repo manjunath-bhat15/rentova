@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 const metrics = [
   { label: 'Verified Vendors', value: '1.8k+', trend: '+12% this week' },
@@ -11,6 +11,40 @@ const metrics = [
 
 export default function LandingPage() {
   const { isAuthenticated, user } = useAuth();
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallModal, setShowInstallModal] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+
+  // PWA Install Event Handler
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    // Detect iOS
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isApple = /iphone|ipad|ipod/.test(userAgent);
+    setIsIOS(isApple);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
+    } else {
+      setShowInstallModal(true);
+    }
+  };
 
   // Scroll animations for Hero
   const { scrollY } = useScroll();
@@ -56,6 +90,23 @@ export default function LandingPage() {
         </div>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          {/* Install App Button */}
+          <button 
+            onClick={handleInstallClick}
+            className="btn btn-secondary" 
+            style={{ 
+              borderRadius: '100px', 
+              padding: '8px 18px', 
+              fontSize: '0.85rem', 
+              border: '1px solid rgba(108, 92, 231, 0.4)',
+              background: 'rgba(108, 92, 231, 0.05)',
+              color: '#a29bfe',
+              cursor: 'pointer'
+            }}
+          >
+            Install App
+          </button>
+
           {isAuthenticated ? (
             <Link to={`/${user?.role?.toLowerCase() || 'customer'}`} className="btn" style={{ 
               background: 'linear-gradient(135deg, #6c5ce7, #4834d4)', 
@@ -138,12 +189,12 @@ export default function LandingPage() {
           transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
           className="premium-landing-ctas"
         >
-          <Link to="/register" style={{ background: 'linear-gradient(135deg, #6c5ce7, #4834d4)', color: '#fff', padding: '16px 40px', borderRadius: '12px', fontWeight: 600, fontSize: '1.05rem', textDecoration: 'none', boxShadow: '0 20px 40px rgba(108, 92, 231, 0.25)', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <Link to="/register" style={{ background: 'linear-gradient(135deg, #6c5ce7, #4834d4)', color: '#fff', padding: '16px 40px', borderRadius: '12px', fontWeight: 600, fontSize: '1.05rem', textDecoration: 'none', boxShadow: '0 20px 40px rgba(108, 92, 231, 0.25)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
             Deploy Engine Free
           </Link>
-          <Link to="/login" style={{ background: 'rgba(255,255,255,0.02)', color: '#fff', padding: '16px 40px', borderRadius: '12px', fontWeight: 600, fontSize: '1.05rem', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(10px)' }}>
-            Explore Sandbox
-          </Link>
+          <button onClick={handleInstallClick} style={{ background: 'rgba(255,255,255,0.02)', color: '#fff', padding: '16px 40px', borderRadius: '12px', fontWeight: 600, fontSize: '1.05rem', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(10px)', cursor: 'pointer' }}>
+            Install Native App
+          </button>
         </motion.div>
 
         {/* --- FLOATING DECENTRALIZED UI HUD ELEMENTS --- */}
@@ -303,6 +354,85 @@ export default function LandingPage() {
           © 2026 Rentova Technologies Inc. Architectural Engine Infrastructure Layer.
         </p>
       </footer>
+
+      {/* Install Instruction Modal */}
+      {showInstallModal && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '24px',
+          background: 'rgba(2, 6, 23, 0.75)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)'
+        }}>
+          <div style={{
+            background: 'rgba(20, 20, 30, 0.9)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            borderRadius: '24px',
+            padding: '40px 32px',
+            maxWidth: '440px',
+            width: '100%',
+            boxShadow: '0 30px 60px rgba(0, 0, 0, 0.5)',
+            textAlign: 'center',
+            position: 'relative'
+          }}>
+            <h3 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '16px', color: '#fff' }}>Install Rentova</h3>
+            <p style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '28px' }}>
+              Add Rentova to your home screen or desktop for a native-app experience, faster load times, and instant notifications.
+            </p>
+
+            <div style={{ textAlign: 'left', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '16px', padding: '24px', marginBottom: '32px' }}>
+              {isIOS ? (
+                <>
+                  <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(108, 92, 231, 0.2)', color: '#a29bfe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>1</div>
+                    <span style={{ fontSize: '0.9rem', color: '#fff' }}>Tap the <strong>Share</strong> button in Safari.</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(108, 92, 231, 0.2)', color: '#a29bfe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>2</div>
+                    <span style={{ fontSize: '0.9rem', color: '#fff' }}>Scroll down and select <strong>Add to Home Screen</strong>.</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(108, 92, 231, 0.2)', color: '#a29bfe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>3</div>
+                    <span style={{ fontSize: '0.9rem', color: '#fff' }}>Tap <strong>Add</strong> in the top-right corner to confirm.</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(108, 92, 231, 0.2)', color: '#a29bfe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>1</div>
+                    <span style={{ fontSize: '0.9rem', color: '#fff' }}>Click the <strong>Install</strong> button (➕/🖥️) in the browser address bar.</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(108, 92, 231, 0.2)', color: '#a29bfe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>2</div>
+                    <span style={{ fontSize: '0.9rem', color: '#fff' }}>Or open the browser menu (⋮ / ⋯) and tap <strong>Install App</strong> or <strong>Add to Home Screen</strong>.</span>
+                  </div>
+                </>
+              )}
+            </div>
+
+            <button 
+              onClick={() => setShowInstallModal(false)}
+              className="btn btn-primary"
+              style={{
+                width: '100%',
+                padding: '12px',
+                borderRadius: '12px',
+                fontSize: '0.95rem',
+                fontWeight: 600,
+                background: 'linear-gradient(135deg, #6c5ce7, #4834d4)',
+                cursor: 'pointer'
+              }}
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,0 +1,16 @@
+{
+  "short_name": "Rentova",
+  "name": "Rentova Rental Platform",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#030303",
+  "theme_color": "#6c5ce7",
+  "display": "standalone",
+  "orientation": "portrait"
+}
