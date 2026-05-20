@@ -2133,5 +2133,559 @@ select.input-field {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* ==========================================================================
+   ULTRA-MODERN FLOATING NAVIGATION DOCK & HEADER LAYOUT
+   ========================================================================== */
+
+/* Design Tokens Extensions */
+:root {
+  --dock-collapsed-width: 80px;
+  --dock-expanded-width: 260px;
+  --dock-margin: 20px;
+  --dock-border-radius: 18px;
+  --dock-glow-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --header-floating-height: 64px;
+}
+
+/* Base Layout Modifications */
+.dashboard-content {
+  margin-left: calc(var(--dock-collapsed-width) + var(--dock-margin)) !important;
+  padding-top: 0 !important;
+  transition: margin-left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 100vh;
+}
+
+.page-content {
+  padding: calc(var(--header-floating-height) + var(--dock-margin) + 20px) var(--space-xl) var(--space-xl) var(--space-xl) !important;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Glassmorphism Navigation Dock */
+.sidebar {
+  display: none !important; /* Hide old-school sidebar completely */
+}
+
+.navigation-dock {
+  position: fixed;
+  top: var(--dock-margin);
+  left: var(--dock-margin);
+  bottom: var(--dock-margin);
+  width: var(--dock-collapsed-width);
+  height: calc(100vh - (var(--dock-margin) * 2));
+  background: rgba(26, 26, 26, 0.65);
+  backdrop-filter: blur(24px) saturate(120%);
+  -webkit-backdrop-filter: blur(24px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--dock-border-radius);
+  box-shadow: var(--dock-glow-shadow);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  overflow: hidden;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s, border-color 0.25s;
+}
+
+/* Hover Expand Behaviour */
+.navigation-dock:hover {
+  width: var(--dock-expanded-width);
+  background: rgba(20, 20, 20, 0.85);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 122, 0, 0.1);
+}
+
+.light-theme .navigation-dock {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.02);
+}
+
+.light-theme .navigation-dock:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.12), 0 0 20px rgba(255, 122, 0, 0.05);
+}
+
+/* Logo Section inside Dock */
+.dock-logo {
+  padding: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  height: 70px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.dock-logo .logo-icon {
+  width: 44px;
+  height: 44px;
+  background: var(--accent-gradient);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: white;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(255, 122, 0, 0.3);
+}
+
+.dock-logo .logo-text-wrapper {
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.navigation-dock:hover .dock-logo .logo-text-wrapper {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.dock-logo .logo-text {
+  font-size: 1.15rem;
+  font-weight: 800;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+}
+
+.dock-logo .logo-subtitle {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 1px;
+}
+
+/* Nav Links inside Dock */
+.dock-nav {
+  flex: 1;
+  padding: var(--space-md) var(--space-sm);
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dock-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 12px;
+  height: 46px;
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  font-weight: 550;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.dock-item .dock-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.dock-item:hover .dock-icon {
+  transform: scale(1.1);
+}
+
+.dock-item .dock-label {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.navigation-dock:hover .dock-item .dock-label {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Active & Hover states */
+.dock-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+}
+
+.light-theme .dock-item:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+/* Role Specific Glow Colors */
+.dock-item.active {
+  font-weight: 600;
+}
+
+.customer-dashboard-layout .dock-item.active {
+  background: rgba(0, 206, 201, 0.1);
+  color: var(--accent-secondary) !important;
+  border-color: rgba(0, 206, 201, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 206, 201, 0.05);
+}
+
+.vendor-dashboard-layout .dock-item.active {
+  background: rgba(255, 122, 0, 0.1);
+  color: var(--accent-primary) !important;
+  border-color: rgba(255, 122, 0, 0.25);
+  box-shadow: 0 4px 12px rgba(255, 122, 0, 0.05);
+}
+
+.admin-dashboard-layout .dock-item.active {
+  background: rgba(255, 107, 107, 0.1);
+  color: var(--accent-danger) !important;
+  border-color: rgba(255, 107, 107, 0.25);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.05);
+}
+
+/* Dock Bottom Profile Section */
+.dock-bottom {
+  padding: var(--space-md) var(--space-sm);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.dock-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  overflow: hidden;
+}
+
+.dock-profile:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.dock-profile-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+  font-size: var(--font-sm);
+}
+
+.dock-profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.dock-profile-info {
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.navigation-dock:hover .dock-profile-info {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.dock-profile-name {
+  font-size: var(--font-xs);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.dock-profile-role {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* Floating Glassmorphic Header */
+.header {
+  position: fixed !important;
+  top: var(--dock-margin);
+  left: calc(var(--dock-collapsed-width) + (var(--dock-margin) * 2)) !important;
+  right: var(--dock-margin) !important;
+  height: var(--header-floating-height) !important;
+  background: rgba(26, 26, 26, 0.65) !important;
+  backdrop-filter: blur(24px) saturate(120%);
+  -webkit-backdrop-filter: blur(24px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.25) !important;
+  padding: 0 var(--space-lg) !important;
+  z-index: 999 !important;
+  transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.light-theme .header {
+  background: rgba(255, 255, 255, 0.7) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Workspace switching indicators and kickers */
+.header-kicker {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent-primary);
+  margin-bottom: 2px;
+}
+
+.customer-dashboard-layout .header-kicker {
+  color: var(--accent-secondary);
+}
+
+.admin-dashboard-layout .header-kicker {
+  color: var(--accent-danger);
+}
+
+/* Live pill glow */
+.live-pill {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  padding: 2px 8px !important;
+  border-radius: var(--radius-full);
+  background: rgba(255, 107, 107, 0.15);
+  color: var(--accent-danger);
+  border: 1px solid rgba(255, 107, 107, 0.2);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.live-pill.online {
+  background: rgba(0, 184, 148, 0.15);
+  color: var(--accent-success);
+  border-color: rgba(0, 184, 148, 0.2);
+}
+
+.live-pill::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  display: inline-block;
+  box-shadow: 0 0 8px currentColor;
+}
+
+/* Redesigned Premium Listing Cards (ServiceCard) */
+.modern-service-card {
+  background: rgba(30, 30, 30, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px !important;
+  padding: var(--space-md) !important;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  backdrop-filter: blur(10px);
+}
+
+.light-theme .modern-service-card {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+}
+
+.modern-service-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255, 122, 0, 0.3);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 122, 0, 0.05);
+}
+
+.light-theme .modern-service-card:hover {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08), 0 0 20px rgba(255, 122, 0, 0.02);
+}
+
+.modern-service-card-image {
+  width: 100%;
+  height: 160px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+}
+
+.modern-service-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.modern-service-card:hover .modern-service-card-image img {
+  transform: scale(1.08);
+}
+
+.modern-service-card-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Premium Booking Flow card updates */
+.modern-booking-card {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(30, 30, 30, 0.45) !important;
+  border-radius: 18px !important;
+  padding: var(--space-md) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.light-theme .modern-booking-card {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+}
+
+.modern-booking-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(0, 206, 201, 0.3);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.4);
+}
+
+/* Fixed Booking Flow Modal overscroll issue */
+.scrollable-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: flex-start; /* Start from top to support overflow */
+  justify-content: center;
+  z-index: 10000;
+  padding: 40px var(--space-lg);
+  overflow-y: auto; /* Allows complete scrolling of modal card */
+  animation: fadeIn 0.25s ease;
+}
+
+.scrollable-modal-card {
+  width: 100%;
+  max-width: 520px;
+  background: rgba(30, 30, 30, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: var(--space-2xl);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+  animation: slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin-bottom: 20px;
+}
+
+.light-theme .scrollable-modal-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+/* Bottom Floating Navigation for Mobile screens */
+@media (max-width: 768px) {
+  .dashboard-content {
+    margin-left: 0 !important;
+  }
+  
+  .page-content {
+    padding: calc(var(--header-floating-height) + 40px) var(--space-md) 100px var(--space-md) !important;
+  }
+  
+  .header {
+    left: var(--space-md) !important;
+    right: var(--space-md) !important;
+    top: 15px !important;
+    border-radius: 12px !important;
+    padding: 0 var(--space-md) !important;
+  }
+  
+  .navigation-dock {
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    top: auto;
+    width: auto !important;
+    height: 66px !important;
+    flex-direction: row !important;
+    border-radius: 16px !important;
+    padding: 0 var(--space-md) !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4) !important;
+    align-items: center;
+    justify-content: space-around;
+  }
+
+  .navigation-dock:hover {
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4) !important;
+    background: rgba(26, 26, 26, 0.85);
+  }
+  
+  .dock-logo {
+    display: none !important;
+  }
+  
+  .dock-nav {
+    flex-direction: row !important;
+    padding: 0 !important;
+    width: 100%;
+    justify-content: space-around;
+    align-items: center;
+    gap: 0 !important;
+    overflow-y: hidden !important;
+  }
+  
+  .dock-item {
+    padding: 8px !important;
+    height: auto !important;
+    border-radius: 10px !important;
+    justify-content: center;
+    flex: 1;
+  }
+  
+  .dock-item .dock-label {
+    display: none !important;
+  }
+  
+  .dock-bottom {
+    display: none !important;
+  }
+}
+
 
 

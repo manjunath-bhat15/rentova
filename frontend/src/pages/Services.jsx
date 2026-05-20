@@ -175,16 +175,12 @@ export default function Services() {
 
       {/* Booking Modal */}
       {showBookingModal && selectedService && (
-        <div style={{
-          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
-          backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center',
-          justifyContent: 'center', zIndex: 1000, padding: 'var(--space-lg)',
-        }}
+        <div 
+          className="scrollable-modal-overlay"
           onClick={() => setShowBookingModal(false)}
         >
           <div
-            className="glass-card"
-            style={{ width: '100%', maxWidth: '480px', padding: 'var(--space-2xl)', animation: 'slideUp 0.3s ease' }}
+            className="scrollable-modal-card"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 style={{ fontSize: 'var(--font-xl)', fontWeight: 700, marginBottom: 'var(--space-xs)' }}>

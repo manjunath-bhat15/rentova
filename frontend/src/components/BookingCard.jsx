@@ -12,7 +12,7 @@ export default function BookingCard({ booking, userRole }) {
 
   return (
     <div
-      className="bento-card"
+      className="modern-booking-card"
       style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}
       onClick={() => navigate(`/dashboard/bookings/${booking.id}`)}
     >
