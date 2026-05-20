@@ -39,7 +39,7 @@ public class ServiceEntity {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal pricePerUnit;
 
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(precision = 10, scale = 2)
     @Builder.Default
     private BigDecimal securityDeposit = BigDecimal.ZERO;
 

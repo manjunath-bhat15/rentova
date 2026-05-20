@@ -22,6 +22,10 @@ public class DatabaseMigrationRunner implements CommandLineRunner {
             jdbcTemplate.execute("UPDATE users SET gst_verified = false WHERE gst_verified IS NULL");
             jdbcTemplate.execute("UPDATE users SET trust_score = 10 WHERE trust_score IS NULL");
             
+            // Patch services and bookings tables to fill in null security deposits
+            jdbcTemplate.execute("UPDATE services SET security_deposit = 0 WHERE security_deposit IS NULL");
+            jdbcTemplate.execute("UPDATE bookings SET security_deposit = 0 WHERE security_deposit IS NULL");
+            
             System.out.println("Database migrations successfully applied!");
         } catch (Exception e) {
             System.err.println("Database migration note (might be normal if columns don't exist yet): " + e.getMessage());
