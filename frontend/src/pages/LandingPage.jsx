@@ -1,561 +1,656 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef, useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import landingHero from '../assets/landing_hero.png';
 
-const translations = {
-  en: {
-    badge: "RENTOVA 2.0 PROTOCOL IS LIVE",
-    title: "The infrastructure for ",
-    titleSpan: "Modern Marketplaces.",
-    subtitle: "Whether booking elite services or scaling high-volume rental networks, Rentova processes decentralized assets with zero friction.",
-    ctaDeploy: "Deploy Engine Free",
-    ctaInstall: "Install Native App",
-    installApp: "Install App",
-    signIn: "Sign In",
-    getStarted: "Get Started",
-    goToDashboard: "Go to Dashboard",
-    verifiedVendors: "Verified Vendors",
-    bookingsRouted: "Bookings Routed",
-    avgResponseTime: "Avg. Response Time",
-    realtimeSync: "Real-time sync",
-    ultrafastLatency: "Ultra-fast latency",
-    avgResponseValue: "8m",
-    thisWeekTrend: "+12% this week",
-    dualEngineTitle: "Dual-Engine Architectures",
-    dualEngineSubtitle: "Synchronized, segregated execution setups built for distinct end-user flows.",
-    forCustomers: "For Customers",
-    customerBody: "Access global inventory endpoints instantly. Rentova delivers highly predictive routing pipelines mapping geolocation metrics directly to secure checkout flows.",
-    atomicCheckout: "Atomic Checkout",
-    atomicCheckoutDesc: "One-click smart wallet bindings.",
-    liveTopology: "Live Topology",
-    liveTopologyDesc: "Real-time high fidelity tracking.",
-    forVendors: "For Vendors",
-    vendorBody: "Turn physical inventory assets into yield generating pipelines. Access a comprehensive dashboard featuring enterprise configurations, programmatic liquidity, and global analytics.",
-    yieldAnalytics: "Yield Analytics",
-    yieldAnalyticsDesc: "Deep statistical insight frameworks.",
-    automatedPayouts: "Automated Payouts",
-    automatedPayoutsDesc: "Zero fee immediate ledger clearances.",
-    footerText: "© 2026 Rentova Technologies Inc. Architectural Engine Infrastructure Layer.",
-    ledgerTx: "LEDGER TRANSACTION",
-    escrowSettled: "Escrow Settled Instantly",
-    clusterNode: "CLUSTER NODE",
-    bookingSynced: "Booking Synced Successfully",
-    installRentova: "Install Rentova",
-    installDesc: "Add Rentova to your home screen or desktop for a native-app experience, faster load times, and instant notifications.",
-    iosStep1: "Tap the Share button in Safari.",
-    iosStep2: "Scroll down and select Add to Home Screen.",
-    iosStep3: "Tap Add in the top-right corner to confirm.",
-    otherStep1: "Click the Install button (➕/🖥️) in the browser address bar.",
-    otherStep2: "Or open the browser menu (⋮ / ⋯) and tap Install App or Add to Home Screen.",
-    gotIt: "Got it"
+/* ── Rental category data ── */
+const CATEGORIES = [
+  { emoji: '🛵', label: 'Scooters' },
+  { emoji: '📷', label: 'Cameras' },
+  { emoji: '🚲', label: 'Bicycles' },
+  { emoji: '⛺', label: 'Camping' },
+  { emoji: '🔧', label: 'Tools' },
+  { emoji: '🎮', label: 'Gaming' },
+  { emoji: '💻', label: 'Laptops' },
+  { emoji: '🚗', label: 'Vehicles' },
+  { emoji: '🪚', label: 'Equipment' },
+  { emoji: '🏠', label: 'Spaces' },
+  { emoji: '🎸', label: 'Music' },
+  { emoji: '📦', label: 'Other' },
+];
+
+/* ── Featured services (static showcase) ── */
+const FEATURED = [
+  {
+    emoji: '🛵',
+    title: 'Honda Activa 6G',
+    vendor: 'SpeedRide Rentals',
+    category: 'Vehicles',
+    price: 299,
+    unit: 'day',
+    distance: '1.2 km',
+    discount: 'Upto 20% off with wallet',
+    rating: 4.8,
+    bg: '#fff8f3',
   },
-  kn: {
-    badge: "ರೆಂಟೋವಾ 2.0 ಇದೀಗ ಲೈವ್ ಆಗಿದೆ",
-    title: "ಆಧುನಿಕ ಡಿಜಿಟಲ್ ಮಾರುಕಟ್ಟೆಗಳಿಗಾಗಿ ",
-    titleSpan: "ವಿಶ್ವಾಸಾರ್ಹ ವೇದಿಕೆ.",
-    subtitle: "ಪ್ರಿಮಿಯಂ ಸೇವೆಗಳ ಬುಕ್ಕಿಂಗ್ ಆಗಲಿ ಅಥವಾ ದೊಡ್ಡ ಮಟ್ಟದ ಬಾಡಿಗೆ ವ್ಯವಹಾರಗಳ ನಿರ್ವಹಣೆ ಆಗಲಿ — ರೆಂಟೋವಾ ಎಲ್ಲ ಪ್ರಕ್ರಿಯೆಗಳನ್ನೂ ವೇಗವಾಗಿ, ಸುರಕ್ಷಿತವಾಗಿ ಮತ್ತು ಯಾವುದೇ ತೊಂದರೆಯಿಲ್ಲದೆ ನಿರ್ವಹಿಸುತ್ತದೆ.",
-    ctaDeploy: "ಉಚಿತವಾಗಿ ಪ್ರಾರಂಭಿಸಿ",
-    ctaInstall: "ಆಪ್ ಇನ್ಸ್ಟಾಲ್ ಮಾಡಿ",
-    installApp: "ಆಪ್ ಇನ್ಸ್ಟಾಲ್ ಮಾಡಿ",
-    signIn: "ಲಾಗಿನ್",
-    getStarted: "ಪ್ರಾರಂಭಿಸಿ",
-    goToDashboard: "ಡ್ಯಾಶ್ಬೋರ್ಡ್ಗೆ ಹೋಗಿ",
-    verifiedVendors: "ಪರಿಶೀಲಿತ ವ್ಯಾಪಾರಿಗಳು",
-    bookingsRouted: "ಯಶಸ್ವಿ ಬುಕ್ಕಿಂಗ್ಗಳು",
-    avgResponseTime: "ಸರಾವರಿ ಪ್ರತಿಕ್ರಿಯೆ ಸಮಯ",
-    realtimeSync: "ರಿಯಲ್-ಟೈಮ್ ಸಿಂಕ್",
-    ultrafastLatency: "ಅತ್ಯಂತ ವೇಗದ ಪ್ರತಿಕ್ರಿಯೆ",
-    avgResponseValue: "8 ನಿಮಿಷ",
-    thisWeekTrend: "ಈ ವಾರ +12% ಬೆಳವಣಿಗೆ",
-    dualEngineTitle: "ಎರಡು ಹಂತದ ಸ್ಮಾರ್ಟ್ ವ್ಯವಸ್ಥೆ",
-    dualEngineSubtitle: "ಗ್ರಾಹಕರು ಮತ್ತು ವ್ಯಾಪಾರಿಗಳ ವಿಭಿನ್ನ ಅಗತ್ಯಗಳಿಗೆ ಹೊಂದಿಕೊಳ್ಳುವಂತೆ ವಿನ್ಯಾಸಗೊಳಿಸಿದ ಆಧುನಿಕ ಡಿಜಿಟಲ್ ವ್ಯವಸ್ಥೆ.",
-    forCustomers: "ಗ್ರಾಹಕರಿಗಾಗಿ",
-    customerBody: "ನಿಮಗೆ ಬೇಕಾದ ಸೇವೆಗಳು ಮತ್ತು ಉತ್ಪನ್ನಗಳನ್ನು ವೇಗವಾಗಿ ಹುಡುಕಿ ಹಾಗೂ ಸುರಕ್ಷಿತವಾಗಿ ಬುಕ್ ಮಾಡಿ. ರೆಂಟೋವಾ ಉತ್ತಮ ಅನುಭವಕ್ಕಾಗಿ ಸ್ಮಾರ್ಟ್ ಲೊಕೇಶನ್ ಮತ್ತು ವೇಗದ ಚೆಕ್ಔಟ್ ವ್ಯವಸ್ಥೆಯನ್ನು ಒದಗಿಸುತ್ತದೆ.",
-    atomicCheckout: "ತ್ವರಿತ ಪಾವತಿ",
-    atomicCheckoutDesc: "ಒಂದೇ ಕ್ಲಿಕ್ಕಿನಲ್ಲಿ ಸುರಕ್ಷಿತ ಪಾವತಿ ಪೂರ್ಣಗೊಳಿಸಿ.",
-    liveTopology: "ಲೈವ್ ಟ್ರ್ಯಾಕಿಂಗ್",
-    liveTopologyDesc: "ನೈಜ ಸಮಯದಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್ಕಿಂಗ್ ಸ್ಥಿತಿಯನ್ನು ಗಮನಿಸಿ.",
-    forVendors: "ವ್ಯಾಪಾರಿಗಳಿಗಾಗಿ",
-    vendorBody: "ನಿಮ್ಮ ಬಾಡಿಗೆ ವ್ಯವಹಾರವನ್ನು ಸುಲಭವಾಗಿ ನಿರ್ವಹಿಸಿ. ರೆಂಟೋವಾ ಮೂಲಕ ಬುಕ್ಕಿಂಗ್ಗಳು, ಆದಾಯ, ವಿಶ್ಲೇಷಣೆ ಮತ್ತು ಪಾವತಿಗಳನ್ನು ಒಂದೇ ಸ್ಥಳದಲ್ಲಿ ನಿಯಂತ್ರಿಸಬಹುದು.",
-    yieldAnalytics: "ಆದಾಯ ವಿಶ್ಲೇಷಣೆ",
-    yieldAnalyticsDesc: "ವ್ಯವಹಾರದ ಕಾರ್ಯಕ್ಷಮತೆಯ ಸಂಪೂರ್ಣ ಮಾಹಿತಿ ಪಡೆಯಿರಿ.",
-    automatedPayouts: "ಸ್ವಯಂ ಪಾವತಿ ವ್ಯವಸ್ಥೆ",
-    automatedPayoutsDesc: "ವೇಗವಾದ ಮತ್ತು ಸುರಕ್ಷಿತ ಪಾವತಿ ವರ್ಗಾವಣೆ.",
-    footerText: "© 2026 ರೆಂಟೋವಾ ಟೆಕ್ನಾಲಜೀಸ್. ಎಲ್ಲಾ ಹಕ್ಕುಗಳು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.",
-    ledgerTx: "ವಹಿವಾಟು ದಾಖಲೆ",
-    escrowSettled: "ಪಾವತಿ ಯಶಸ್ವಿಯಾಗಿ ಪೂರ್ಣಗೊಂಡಿದೆ",
-    clusterNode: "ಸರ್ವರ್ ನೋಡ್",
-    bookingSynced: "ಬುಕ್ಕಿಂಗ್ ಯಶಸ್ವಿಯಾಗಿ ಸಿಂಕ್ ಆಗಿದೆ",
-    installRentova: "ರೆಂಟೋವಾ ಆಪ್ ಇನ್ಸ್ಟಾಲ್ ಮಾಡಿ",
-    installDesc: "ವೇಗವಾದ ಅನುಭವ, ತ್ವರಿತ ಸೂಚನೆಗಳು ಮತ್ತು ಸುಲಭ ಬಳಕೆಗೆ ರೆಂಟೋವಾ ಆಪ್ ಅನ್ನು ನಿಮ್ಮ ಮೊಬೈಲ್ ಅಥವಾ ಡೆಸ್ಕ್ಟಾಪ್ಗೆ ಸೇರಿಸಿ.",
-    iosStep1: "Safari ನಲ್ಲಿ Share ಬಟನ್ ಒತ್ತಿರಿ.",
-    iosStep2: "ನಂತರ 'Add to Home Screen' ಆಯ್ಕೆಮಾಡಿ.",
-    iosStep3: "ಮೇಲಿನ 'Add' ಬಟನ್ ಒತ್ತಿ ದೃಢೀಕರಿಸಿ.",
-    otherStep1: "ಬ್ರೌಸರ್ನ ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿರುವ Install ಬಟನ್ ಒತ್ತಿರಿ.",
-    otherStep2: "ಅಥವಾ ಬ್ರೌಸರ್ ಮೆನು ತೆರೆಯಿಸಿ 'Install App' ಅಥವಾ 'Add to Home Screen' ಆಯ್ಕೆಮಾಡಿ.",
-    gotIt: "ಸರಿ"
-  }
+  {
+    emoji: '📷',
+    title: 'Sony A7III Camera Kit',
+    vendor: 'LensHub Pro',
+    category: 'Electronics',
+    price: 799,
+    unit: 'day',
+    distance: '2.4 km',
+    discount: 'Flat 15% off first booking',
+    rating: 4.9,
+    bg: '#f0f8ff',
+  },
+  {
+    emoji: '⛺',
+    title: 'Camping Tent — 4 Person',
+    vendor: 'WildGear Rentals',
+    category: 'Camping',
+    price: 199,
+    unit: 'day',
+    distance: '3.1 km',
+    discount: 'Upto 10% off',
+    rating: 4.6,
+    bg: '#f0fff4',
+  },
+  {
+    emoji: '💻',
+    title: 'MacBook Pro M3',
+    vendor: 'TechLease',
+    category: 'Electronics',
+    price: 699,
+    unit: 'day',
+    distance: '0.8 km',
+    discount: 'Flat 10% off with coupon',
+    rating: 4.7,
+    bg: '#fdf0ff',
+  },
+];
+
+/* ── How it works ── */
+const STEPS = [
+  { num: '01', icon: '📍', title: 'Enter Your Location', desc: 'Allow location access to see rental items near you in real-time.' },
+  { num: '02', icon: '🔍', title: 'Browse & Compare', desc: 'Filter by category, price, distance — find the perfect rental.' },
+  { num: '03', icon: '📅', title: 'Book in Seconds', desc: 'Choose pickup or delivery. Pay via Rentova wallet securely.' },
+  { num: '04', icon: '✅', title: 'Vendor OTP Handoff', desc: 'Vendor confirms handover with OTP. Full lifecycle tracked.' },
+];
+
+/* ── Footer links ── */
+const FOOTER_LINKS = {
+  Company: ['About Us', 'Careers', 'Blog', 'Press'],
+  'For Vendors': ['Partner With Us', 'Vendor Dashboard', 'Earnings', 'Support'],
+  Legal: ['Terms & Conditions', 'Privacy Policy', 'Cookie Policy'],
+  Cities: ['Bangalore', 'Mumbai', 'Delhi', 'Hyderabad', 'Pune', 'Chennai'],
 };
 
 export default function LandingPage() {
   const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
+  const [search, setSearch] = useState('');
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showInstallModal, setShowInstallModal] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
+  const catScrollRef = useRef(null);
 
-  // Theme & Language State with LocalStorage cache - locked temporarily
-  const [lang] = useState('en');
-  const [theme] = useState('light');
-
-  const t = (key) => translations[lang][key];
-
-  const toggleTheme = () => {
-    // Temporarily disabled
-  };
-
-  const toggleLanguage = () => {
-    // Temporarily disabled
-  };
-
-  // Metrics configurations
-  const metrics = [
-    { label: t('verifiedVendors'), value: '1.8k+', trend: t('thisWeekTrend') },
-    { label: t('bookingsRouted'), value: '42k+', trend: t('realtimeSync') },
-    { label: t('avgResponseTime'), value: t('avgResponseValue'), trend: t('ultrafastLatency') },
-  ];
-
-  // PWA Install Event Handler
   useEffect(() => {
-    const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
-
+    const handleBeforeInstallPrompt = (e) => { e.preventDefault(); setDeferredPrompt(e); };
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-    // Detect iOS
-    const userAgent = window.navigator.userAgent.toLowerCase();
-    const isApple = /iphone|ipad|ipod/.test(userAgent);
-    setIsIOS(isApple);
-
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', onScroll);
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('scroll', onScroll);
     };
   }, []);
 
-  const handleInstallClick = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        setDeferredPrompt(null);
-      }
-    } else {
-      setShowInstallModal(true);
-    }
+  const handleSearch = (e) => {
+    e.preventDefault();
+    navigate(isAuthenticated ? `/dashboard/services?search=${search}` : '/login');
   };
 
-  // Scroll animations for Hero
-  const { scrollY } = useScroll();
-  const heroY = useTransform(scrollY, [0, 600], [0, 200]);
-  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
-  const heroScale = useTransform(scrollY, [0, 500], [1, 0.9]);
-
-  // Scroll animations for Bento Architecture Section
-  const bentoRef = useRef(null);
-  const { scrollYProgress: bentoProgress } = useScroll({
-    target: bentoRef,
-    offset: ["start end", "center center"]
-  });
-  
-  // 3D Transforms mapped to scroll
-  const bentoRotateX = useTransform(bentoProgress, [0, 1], [30, 0]);
-  const bentoScale = useTransform(bentoProgress, [0, 1], [0.8, 1]);
-  const bentoOpacity = useTransform(bentoProgress, [0, 1], [0, 1]);
-  const bentoY = useTransform(bentoProgress, [0, 1], [100, 0]);
+  const scrollCats = (dir) => {
+    if (catScrollRef.current) catScrollRef.current.scrollLeft += dir * 260;
+  };
 
   return (
-    <div className={`premium-landing ${theme === 'light' ? 'light-theme' : ''}`}>
-      {/* Premium Ambient Background Glows */}
-      <div style={{ position: 'absolute', top: '-10%', left: '20%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(255, 122, 0, 0.15) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
-      <div style={{ position: 'absolute', top: '40%', right: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(0, 206, 201, 0.1) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
+    <div className="light-theme" style={{ background: '#ffffff', minHeight: '100vh', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", color: '#1c1c1c', overflowX: 'hidden' }}>
 
-      {/* --- NAVIGATION BAR --- */}
-      <nav className="premium-landing-nav">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ 
-            width: '36px', 
-            height: '36px', 
-            background: 'var(--accent-gradient)', 
-            borderRadius: '10px', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            fontWeight: 800, 
-            color: '#fff',
-            boxShadow: 'var(--glow-primary)'
+      {/* ── STICKY NAV ── */}
+      <nav style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+        background: scrolled ? 'rgba(255,255,255,0.97)' : 'transparent',
+        boxShadow: scrolled ? '0 2px 20px rgba(0,0,0,0.08)' : 'none',
+        backdropFilter: scrolled ? 'blur(12px)' : 'none',
+        transition: 'all 0.3s ease',
+        padding: '0 max(20px, calc((100vw - 1200px) / 2))',
+        height: '64px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      }}>
+        {/* Logo */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => navigate('/')}>
+          <div style={{
+            width: 38, height: 38, borderRadius: 10,
+            background: '#fc8019',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 18, fontWeight: 800, color: '#fff',
+            boxShadow: '0 4px 12px rgba(252,128,25,0.4)',
           }}>R</div>
-          <span style={{ fontWeight: 700, fontSize: '1.25rem', letterSpacing: '-0.03em', background: 'linear-gradient(to right, #fff, var(--accent-primary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Rentova</span>
+          <span style={{ fontWeight: 800, fontSize: '1.3rem', letterSpacing: '-0.04em', color: '#1c1c1c' }}>Rentova</span>
         </div>
-        
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {/* Language Switcher - temporarily commented out
-          <button 
-            onClick={toggleLanguage}
-            className="theme-switcher-btn-class"
-            title="Switch Language"
-          >
-            🌐 {lang === 'en' ? 'ಕನ್ನಡ' : 'English'}
-          </button>
-          */}
 
-          {/* Theme Switcher - temporarily commented out
-          <button 
-            onClick={toggleTheme}
-            className="theme-switcher-btn-class"
-            title="Toggle Theme"
-          >
-            {theme === 'dark' ? '☀️' : '🌙'}
-          </button>
-          */}
+        {/* Nav links */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '28px', fontSize: '14px', color: '#686b78', fontWeight: 500 }}>
+          <a href="#how-it-works" style={{ color: 'inherit', textDecoration: 'none' }}>How it works</a>
+          <a href="#categories" style={{ color: 'inherit', textDecoration: 'none' }}>Browse</a>
+          <a href="#partner" style={{ color: 'inherit', textDecoration: 'none' }}>Partner with us</a>
+        </div>
 
-          {/* Install App Button */}
-          <button 
-            onClick={handleInstallClick}
-            className="premium-landing-nav-install-btn"
-          >
-            {t('installApp')}
-          </button>
-
+        {/* Auth CTAs */}
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           {isAuthenticated ? (
-            <Link to={`/${user?.role?.toLowerCase() || 'customer'}`} className="btn" style={{ 
-              background: 'var(--accent-gradient)', 
-              color: '#fff', 
-              padding: '10px 24px', 
-              borderRadius: '100px', 
-              fontWeight: 600, 
-              fontSize: '0.9rem', 
+            <Link to="/dashboard" style={{
+              background: '#fc8019', color: '#fff',
+              padding: '9px 22px', borderRadius: '999px',
+              fontWeight: 700, fontSize: '14px',
               textDecoration: 'none',
-              boxShadow: 'var(--glow-primary)',
-              transition: 'transform 0.2s'
-            }}>
-              {t('goToDashboard')}
-            </Link>
+              boxShadow: '0 4px 14px rgba(252,128,25,0.35)',
+            }}>Dashboard →</Link>
           ) : (
             <>
-              <Link to="/login" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem', padding: '10px 20px' }} className="theme-switcher-btn-class">{t('signIn')}</Link>
-              <Link to="/register" style={{ 
-                background: '#ffffff', 
-                color: 'var(--bg-primary)', 
-                padding: '10px 24px', 
-                borderRadius: '100px', 
-                fontWeight: 600, 
-                fontSize: '0.9rem', 
+              <Link to="/login" style={{
+                color: '#1c1c1c', fontWeight: 600, fontSize: '14px',
+                textDecoration: 'none', padding: '9px 18px',
+                borderRadius: '999px', border: '1.5px solid #e8e8e8',
+              }}>Sign in</Link>
+              <Link to="/register" style={{
+                background: '#1c1c1c', color: '#fff',
+                padding: '9px 22px', borderRadius: '999px',
+                fontWeight: 700, fontSize: '14px',
                 textDecoration: 'none',
-                boxShadow: '0 4px 25px rgba(255,255,255,0.15)',
-                transition: 'all 0.2s'
-              }} className="theme-switcher-btn-class">
-                {t('getStarted')}
-              </Link>
+              }}>Get Started ↗</Link>
             </>
           )}
         </div>
       </nav>
 
-      {/* --- HERO SECTION --- */}
-      <motion.section 
-        className="premium-landing-hero"
-        style={{ 
-          y: heroY, 
-          opacity: heroOpacity, 
-          scale: heroScale
-        }}
-      >
-        {/* Decorative subtle ambient pattern token */}
-        <motion.div 
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="premium-landing-badge"
-        >
-          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent-primary)', boxShadow: 'var(--glow-primary)' }}></span>
-          <span style={{ fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--accent-primary)' }}>{t('badge')}</span>
-        </motion.div>
+      {/* ── HERO ── */}
+      <section style={{
+        background: '#fc8019',
+        paddingTop: '80px',
+        paddingBottom: '0',
+        minHeight: '520px',
+        position: 'relative',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}>
+        {/* Subtle orange noise texture overlay */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'radial-gradient(ellipse at 80% 20%, rgba(255,180,80,0.35) 0%, transparent 60%), radial-gradient(ellipse at 20% 80%, rgba(200,60,0,0.2) 0%, transparent 60%)',
+          pointerEvents: 'none',
+        }} />
 
-        {/* Master Copy */}
-        <motion.h1 
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
-          className="premium-landing-title"
-        >
-          {t('title')}<br />
-          <span style={{ background: 'linear-gradient(180deg, #ffffff 30%, var(--accent-primary) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t('titleSpan')}</span>
-        </motion.h1>
+        {/* Hero text */}
+        <div style={{ textAlign: 'center', padding: '60px 20px 40px', position: 'relative', zIndex: 2 }}>
+          <h1 style={{
+            fontSize: 'clamp(2rem, 6vw, 3.8rem)',
+            fontWeight: 900,
+            color: '#ffffff',
+            lineHeight: 1.1,
+            letterSpacing: '-0.04em',
+            marginBottom: '16px',
+            maxWidth: '820px',
+            margin: '0 auto 16px',
+          }}>
+            Rent anything. Anytime.<br />Anywhere.
+          </h1>
+          <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '1.1rem', marginBottom: '36px', fontWeight: 400 }}>
+            Scooters, cameras, tools &amp; more — from trusted vendors near you.
+          </p>
 
-        <motion.p 
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="premium-landing-subtitle"
-        >
-          {t('subtitle')}
-        </motion.p>
+          {/* Swiggy-style dual search bar */}
+          <form onSubmit={handleSearch} style={{
+            display: 'flex', gap: '0',
+            background: '#fff',
+            borderRadius: '16px',
+            boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
+            maxWidth: '680px',
+            margin: '0 auto',
+            overflow: 'hidden',
+          }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '10px',
+              padding: '0 20px', flex: '0 0 auto',
+              borderRight: '1px solid #f0f0f0',
+              cursor: 'pointer',
+              minWidth: '180px',
+            }}>
+              <span style={{ fontSize: '16px' }}>📍</span>
+              <span style={{ fontSize: '14px', color: '#93959f', fontWeight: 500 }}>Your location</span>
+              <span style={{ fontSize: '12px', color: '#686b78' }}>▾</span>
+            </div>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search for tools, cameras, scooters..."
+              style={{
+                flex: 1, border: 'none', outline: 'none',
+                padding: '16px 20px',
+                fontSize: '14px', color: '#1c1c1c',
+                background: 'transparent',
+              }}
+            />
+            <button type="submit" style={{
+              background: '#fc8019', color: '#fff',
+              border: 'none', padding: '0 28px',
+              cursor: 'pointer', fontSize: '20px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>🔍</button>
+          </form>
+        </div>
 
-        {/* Interactive Luxury CTAs */}
-        <motion.div 
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-          className="premium-landing-ctas"
-        >
-          <Link to="/register" style={{ background: 'var(--accent-gradient)', color: '#fff', padding: '16px 40px', borderRadius: '12px', fontWeight: 600, fontSize: '1.05rem', textDecoration: 'none', boxShadow: 'var(--glow-primary)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-            {t('ctaDeploy')}
-          </Link>
-          <button onClick={handleInstallClick} style={{ background: 'rgba(255,255,255,0.02)', color: '#fff', padding: '16px 40px', borderRadius: '12px', fontWeight: 600, fontSize: '1.05rem', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(10px)', cursor: 'pointer' }}>
-            {t('ctaInstall')}
-          </button>
-        </motion.div>
-
-        {/* --- FLOATING DECENTRALIZED UI HUD ELEMENTS --- */}
-        {/* Left Floating Component */}
-        <motion.div 
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ 
-            opacity: 1, 
-            x: 0,
-            y: [0, -20, 0],
-            rotateY: [15, 25, 15],
-            rotateX: [5, -5, 5]
-          }}
-          transition={{ 
-            opacity: { duration: 1, delay: 0.5 },
-            x: { duration: 1, delay: 0.5 },
-            y: { duration: 6, repeat: Infinity, ease: "easeInOut" },
-            rotateY: { duration: 8, repeat: Infinity, ease: "easeInOut" },
-            rotateX: { duration: 7, repeat: Infinity, ease: "easeInOut" }
-          }}
-          className="premium-landing-hud premium-landing-hud-left"
-          style={{ transformPerspective: 1000 }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#00cec9', boxShadow: '0 0 10px #00cec9' }} />
-            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.05em' }}>{t('ledgerTx')}</span>
-          </div>
-          <div style={{ marginTop: '16px', fontSize: '1.5rem', fontWeight: 700, color: '#fff' }}>+ ₹2,500.00</div>
-          <div style={{ fontSize: '0.8rem', color: '#00cec9', marginTop: '4px', fontWeight: 500 }}>{t('escrowSettled')}</div>
-        </motion.div>
-
-        {/* Right Floating Component */}
-        <motion.div 
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ 
-            opacity: 1, 
-            x: 0,
-            y: [0, 20, 0],
-            rotateY: [-15, -25, -15],
-            rotateX: [5, 15, 5]
-          }}
-          transition={{ 
-            opacity: { duration: 1, delay: 0.7 },
-            x: { duration: 1, delay: 0.7 },
-            y: { duration: 7, repeat: Infinity, ease: "easeInOut" },
-            rotateY: { duration: 9, repeat: Infinity, ease: "easeInOut" },
-            rotateX: { duration: 6, repeat: Infinity, ease: "easeInOut" }
-          }}
-          className="premium-landing-hud premium-landing-hud-right"
-          style={{ transformPerspective: 1000 }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)' }}>{t('clusterNode')}</span>
-            <span style={{ fontSize: '0.75rem', background: 'rgba(255, 122, 0, 0.1)', color: 'var(--accent-primary)', padding: '2px 8px', borderRadius: '4px', fontWeight: 600 }}>DELHI_09</span>
-          </div>
-          <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>{t('bookingSynced')}</div>
-          <div style={{ marginTop: '12px', height: '2px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
-            <div style={{ width: '100%', height: '100%', background: 'var(--accent-gradient)' }}></div>
-          </div>
-        </motion.div>
-      </motion.section>
-
-      {/* --- PREMIUM DATA METRICS TICKER --- */}
-      <section className="premium-landing-metrics">
-        <div className="premium-landing-metrics-grid">
-          {metrics.map((m, idx) => (
-            <motion.div 
-              key={idx} 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className="premium-landing-metric-item"
+        {/* Service category cards — Swiggy style cards at bottom of hero */}
+        <div style={{
+          display: 'flex', gap: '16px',
+          padding: '0 max(20px, calc((100vw - 1200px) / 2)) 0',
+          maxWidth: '100vw',
+          overflowX: 'auto',
+          scrollbarWidth: 'none',
+          position: 'relative', zIndex: 2,
+          marginTop: '8px',
+          WebkitOverflowScrolling: 'touch',
+        }}>
+          {[
+            { emoji: '🛵', label: 'VEHICLE RENTAL', sub: 'Cars, Bikes & Scooters', off: 'Upto 25% off', bg: '#fff' },
+            { emoji: '🔧', label: 'TOOLS & EQUIPMENT', sub: 'Power tools, Drills', off: 'Upto 30% off', bg: '#fff' },
+            { emoji: '📷', label: 'ELECTRONICS', sub: 'Cameras, Laptops', off: 'Upto 20% off', bg: '#fff' },
+            { emoji: '🏠', label: 'SPACES', sub: 'Studios, Offices', off: 'Upto 15% off', bg: '#fff' },
+          ].map((card) => (
+            <div key={card.label} onClick={() => navigate(isAuthenticated ? '/dashboard/services' : '/login')} style={{
+              background: card.bg,
+              borderRadius: '20px 20px 0 0',
+              padding: '24px 28px 8px',
+              minWidth: '240px',
+              flex: '0 0 auto',
+              cursor: 'pointer',
+              transition: 'transform 0.2s ease',
+              position: 'relative',
+              overflow: 'visible',
+            }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
             >
-              <div style={{ fontSize: '2.5rem', fontWeight: 800, letterSpacing: '-0.02em', background: 'linear-gradient(180deg, #ffffff, var(--accent-primary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{m.value}</div>
-              <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)', fontWeight: 500, marginTop: '4px' }}>{m.label}</div>
-              <div style={{ fontSize: '0.7rem', color: '#00cec9', marginTop: '4px', letterSpacing: '0.02em' }}>{m.trend}</div>
-            </motion.div>
+              <div style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.06em', color: '#1c1c1c', marginBottom: '4px' }}>{card.label}</div>
+              <div style={{ fontSize: '13px', color: '#686b78', marginBottom: '8px' }}>{card.sub}</div>
+              <div style={{ fontSize: '12px', fontWeight: 700, color: '#fc8019', marginBottom: '16px' }}>{card.off}</div>
+              <div style={{
+                width: '36px', height: '36px', borderRadius: '50%',
+                background: '#fc8019',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '16px',
+              }}>→</div>
+              <div style={{ fontSize: '42px', marginTop: '8px', lineHeight: 1 }}>{card.emoji}</div>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* --- BENTO CARD ARCHITECTURE SECTION --- */}
-      <section ref={bentoRef} className="premium-landing-bento-section">
-        <motion.div 
-          style={{ 
-            textAlign: 'center', marginBottom: '80px',
-            opacity: bentoOpacity,
-            y: bentoY
-          }}
-        >
-          <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: '16px' }}>{t('dualEngineTitle')}</h2>
-          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.1rem', maxWidth: '500px', margin: '0 auto' }}>{t('dualEngineSubtitle')}</p>
-        </motion.div>
-
-        <motion.div 
-          className="premium-landing-bento-grid"
-          style={{ 
-            rotateX: bentoRotateX,
-            scale: bentoScale,
-            opacity: bentoOpacity
-          }}
-        >
-          {/* Bento Experience One: Customer Workspace */}
-          <div className="premium-landing-bento-card">
-            <div>
-              <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(255, 122, 0, 0.1)', border: '1px solid rgba(255, 122, 0, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', marginBottom: '40px' }}>⚡</div>
-              <h3 style={{ fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '16px' }}>{t('forCustomers')}</h3>
-              <p style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, fontSize: '1.05rem', marginBottom: '40px' }}>
-                {t('customerBody')}
-              </p>
-            </div>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '32px' }}>
-              <div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#fff' }}>{t('atomicCheckout')}</div>
-                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>{t('atomicCheckoutDesc')}</div>
-              </div>
-              <div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#fff' }}>{t('liveTopology')}</div>
-                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>{t('liveTopologyDesc')}</div>
-              </div>
-            </div>
+      {/* ── CATEGORY SCROLL SECTION ── */}
+      <section id="categories" style={{ padding: '56px max(20px, calc((100vw - 1200px) / 2)) 40px', background: '#ffffff' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.03em', color: '#1c1c1c', margin: 0 }}>
+            What are you looking to rent?
+          </h2>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button onClick={() => scrollCats(-1)} style={{
+              width: 36, height: 36, borderRadius: '50%', border: '1.5px solid #e8e8e8',
+              background: '#fff', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>←</button>
+            <button onClick={() => scrollCats(1)} style={{
+              width: 36, height: 36, borderRadius: '50%', border: '1.5px solid #e8e8e8',
+              background: '#fff', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>→</button>
           </div>
-
-          {/* Bento Experience Two: Vendor Terminal */}
-          <div className="premium-landing-bento-card">
-            <div>
-              <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(0, 206, 201, 0.1)', border: '1px solid rgba(0, 206, 201, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', marginBottom: '40px' }}>🪐</div>
-              <h3 style={{ fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '16px' }}>{t('forVendors')}</h3>
-              <p style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, fontSize: '1.05rem', marginBottom: '40px' }}>
-                {t('vendorBody')}
-              </p>
-            </div>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '32px' }}>
-              <div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#fff' }}>{t('yieldAnalytics')}</div>
-                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>{t('yieldAnalyticsDesc')}</div>
-              </div>
-              <div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#fff' }}>{t('automatedPayouts')}</div>
-                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>{t('automatedPayoutsDesc')}</div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* --- FOOTER --- */}
-      <footer className="premium-landing-footer">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ width: '24px', height: '24px', background: 'var(--accent-gradient)', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '11px' }}>R</div>
-          <span style={{ fontWeight: 600, fontSize: '0.95rem', color: '#fff', letterSpacing: '-0.02em' }}>Rentova</span>
         </div>
-        <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem', textAlign: 'center', letterSpacing: '0.02em' }}>
-          {t('footerText')}
-        </p>
-      </footer>
 
-      {/* Install Instruction Modal */}
-      {showInstallModal && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 1000,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '24px',
-          background: 'rgba(2, 6, 23, 0.75)',
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)'
+        <div ref={catScrollRef} style={{
+          display: 'flex', gap: '28px',
+          overflowX: 'auto', scrollbarWidth: 'none',
+          scrollBehavior: 'smooth',
+          WebkitOverflowScrolling: 'touch',
+          paddingBottom: '8px',
         }}>
-          <div style={{
-            background: theme === 'light' ? '#ffffff' : 'rgba(20, 20, 30, 0.9)',
-            border: theme === 'light' ? '1px solid rgba(15, 23, 42, 0.08)' : '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '24px',
-            padding: '40px 32px',
-            maxWidth: '440px',
-            width: '100%',
-            boxShadow: '0 30px 60px rgba(0, 0, 0, 0.5)',
-            textAlign: 'center',
-            position: 'relative'
-          }}>
-            <h3 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '16px', color: theme === 'light' ? '#0f172a' : '#fff' }}>{t('installRentova')}</h3>
-            <p style={{ color: theme === 'light' ? 'rgba(15, 23, 42, 0.6)' : 'rgba(255, 255, 255, 0.6)', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '28px' }}>
-              {t('installDesc')}
-            </p>
-
-            <div style={{ textAlign: 'left', background: theme === 'light' ? 'rgba(15, 23, 42, 0.02)' : 'rgba(255, 255, 255, 0.03)', border: theme === 'light' ? '1px solid rgba(15, 23, 42, 0.05)' : '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '16px', padding: '24px', marginBottom: '32px' }}>
-              {isIOS ? (
-                <>
-                  <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
-                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(255, 122, 0, 0.2)', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>1</div>
-                    <span style={{ fontSize: '0.9rem', color: theme === 'light' ? '#0f172a' : '#fff' }}>{t('iosStep1')}</span>
-                  </div>
-                  <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
-                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(255, 122, 0, 0.2)', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>2</div>
-                    <span style={{ fontSize: '0.9rem', color: theme === 'light' ? '#0f172a' : '#fff' }}>{t('iosStep2')}</span>
-                  </div>
-                  <div style={{ display: 'flex', gap: '12px' }}>
-                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(255, 122, 0, 0.2)', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>3</div>
-                    <span style={{ fontSize: '0.9rem', color: theme === 'light' ? '#0f172a' : '#fff' }}>{t('iosStep3')}</span>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
-                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(255, 122, 0, 0.2)', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>1</div>
-                    <span style={{ fontSize: '0.9rem', color: theme === 'light' ? '#0f172a' : '#fff' }}>{t('otherStep1')}</span>
-                  </div>
-                  <div style={{ display: 'flex', gap: '12px' }}>
-                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(255, 122, 0, 0.2)', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>2</div>
-                    <span style={{ fontSize: '0.9rem', color: theme === 'light' ? '#0f172a' : '#fff' }}>{t('otherStep2')}</span>
-                  </div>
-                </>
-              )}
-            </div>
-
-            <button 
-              onClick={() => setShowInstallModal(false)}
-              className="btn btn-primary"
+          {CATEGORIES.map((cat) => (
+            <div key={cat.label}
+              onClick={() => { setActiveCategory(cat.label); navigate(isAuthenticated ? `/dashboard/services?category=${cat.label}` : '/login'); }}
               style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: '12px',
-                fontSize: '0.95rem',
-                fontWeight: 600,
-                background: 'var(--accent-gradient)',
-                cursor: 'pointer',
-                border: 'none',
-                color: '#fff'
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px',
+                cursor: 'pointer', flexShrink: 0, minWidth: '72px',
               }}
             >
-              {t('gotIt')}
-            </button>
+              <div style={{
+                width: 80, height: 80, borderRadius: '50%',
+                background: activeCategory === cat.label ? 'rgba(252,128,25,0.12)' : '#f5f5f5',
+                border: activeCategory === cat.label ? '2.5px solid #fc8019' : '2.5px solid transparent',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '32px',
+                transition: 'all 0.2s ease',
+                boxShadow: activeCategory === cat.label ? '0 4px 16px rgba(252,128,25,0.2)' : 'none',
+              }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.08)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+              >
+                {cat.emoji}
+              </div>
+              <span style={{ fontSize: '12px', fontWeight: 600, color: '#3d3d3d', whiteSpace: 'nowrap' }}>{cat.label}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── FEATURED LISTINGS ── */}
+      <section style={{ padding: '16px max(20px, calc((100vw - 1200px) / 2)) 56px', background: '#fafafa' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.03em', color: '#1c1c1c', margin: 0 }}>
+            Top rentals near you
+          </h2>
+          <button onClick={() => navigate(isAuthenticated ? '/dashboard/services' : '/login')}
+            style={{ fontSize: '13px', fontWeight: 600, color: '#fc8019', background: 'none', border: 'none', cursor: 'pointer' }}>
+            See all →
+          </button>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '20px' }}>
+          {FEATURED.map((item) => (
+            <div key={item.title}
+              onClick={() => navigate(isAuthenticated ? '/dashboard/services' : '/login')}
+              style={{
+                background: '#ffffff',
+                borderRadius: '20px',
+                overflow: 'hidden',
+                cursor: 'pointer',
+                boxShadow: '0 2px 12px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)',
+                transition: 'all 0.25s ease',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(0,0,0,0.1)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)'; }}
+            >
+              {/* Image area */}
+              <div style={{
+                height: '160px', background: item.bg,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '72px', position: 'relative',
+              }}>
+                {item.emoji}
+                <span style={{
+                  position: 'absolute', top: '12px', left: '12px',
+                  background: 'rgba(0,0,0,0.5)', color: '#fff',
+                  fontSize: '11px', fontWeight: 700,
+                  padding: '3px 10px', borderRadius: '999px',
+                  backdropFilter: 'blur(8px)',
+                }}>{item.category}</span>
+                <span style={{
+                  position: 'absolute', bottom: '12px', right: '12px',
+                  background: '#fff', color: '#1c1c1c',
+                  fontSize: '11px', fontWeight: 700,
+                  padding: '3px 10px', borderRadius: '999px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                }}>⭐ {item.rating}</span>
+              </div>
+
+              {/* Content */}
+              <div style={{ padding: '16px' }}>
+                <h3 style={{ fontSize: '15px', fontWeight: 700, margin: '0 0 4px', letterSpacing: '-0.02em' }}>{item.title}</h3>
+                <p style={{ fontSize: '12px', color: '#686b78', margin: '0 0 6px' }}>{item.vendor}</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <span style={{ fontSize: '12px', color: '#10b981', fontWeight: 600 }}>📍 {item.distance}</span>
+                </div>
+
+                {/* Discount badge */}
+                <div style={{
+                  background: 'rgba(16,185,129,0.08)',
+                  color: '#10b981',
+                  fontSize: '11px', fontWeight: 600,
+                  padding: '6px 10px', borderRadius: '8px',
+                  marginBottom: '12px',
+                }}>
+                  🎁 {item.discount}
+                </div>
+
+                {/* Price + CTA */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '10px', borderTop: '1px solid #f0f0f0' }}>
+                  <div>
+                    <span style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '-0.03em' }}>₹{item.price}</span>
+                    <span style={{ fontSize: '11px', color: '#93959f', marginLeft: '3px' }}>/{item.unit}</span>
+                  </div>
+                  <button style={{
+                    background: '#fc8019', color: '#fff',
+                    border: 'none', padding: '8px 18px', borderRadius: '999px',
+                    fontWeight: 700, fontSize: '12px', cursor: 'pointer',
+                  }}>Book Now</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── HOW IT WORKS ── */}
+      <section id="how-it-works" style={{ padding: '64px max(20px, calc((100vw - 1200px) / 2))', background: '#fff' }}>
+        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+          <p style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#fc8019', marginBottom: '10px' }}>Simple. Fast. Trusted.</p>
+          <h2 style={{ fontSize: 'clamp(1.6rem, 3vw, 2.4rem)', fontWeight: 900, letterSpacing: '-0.04em', margin: '0 auto 12px', color: '#1c1c1c' }}>
+            How Rentova works
+          </h2>
+          <p style={{ color: '#686b78', fontSize: '15px', maxWidth: '480px', margin: '0 auto' }}>
+            From search to handoff — fully tracked, OTP-secured, and wallet-powered.
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '24px' }}>
+          {STEPS.map((step, i) => (
+            <div key={step.num} style={{
+              background: i % 2 === 0 ? '#fff8f3' : '#ffffff',
+              borderRadius: '20px',
+              padding: '32px 28px',
+              border: '1px solid #f0f0f0',
+              position: 'relative',
+              transition: 'all 0.2s ease',
+            }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(0,0,0,0.08)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+            >
+              <div style={{ fontSize: '11px', fontWeight: 800, color: '#fc8019', letterSpacing: '0.08em', marginBottom: '16px' }}>{step.num}</div>
+              <div style={{ fontSize: '36px', marginBottom: '16px' }}>{step.icon}</div>
+              <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '8px', letterSpacing: '-0.02em' }}>{step.title}</h3>
+              <p style={{ fontSize: '13px', color: '#686b78', lineHeight: 1.6 }}>{step.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── VENDOR PARTNER SECTION ── */}
+      <section id="partner" style={{
+        background: '#1c1c1c',
+        padding: '80px max(20px, calc((100vw - 1200px) / 2))',
+        display: 'flex', alignItems: 'center', gap: '60px',
+        flexWrap: 'wrap',
+      }}>
+        <div style={{ flex: 1, minWidth: '280px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: '#fc8019', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#fff', fontSize: 14 }}>R</div>
+            <span style={{ color: '#fc8019', fontWeight: 800, fontSize: '15px', letterSpacing: '-0.02em' }}>Rentova for Vendors</span>
+          </div>
+          <h2 style={{ color: '#ffffff', fontSize: 'clamp(1.8rem, 3vw, 2.8rem)', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.1, marginBottom: '20px' }}>
+            Turn your idle assets<br />into monthly income.
+          </h2>
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '15px', lineHeight: 1.7, marginBottom: '32px', maxWidth: '440px' }}>
+            List your equipment, vehicles, or spaces on Rentova. Get OTP-secured bookings, instant wallet payouts, and a real-time analytics dashboard.
+          </p>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+            <Link to="/register" style={{
+              background: '#fc8019', color: '#fff',
+              padding: '13px 28px', borderRadius: '999px',
+              fontWeight: 700, fontSize: '14px', textDecoration: 'none',
+              boxShadow: '0 4px 20px rgba(252,128,25,0.4)',
+            }}>Start Listing Free →</Link>
+            <a href="#how-it-works" style={{
+              background: 'rgba(255,255,255,0.08)', color: '#fff',
+              padding: '13px 28px', borderRadius: '999px',
+              fontWeight: 600, fontSize: '14px', textDecoration: 'none',
+              border: '1px solid rgba(255,255,255,0.12)',
+            }}>Learn More</a>
           </div>
         </div>
-      )}
+
+        {/* Stats */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', flex: '0 0 auto' }}>
+          {[
+            { val: '1.8k+', label: 'Active Vendors' },
+            { val: '42k+', label: 'Bookings Completed' },
+            { val: '₹0', label: 'Listing Fee' },
+            { val: '8 min', label: 'Avg. Response Time' },
+          ].map((stat) => (
+            <div key={stat.label} style={{
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              borderRadius: '16px',
+              padding: '24px 28px',
+              textAlign: 'center',
+            }}>
+              <div style={{ fontSize: '2rem', fontWeight: 900, color: '#fc8019', letterSpacing: '-0.04em', lineHeight: 1 }}>{stat.val}</div>
+              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginTop: '6px', fontWeight: 500 }}>{stat.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── TRUST SECTION ── */}
+      <section style={{ padding: '64px max(20px, calc((100vw - 1200px) / 2))', background: '#fafafa' }}>
+        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+          <h2 style={{ fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 900, letterSpacing: '-0.04em', color: '#1c1c1c', margin: '0 0 12px' }}>
+            Why people choose Rentova
+          </h2>
+          <p style={{ color: '#686b78', fontSize: '15px' }}>Built on trust, secured by technology.</p>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+          {[
+            { icon: '🔐', title: 'OTP-Secured Handoffs', desc: 'Every pickup and return is verified with a unique OTP — zero disputes.' },
+            { icon: '💰', title: 'Wallet Payments', desc: 'Top up once, pay instantly. Zero payment failures, instant refunds.' },
+            { icon: '📍', title: 'Live Location Tracking', desc: 'Vendors and customers see real-time status of every booking.' },
+            { icon: '⭐', title: 'Verified Vendors', desc: 'Every vendor is KYC-verified before their first listing goes live.' },
+            { icon: '🛡️', title: 'Security Deposit', desc: 'Optional deposit for high-value items, auto-returned on completion.' },
+            { icon: '📞', title: '24/7 Support', desc: 'In-app chat and email support for all booking issues.' },
+          ].map((item) => (
+            <div key={item.title} style={{
+              background: '#ffffff', borderRadius: '16px', padding: '28px 24px',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.04)',
+              transition: 'all 0.2s ease',
+            }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.09)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.04)'; }}
+            >
+              <div style={{ fontSize: '32px', marginBottom: '14px' }}>{item.icon}</div>
+              <h3 style={{ fontSize: '15px', fontWeight: 700, marginBottom: '8px', letterSpacing: '-0.02em' }}>{item.title}</h3>
+              <p style={{ fontSize: '13px', color: '#686b78', lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── APP DOWNLOAD CTA ── */}
+      <section style={{
+        background: '#1c1c1c',
+        padding: '64px max(20px, calc((100vw - 1200px) / 2))',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        gap: '40px', flexWrap: 'wrap',
+      }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+            <div style={{ width: 28, height: 28, borderRadius: 7, background: '#fc8019', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#fff', fontSize: 12 }}>R</div>
+            <span style={{ color: 'rgba(255,255,255,0.6)', fontWeight: 600, fontSize: '13px' }}>Rentova</span>
+          </div>
+          <h2 style={{ color: '#fff', fontSize: 'clamp(1.6rem, 3vw, 2.4rem)', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.1, marginBottom: '12px' }}>
+            Get the Rentova<br />web app now!
+          </h2>
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', marginBottom: '28px', maxWidth: '380px', lineHeight: 1.7 }}>
+            For best experience — fast bookings, real-time updates, wallet top-ups. Add to your home screen.
+          </p>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <Link to="/register" style={{
+              background: '#fc8019', color: '#fff',
+              padding: '13px 28px', borderRadius: '999px',
+              fontWeight: 700, fontSize: '14px', textDecoration: 'none',
+              display: 'inline-flex', alignItems: 'center', gap: '8px',
+            }}>
+              🚀 Start Renting Free
+            </Link>
+            <Link to="/login" style={{
+              background: 'rgba(255,255,255,0.08)', color: '#fff',
+              padding: '13px 28px', borderRadius: '999px',
+              fontWeight: 600, fontSize: '14px', textDecoration: 'none',
+              border: '1px solid rgba(255,255,255,0.12)',
+            }}>Sign In</Link>
+          </div>
+        </div>
+
+        {/* Scan to open */}
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            background: '#ffffff', borderRadius: '20px',
+            padding: '24px', display: 'inline-block',
+            marginBottom: '12px',
+          }}>
+            {/* QR-like visual using emoji grid */}
+            <div style={{ fontSize: '80px', lineHeight: 1 }}>📱</div>
+          </div>
+          <p style={{ color: '#fc8019', fontSize: '12px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Open in browser</p>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', marginTop: '4px' }}>rentova.app</p>
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer style={{ background: '#f5f5f5', padding: '56px max(20px, calc((100vw - 1200px) / 2)) 0' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'auto repeat(4, 1fr)', gap: '40px', flexWrap: 'wrap', marginBottom: '40px' }}>
+          {/* Brand */}
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+              <div style={{ width: 36, height: 36, borderRadius: 9, background: '#fc8019', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#fff', fontSize: 16 }}>R</div>
+              <span style={{ fontWeight: 800, fontSize: '1.2rem', letterSpacing: '-0.04em', color: '#1c1c1c' }}>Rentova</span>
+            </div>
+            <p style={{ fontSize: '12px', color: '#93959f', lineHeight: 1.7 }}>© 2026 Rentova Technologies Inc.<br />All rights reserved.</p>
+          </div>
+          {Object.entries(FOOTER_LINKS).map(([section, links]) => (
+            <div key={section}>
+              <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#1c1c1c', marginBottom: '16px', letterSpacing: '-0.01em' }}>{section}</h4>
+              {links.map((link) => (
+                <div key={link} style={{ marginBottom: '10px' }}>
+                  <a href="#" style={{ fontSize: '13px', color: '#686b78', textDecoration: 'none', fontWeight: 400 }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = '#fc8019'}
+                    onMouseLeave={(e) => e.currentTarget.style.color = '#686b78'}
+                  >{link}</a>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        <div style={{ borderTop: '1px solid #e8e8e8', padding: '20px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+          <p style={{ fontSize: '13px', color: '#93959f' }}>For better experience, open Rentova in your browser and add to home screen.</p>
+          <div style={{ display: 'flex', gap: '16px' }}>
+            {['📘', '📸', '🐦', '💼'].map((icon, i) => (
+              <span key={i} style={{ fontSize: '20px', cursor: 'pointer' }}>{icon}</span>
+            ))}
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
