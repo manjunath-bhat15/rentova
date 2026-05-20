@@ -443,7 +443,8 @@ export default function BookingDetail() {
               Cancel Booking
             </button>
           )}
-          {action && action.nextStatus !== 'IN_PROGRESS' && action.nextStatus !== 'COMPLETED' && (
+          {/* Show Confirm Booking button for vendor on PENDING status only */}
+          {action && booking.status === 'PENDING' && (
             <button
               className={`btn ${action.style}`}
               disabled={actionLoading}

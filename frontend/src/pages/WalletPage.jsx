@@ -130,28 +130,36 @@ export default function WalletPage() {
 
       {/* Top Up Modal */}
       {showTopUp && (
-        <div style={{
-          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
-          backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center',
-          justifyContent: 'center', zIndex: 1000, padding: 'var(--space-lg)',
-        }}
+        <div
+          className="scrollable-modal-overlay"
           onClick={() => setShowTopUp(false)}
         >
           <div
-            className="glass-card"
-            style={{ width: '100%', maxWidth: '440px', padding: 'var(--space-2xl)', animation: 'slideUp 0.3s ease' }}
+            className="scrollable-modal-card"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 style={{ fontSize: 'var(--font-xl)', fontWeight: 700, marginBottom: 'var(--space-xs)' }}>
-              {t('topUp')}
-            </h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-sm)', marginBottom: 'var(--space-lg)' }}>
-              {t('addFunds')}
-            </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-md)' }}>
+              <div>
+                <h2 style={{ fontSize: 'var(--font-xl)', fontWeight: 700 }}>
+                  💳 {t('topUp')}
+                </h2>
+                <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-sm)', marginTop: '4px' }}>
+                  {t('addFunds')}
+                </p>
+              </div>
+              <button
+                className="btn btn-ghost btn-sm"
+                onClick={() => { setShowTopUp(false); setError(''); }}
+                style={{ borderRadius: '999px', fontSize: '18px', padding: '6px 12px' }}
+              >
+                ✕
+              </button>
+            </div>
 
             {error && <div className="error-message" style={{ marginBottom: 'var(--space-md)' }}>{error}</div>}
 
             {/* Quick Amounts */}
+            <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)', marginBottom: '10px' }}>Quick Select</p>
             <div style={{
               display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
               gap: 'var(--space-sm)', marginBottom: 'var(--space-md)',
@@ -159,8 +167,18 @@ export default function WalletPage() {
               {quickAmounts.map((amt) => (
                 <button
                   key={amt}
-                  className={`btn btn-sm ${parseFloat(topUpAmount) === amt ? 'btn-primary' : 'btn-secondary'}`}
                   onClick={() => setTopUpAmount(String(amt))}
+                  style={{
+                    padding: '10px',
+                    borderRadius: '12px',
+                    border: parseFloat(topUpAmount) === amt ? '2px solid var(--accent-primary)' : '1.5px solid var(--glass-border)',
+                    background: parseFloat(topUpAmount) === amt ? 'rgba(252,128,25,0.08)' : 'var(--glass-bg)',
+                    color: parseFloat(topUpAmount) === amt ? 'var(--accent-primary)' : 'var(--text-primary)',
+                    fontWeight: parseFloat(topUpAmount) === amt ? 700 : 500,
+                    fontSize: 'var(--font-sm)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
                 >
                   ₹{amt}
                 </button>
@@ -177,7 +195,7 @@ export default function WalletPage() {
                 <input
                   type="number"
                   className="input-field"
-                  style={{ paddingLeft: '30px' }}
+                  style={{ paddingLeft: '30px', borderRadius: '12px' }}
                   placeholder="0.00"
                   min="1"
                   step="0.01"
@@ -188,16 +206,17 @@ export default function WalletPage() {
             </div>
 
             <div style={{ display: 'flex', gap: 'var(--space-md)' }}>
-              <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => { setShowTopUp(false); setError(''); }}>
+              <button className="btn btn-secondary" style={{ flex: 1, borderRadius: '12px' }} onClick={() => { setShowTopUp(false); setError(''); }}>
                 {t('dismiss')}
               </button>
-              <button className="btn btn-primary" style={{ flex: 1 }} disabled={topUpLoading} onClick={handleTopUp}>
-                {topUpLoading ? t('loading') : `${t('topUp')} ₹${topUpAmount || '0'}`}
+              <button className="btn btn-primary" style={{ flex: 2, borderRadius: '12px' }} disabled={topUpLoading} onClick={handleTopUp}>
+                {topUpLoading ? t('loading') : `Add ₹${topUpAmount || '0'} to Wallet`}
               </button>
             </div>
           </div>
         </div>
       )}
+
 
       {/* Transaction History */}
       <div>

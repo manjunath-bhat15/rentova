@@ -217,23 +217,19 @@ const translations = {
   }
 };
 
+// Apply theme synchronously BEFORE first React paint to prevent flash
+if (typeof document !== 'undefined') {
+  document.documentElement.classList.add('light-theme');
+}
+
 export function ThemeLanguageProvider({ children }) {
-  // Temporarily locked to English and original Dark theme as requested
+  // Locked to English + Light theme
   const [lang] = useState('en');
   const [theme] = useState('light');
 
-  useEffect(() => {
-    // Keep document class locked to light mode (add light-theme)
-    document.documentElement.classList.add('light-theme');
-  }, []);
-
-  const toggleLanguage = () => {
-    // Temporarily disabled
-  };
-
-  const toggleTheme = () => {
-    // Temporarily disabled
-  };
+  // No useEffect needed — class is applied synchronously above
+  const toggleLanguage = () => {};
+  const toggleTheme = () => {};
 
   const t = (key) => {
     return translations[lang]?.[key] || translations['en']?.[key] || key;

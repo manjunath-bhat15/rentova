@@ -97,26 +97,41 @@ export default function Overview() {
 
   return (
     <div className="animate-fade-in">
-      <div className="workspace-hero">
+      {/* Welcome Hero */}
+      <div className="workspace-hero stagger">
         <div>
-          <p className="eyebrow">{isVendor ? t('vendorOps') : t('custDashboard')}</p>
-          <h1>{t('welcome')}, {user?.name?.split(' ')[0]}</h1>
-          <p>
-            {isVendor
-              ? t('vendorHeroDesc')
-              : t('custHeroDesc')}
+          <p className="eyebrow" style={{ marginBottom: '6px' }}>
+            {isVendor ? t('vendorOps') : t('custDashboard')}
+          </p>
+          <h1>
+            {t('welcome')},{' '}
+            <span>{user?.name?.split(' ')[0]}</span> 👋
+          </h1>
+          <p style={{ marginTop: '8px' }}>
+            {isVendor ? t('vendorHeroDesc') : t('custHeroDesc')}
           </p>
         </div>
         <div className="hero-actions">
-          <button className="btn btn-primary" onClick={() => navigate(isVendor ? '/dashboard/services/create' : '/dashboard/nearby')}>
+          <button
+            className="btn btn-primary"
+            onClick={() => navigate(isVendor ? '/dashboard/services/create' : '/dashboard/nearby')}
+            style={{ borderRadius: '12px', padding: '12px 24px' }}
+          >
             {isVendor ? t('addListing') : t('findNearby')}
           </button>
-          <button className="btn btn-secondary" onClick={() => navigate('/dashboard/bookings')}>{t('viewBookings')}</button>
+          <button
+            className="btn btn-secondary"
+            onClick={() => navigate('/dashboard/bookings')}
+            style={{ borderRadius: '12px', padding: '12px 24px' }}
+          >
+            {t('viewBookings')}
+          </button>
         </div>
       </div>
 
-      <div className="metric-grid">
-        {metricCards.map((metric) => (
+      {/* Metric Cards */}
+      <div className="metric-grid stagger">
+        {metricCards.map((metric, i) => (
           <div className="metric-card" key={metric.label}>
             <span>{metric.label}</span>
             <strong>{metric.value}</strong>
@@ -125,14 +140,20 @@ export default function Overview() {
         ))}
       </div>
 
+      {/* Two-column panels */}
       <div className="split-panels">
+        {/* Recent Bookings */}
         <section className="panel-block">
           <div className="panel-heading">
             <div>
               <h2>{t('recentBookings')}</h2>
               <p>{t('latestActivity')}</p>
             </div>
-            <button className="btn btn-ghost btn-sm" onClick={() => navigate('/dashboard/bookings')}>{t('openAll')}</button>
+            <button className="btn btn-ghost btn-sm" onClick={() => navigate('/dashboard/bookings')}
+              style={{ borderRadius: '999px', fontSize: '12px' }}
+            >
+              {t('openAll')} →
+            </button>
           </div>
           <div className="recent-list">
             {recentBookings.map((booking) => (
@@ -141,13 +162,31 @@ export default function Overview() {
                   <strong>{booking.serviceTitle}</strong>
                   <small>{isVendor ? booking.customerName : booking.vendorName}</small>
                 </span>
-                <span>{booking.status}</span>
+                <span style={{
+                  padding: '4px 10px',
+                  borderRadius: '999px',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  background: booking.status === 'COMPLETED' ? 'rgba(16,185,129,0.1)'
+                    : booking.status === 'PENDING' ? 'rgba(252,128,25,0.1)'
+                    : booking.status === 'IN_PROGRESS' ? 'rgba(0,188,212,0.1)'
+                    : 'rgba(239,68,68,0.1)',
+                  color: booking.status === 'COMPLETED' ? '#10b981'
+                    : booking.status === 'PENDING' ? '#fc8019'
+                    : booking.status === 'IN_PROGRESS' ? '#00bcd4'
+                    : '#ef4444',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                }}>
+                  {booking.status}
+                </span>
               </button>
             ))}
             {recentBookings.length === 0 && (
               <div className="empty-state">
+                <div style={{ fontSize: '36px', marginBottom: '12px' }}>📋</div>
                 <strong>{t('noBookings')}</strong>
-                <p>{isVendor ? t('vendorEmptyDesc') : t('custEmptyDesc')}</p>
+                <p style={{ marginTop: '6px', fontSize: 'var(--font-sm)' }}>{isVendor ? t('vendorEmptyDesc') : t('custEmptyDesc')}</p>
               </div>
             )}
           </div>
@@ -160,7 +199,11 @@ export default function Overview() {
                 <h2>{t('nearbyInventory')}</h2>
                 <p>{t('freshServices')}</p>
               </div>
-              <button className="btn btn-ghost btn-sm" onClick={() => navigate('/dashboard/nearby')}>{t('mapView')}</button>
+              <button className="btn btn-ghost btn-sm" onClick={() => navigate('/dashboard/nearby')}
+                style={{ borderRadius: '999px', fontSize: '12px' }}
+              >
+                {t('mapView')} →
+              </button>
             </div>
             <div className="recent-list">
               {nearby.slice(0, 5).map((service) => (
@@ -169,13 +212,16 @@ export default function Overview() {
                     <strong>{service.title}</strong>
                     <small>{service.vendorName}</small>
                   </span>
-                  <span>{service.distanceKm} km</span>
+                  <span style={{ color: 'var(--accent-success)', fontWeight: 700, fontSize: 'var(--font-xs)', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                    📍 {service.distanceKm} km
+                  </span>
                 </button>
               ))}
               {nearby.length === 0 && (
                 <div className="empty-state">
+                  <div style={{ fontSize: '36px', marginBottom: '12px' }}>🗺️</div>
                   <strong>{t('noNearbyListings')}</strong>
-                  <p>{t('allowLocationDesc')}</p>
+                  <p style={{ marginTop: '6px', fontSize: 'var(--font-sm)' }}>{t('allowLocationDesc')}</p>
                 </div>
               )}
             </div>
@@ -183,15 +229,24 @@ export default function Overview() {
         )}
       </div>
 
+      {/* Nearby Service Toast */}
       {nearbyPopup && (
         <div className="nearby-toast">
-          <div>
-            <strong>{t('newNearbyListing')}</strong>
+          <div style={{ flex: 1 }}>
+            <strong style={{ fontSize: 'var(--font-sm)', fontWeight: 700 }}>{t('newNearbyListing')}</strong>
             <p>{nearbyPopup.title} by {nearbyPopup.vendorName}, {nearbyPopup.distanceKm} km away.</p>
           </div>
-          <div>
-            <button className="btn btn-primary btn-sm" onClick={() => navigate('/dashboard/nearby')}>{t('view')}</button>
-            <button className="btn btn-ghost btn-sm" onClick={dismissNearby}>{t('dismiss')}</button>
+          <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+            <button className="btn btn-primary btn-sm" onClick={() => navigate('/dashboard/nearby')}
+              style={{ borderRadius: '999px' }}
+            >
+              {t('view')}
+            </button>
+            <button className="btn btn-ghost btn-sm" onClick={dismissNearby}
+              style={{ borderRadius: '999px' }}
+            >
+              ✕
+            </button>
           </div>
         </div>
       )}
