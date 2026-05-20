@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import StatusBadge from '../components/StatusBadge';
+import { Icon } from '../components/Icon';
 import api from '../services/api';
 
 const tabs = [
@@ -63,6 +64,62 @@ export default function AdminPanel({ defaultTab = 'overview' }) {
     loadStatsOnly();
   };
 
+  const deleteUser = async (userId) => {
+    if (!window.confirm('Are you sure you want to delete this user? All their bookings, wallet records, and listings will be deleted.')) return;
+    try {
+      await api.delete(`/api/admin/users/${userId}`);
+      setUsers((prev) => prev.filter((user) => user.id !== userId));
+      loadStatsOnly();
+      loadAdminData();
+    } catch (err) {
+      console.error('Failed to delete user', err);
+      alert('Failed to delete user.');
+    }
+  };
+
+  const deleteBooking = async (bookingId) => {
+    if (!window.confirm('Are you sure you want to delete this booking?')) return;
+    try {
+      await api.delete(`/api/admin/bookings/${bookingId}`);
+      setBookings((prev) => prev.filter((b) => b.id !== bookingId));
+      loadStatsOnly();
+    } catch (err) {
+      console.error('Failed to delete booking', err);
+      alert('Failed to delete booking.');
+    }
+  };
+
+  const deleteService = async (serviceId) => {
+    if (!window.confirm('Are you sure you want to delete this listing? All associated bookings will be deleted.')) return;
+    try {
+      await api.delete(`/api/admin/services/${serviceId}`);
+      setServices((prev) => prev.filter((s) => s.id !== serviceId));
+      loadStatsOnly();
+      loadAdminData();
+    } catch (err) {
+      console.error('Failed to delete listing', err);
+      alert('Failed to delete listing.');
+    }
+  };
+
+  const adjustWallet = async (userId, currentBalance) => {
+    const val = window.prompt('Enter new wallet balance (Rs):', currentBalance);
+    if (val === null || val === '') return;
+    const balance = parseFloat(val);
+    if (isNaN(balance)) {
+      alert('Please enter a valid number.');
+      return;
+    }
+    try {
+      const res = await api.patch(`/api/admin/users/${userId}/wallet`, { balance });
+      setUsers((prev) => prev.map((user) => user.id === userId ? { ...user, walletBalance: res.data.walletBalance } : user));
+      loadStatsOnly();
+    } catch (err) {
+      console.error('Failed to adjust wallet balance', err);
+      alert('Failed to adjust wallet balance.');
+    }
+  };
+
   const loadStatsOnly = async () => {
     const res = await api.get('/api/admin/stats');
     setStats(res.data);
@@ -118,14 +175,15 @@ export default function AdminPanel({ defaultTab = 'overview' }) {
 
       {activeTab === 'users' && (
         <div className="data-table">
-          <div className="data-row header">
+          <div className="data-row header" style={{ gridTemplateColumns: 'minmax(200px, 1.2fr) minmax(130px, 0.8fr) minmax(120px, 0.8fr) minmax(100px, 0.6fr) minmax(110px, 0.7fr)' }}>
             <span>User</span>
             <span>Role</span>
             <span>Wallet</span>
             <span>Created</span>
+            <span>Actions</span>
           </div>
           {users.map((user) => (
-            <div className="data-row" key={user.id}>
+            <div className="data-row" key={user.id} style={{ gridTemplateColumns: 'minmax(200px, 1.2fr) minmax(130px, 0.8fr) minmax(120px, 0.8fr) minmax(100px, 0.6fr) minmax(110px, 0.7fr)' }}>
               <span>
                 <strong>{user.name}</strong>
                 <small>{user.email}</small>
@@ -137,6 +195,26 @@ export default function AdminPanel({ defaultTab = 'overview' }) {
               </span>
               <span>Rs {Number(user.walletBalance || 0).toFixed(2)}</span>
               <span>{new Date(user.createdAt).toLocaleDateString()}</span>
+              <span style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button 
+                  onClick={() => adjustWallet(user.id, user.walletBalance)}
+                  className="btn btn-secondary btn-sm"
+                  style={{ padding: '6px', minWidth: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  title="Adjust Wallet Balance"
+                >
+                  <Icon name="wallet" style={{ width: '14px', height: '14px' }} />
+                </button>
+                {user.role !== 'ADMIN' && (
+                  <button 
+                    onClick={() => deleteUser(user.id)}
+                    className="btn btn-primary btn-sm"
+                    style={{ padding: '6px', minWidth: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--accent-danger)', border: 'none' }}
+                    title="Delete User"
+                  >
+                    <Icon name="trash" style={{ width: '14px', height: '14px', color: '#fff' }} />
+                  </button>
+                )}
+              </span>
             </div>
           ))}
         </div>
@@ -144,14 +222,15 @@ export default function AdminPanel({ defaultTab = 'overview' }) {
 
       {activeTab === 'bookings' && (
         <div className="data-table">
-          <div className="data-row header booking-grid">
+          <div className="data-row header" style={{ gridTemplateColumns: 'minmax(200px, 1.2fr) minmax(150px, 1fr) minmax(160px, 1fr) minmax(100px, 0.6fr) minmax(80px, 0.5fr)' }}>
             <span>Booking</span>
             <span>Parties</span>
             <span>Status</span>
             <span>Amount</span>
+            <span>Actions</span>
           </div>
           {bookings.map((booking) => (
-            <div className="data-row booking-grid" key={booking.id}>
+            <div className="data-row" key={booking.id} style={{ gridTemplateColumns: 'minmax(200px, 1.2fr) minmax(150px, 1fr) minmax(160px, 1fr) minmax(100px, 0.6fr) minmax(80px, 0.5fr)' }}>
               <span>
                 <strong>{booking.serviceTitle}</strong>
                 <small>{new Date(booking.createdAt).toLocaleDateString()}</small>
@@ -167,6 +246,16 @@ export default function AdminPanel({ defaultTab = 'overview' }) {
                 </select>
               </span>
               <span>Rs {Number(booking.amount || 0).toFixed(2)}</span>
+              <span style={{ display: 'flex', alignItems: 'center' }}>
+                <button 
+                  onClick={() => deleteBooking(booking.id)}
+                  className="btn btn-primary btn-sm"
+                  style={{ padding: '6px', minWidth: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--accent-danger)', border: 'none' }}
+                  title="Delete Booking"
+                >
+                  <Icon name="trash" style={{ width: '14px', height: '14px', color: '#fff' }} />
+                </button>
+              </span>
             </div>
           ))}
         </div>
@@ -174,14 +263,15 @@ export default function AdminPanel({ defaultTab = 'overview' }) {
 
       {activeTab === 'services' && (
         <div className="data-table">
-          <div className="data-row header service-grid">
+          <div className="data-row header" style={{ gridTemplateColumns: 'minmax(200px, 1.2fr) minmax(130px, 0.8fr) minmax(130px, 0.8fr) minmax(100px, 0.6fr) minmax(100px, 0.6fr)' }}>
             <span>Listing</span>
             <span>Vendor</span>
             <span>Location</span>
             <span>Control</span>
+            <span>Actions</span>
           </div>
           {services.map((service) => (
-            <div className="data-row service-grid" key={service.id}>
+            <div className="data-row" key={service.id} style={{ gridTemplateColumns: 'minmax(200px, 1.2fr) minmax(130px, 0.8fr) minmax(130px, 0.8fr) minmax(100px, 0.6fr) minmax(100px, 0.6fr)' }}>
               <span>
                 <strong>{service.title}</strong>
                 <small>{service.category} - Rs {service.pricePerUnit}/{service.unit?.toLowerCase()}</small>
@@ -191,6 +281,16 @@ export default function AdminPanel({ defaultTab = 'overview' }) {
               <span>
                 <button className={service.active ? 'btn btn-secondary btn-sm' : 'btn btn-primary btn-sm'} onClick={() => toggleService(service.id)}>
                   {service.active ? 'Deactivate' : 'Activate'}
+                </button>
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center' }}>
+                <button 
+                  onClick={() => deleteService(service.id)}
+                  className="btn btn-primary btn-sm"
+                  style={{ padding: '6px', minWidth: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--accent-danger)', border: 'none' }}
+                  title="Delete Listing"
+                >
+                  <Icon name="trash" style={{ width: '14px', height: '14px', color: '#fff' }} />
                 </button>
               </span>
             </div>

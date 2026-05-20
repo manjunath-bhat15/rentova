@@ -8,7 +8,8 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const [isAdminMode, setIsAdminMode] = useState(false);
+  const { login, logout } = useAuth();
   const { lang, theme, toggleTheme, toggleLanguage, t } = useThemeLanguage();
   const navigate = useNavigate();
 
@@ -17,7 +18,12 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      await login(email, password);
+      const userData = await login(email, password);
+      if (isAdminMode && userData?.role !== 'ADMIN') {
+        logout();
+        setError('Access Denied: Only Administrator accounts can log in through the Admin Portal.');
+        return;
+      }
       navigate('/dashboard');
     } catch (err) {
       if (err.response?.data?.message === 'UNVERIFIED' || err.response?.data === 'UNVERIFIED') {
@@ -54,8 +60,63 @@ export default function Login() {
       */}
 
       <div className="glass-card auth-card">
-        <h1>{t('loginTitle')}</h1>
-        <p>{t('loginSubtitle')}</p>
+        <div style={{ display: 'flex', borderBottom: '1px solid var(--glass-border)', marginBottom: 'var(--space-md)' }}>
+          <button
+            type="button"
+            onClick={() => { setIsAdminMode(false); setError(''); }}
+            style={{
+              flex: 1,
+              padding: 'var(--space-sm) var(--space-md)',
+              background: 'transparent',
+              border: 'none',
+              borderBottom: !isAdminMode ? '2px solid var(--accent-primary)' : '2px solid transparent',
+              color: !isAdminMode ? 'var(--text-primary)' : 'var(--text-secondary)',
+              fontWeight: !isAdminMode ? 700 : 500,
+              cursor: 'pointer',
+              fontSize: 'var(--font-sm)',
+              transition: 'all var(--transition-fast)'
+            }}
+          >
+            Member Login
+          </button>
+          <button
+            type="button"
+            onClick={() => { setIsAdminMode(true); setError(''); }}
+            style={{
+              flex: 1,
+              padding: 'var(--space-sm) var(--space-md)',
+              background: 'transparent',
+              border: 'none',
+              borderBottom: isAdminMode ? '2px solid var(--accent-primary)' : '2px solid transparent',
+              color: isAdminMode ? 'var(--text-primary)' : 'var(--text-secondary)',
+              fontWeight: isAdminMode ? 700 : 500,
+              cursor: 'pointer',
+              fontSize: 'var(--font-sm)',
+              transition: 'all var(--transition-fast)'
+            }}
+          >
+            Admin Portal
+          </button>
+        </div>
+
+        <h1>{isAdminMode ? 'Admin Command Center' : t('loginTitle')}</h1>
+        <p>{isAdminMode ? 'Authorized personnel access only. Audit logs are active.' : t('loginSubtitle')}</p>
+
+        {isAdminMode && (
+          <div style={{
+            background: 'rgba(255,122,0,0.1)',
+            border: '1px solid var(--accent-primary)',
+            color: 'var(--accent-primary)',
+            padding: '8px 12px',
+            borderRadius: 'var(--radius-md)',
+            fontSize: 'var(--font-xs)',
+            marginBottom: 'var(--space-md)',
+            fontWeight: 600,
+            textAlign: 'center'
+          }}>
+            ⚠️ SECURE ADMINISTRATOR ACCESS ONLY
+          </div>
+        )}
 
         {error && <div className="error-message">{error}</div>}
 
@@ -85,13 +146,15 @@ export default function Login() {
             />
           </div>
           <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? t('loading') : t('loginBtn')}
+            {loading ? t('loading') : (isAdminMode ? 'Authenticate & Enter' : t('loginBtn'))}
           </button>
         </form>
 
-        <div className="auth-footer">
-          {t('noAccount')} <Link to="/register">{t('registerLink')}</Link>
-        </div>
+        {!isAdminMode && (
+          <div className="auth-footer">
+            {t('noAccount')} <Link to="/register">{t('registerLink')}</Link>
+          </div>
+        )}
       </div>
     </div>
   );
