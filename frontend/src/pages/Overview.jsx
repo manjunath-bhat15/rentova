@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useThemeLanguage } from '../contexts/ThemeLanguageContext';
 import api from '../services/api';
 
 export default function Overview() {
   const { user } = useAuth();
+  const { t } = useThemeLanguage();
   const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [bookings, setBookings] = useState([]);
@@ -76,13 +78,13 @@ export default function Overview() {
   const isVendor = user?.role === 'VENDOR';
 
   const metricCards = isVendor ? [
-    { label: 'Active bookings', value: stats?.activeBookings || 0, detail: `${stats?.pendingBookings || 0} pending` },
-    { label: 'Listings', value: stats?.totalServices || 0, detail: `${stats?.activeServices || 0} active` },
-    { label: 'Revenue', value: `Rs ${Number(stats?.totalRevenue || 0).toFixed(2)}`, detail: 'Completed bookings' },
+    { label: t('activeBookings'), value: stats?.activeBookings || 0, detail: `${stats?.pendingBookings || 0} ${t('statusPending').toLowerCase()}` },
+    { label: t('myListings'), value: stats?.totalServices || 0, detail: `${stats?.activeServices || 0} ${t('online').toLowerCase()}` },
+    { label: t('revenue'), value: `Rs ${Number(stats?.totalRevenue || 0).toFixed(2)}`, detail: t('statusCompleted') },
   ] : [
-    { label: 'Active bookings', value: stats?.activeBookings || 0, detail: `${stats?.pendingBookings || 0} pending` },
-    { label: 'Wallet balance', value: `Rs ${Number(stats?.walletBalance || 0).toFixed(2)}`, detail: 'Ready for booking' },
-    { label: 'Nearby vendors', value: nearby.length, detail: 'Within 10 km' },
+    { label: t('activeBookings'), value: stats?.activeBookings || 0, detail: `${stats?.pendingBookings || 0} ${t('statusPending').toLowerCase()}` },
+    { label: t('walletBalance'), value: `Rs ${Number(stats?.walletBalance || 0).toFixed(2)}`, detail: t('wallet') },
+    { label: t('nearbyVendors'), value: nearby.length, detail: 'Within 10 km' },
   ];
 
   if (loading) {
@@ -97,19 +99,19 @@ export default function Overview() {
     <div className="animate-fade-in">
       <div className="workspace-hero">
         <div>
-          <p className="eyebrow">{isVendor ? 'Vendor operations' : 'Customer dashboard'}</p>
-          <h1>Welcome, {user?.name?.split(' ')[0]}</h1>
+          <p className="eyebrow">{isVendor ? t('vendorOps') : t('custDashboard')}</p>
+          <h1>{t('welcome')}, {user?.name?.split(' ')[0]}</h1>
           <p>
             {isVendor
-              ? 'Manage listings, orders, customer messages, and wallet payouts from one workspace.'
-              : 'Find nearby vendors, manage bookings, and keep service conversations in sync.'}
+              ? t('vendorHeroDesc')
+              : t('custHeroDesc')}
           </p>
         </div>
         <div className="hero-actions">
           <button className="btn btn-primary" onClick={() => navigate(isVendor ? '/dashboard/services/create' : '/dashboard/nearby')}>
-            {isVendor ? 'Add Listing' : 'Find Nearby'}
+            {isVendor ? t('addListing') : t('findNearby')}
           </button>
-          <button className="btn btn-secondary" onClick={() => navigate('/dashboard/bookings')}>View Bookings</button>
+          <button className="btn btn-secondary" onClick={() => navigate('/dashboard/bookings')}>{t('viewBookings')}</button>
         </div>
       </div>
 
@@ -127,10 +129,10 @@ export default function Overview() {
         <section className="panel-block">
           <div className="panel-heading">
             <div>
-              <h2>Recent bookings</h2>
-              <p>Latest operational activity</p>
+              <h2>{t('recentBookings')}</h2>
+              <p>{t('latestActivity')}</p>
             </div>
-            <button className="btn btn-ghost btn-sm" onClick={() => navigate('/dashboard/bookings')}>Open all</button>
+            <button className="btn btn-ghost btn-sm" onClick={() => navigate('/dashboard/bookings')}>{t('openAll')}</button>
           </div>
           <div className="recent-list">
             {recentBookings.map((booking) => (
@@ -144,8 +146,8 @@ export default function Overview() {
             ))}
             {recentBookings.length === 0 && (
               <div className="empty-state">
-                <strong>No bookings yet</strong>
-                <p>{isVendor ? 'Create a listing to start receiving orders.' : 'Browse nearby services to create your first booking.'}</p>
+                <strong>{t('noBookings')}</strong>
+                <p>{isVendor ? t('vendorEmptyDesc') : t('custEmptyDesc')}</p>
               </div>
             )}
           </div>
@@ -155,10 +157,10 @@ export default function Overview() {
           <section className="panel-block">
             <div className="panel-heading">
               <div>
-                <h2>Nearby inventory</h2>
-                <p>Fresh services around your current location</p>
+                <h2>{t('nearbyInventory')}</h2>
+                <p>{t('freshServices')}</p>
               </div>
-              <button className="btn btn-ghost btn-sm" onClick={() => navigate('/dashboard/nearby')}>Map view</button>
+              <button className="btn btn-ghost btn-sm" onClick={() => navigate('/dashboard/nearby')}>{t('mapView')}</button>
             </div>
             <div className="recent-list">
               {nearby.slice(0, 5).map((service) => (
@@ -172,8 +174,8 @@ export default function Overview() {
               ))}
               {nearby.length === 0 && (
                 <div className="empty-state">
-                  <strong>No nearby listings yet</strong>
-                  <p>Allow location access or expand your radius in the Nearby Vendors tab.</p>
+                  <strong>{t('noNearbyListings')}</strong>
+                  <p>{t('allowLocationDesc')}</p>
                 </div>
               )}
             </div>
@@ -184,12 +186,12 @@ export default function Overview() {
       {nearbyPopup && (
         <div className="nearby-toast">
           <div>
-            <strong>New nearby listing</strong>
+            <strong>{t('newNearbyListing')}</strong>
             <p>{nearbyPopup.title} by {nearbyPopup.vendorName}, {nearbyPopup.distanceKm} km away.</p>
           </div>
           <div>
-            <button className="btn btn-primary btn-sm" onClick={() => navigate('/dashboard/nearby')}>View</button>
-            <button className="btn btn-ghost btn-sm" onClick={dismissNearby}>Dismiss</button>
+            <button className="btn btn-primary btn-sm" onClick={() => navigate('/dashboard/nearby')}>{t('view')}</button>
+            <button className="btn btn-ghost btn-sm" onClick={dismissNearby}>{t('dismiss')}</button>
           </div>
         </div>
       )}

@@ -1,3 +1,5 @@
+import { useThemeLanguage } from '../contexts/ThemeLanguageContext';
+
 function hasCoordinates(lat, lng) {
   return Number.isFinite(Number(lat)) && Number.isFinite(Number(lng));
 }
@@ -25,13 +27,15 @@ export function mapsDirectionsUrl(fromLat, fromLng, toLat, toLng) {
 }
 
 export default function MapPanel({ latitude, longitude, label = 'Location', height = 240 }) {
+  const { t } = useThemeLanguage();
+
   if (!hasCoordinates(latitude, longitude)) {
     return (
       <div className="map-empty" style={{ minHeight: height }}>
         <span className="map-empty-mark">LOC</span>
         <div>
-          <strong>No map coordinates yet</strong>
-          <p>Add GPS coordinates to show this location on the map.</p>
+          <strong>{t('noMapCoords')}</strong>
+          <p>{t('addGpsCoords')}</p>
         </div>
       </div>
     );

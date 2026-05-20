@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useThemeLanguage } from '../contexts/ThemeLanguageContext';
 
 export default function Register() {
   const [step, setStep] = useState(1);
@@ -12,6 +13,7 @@ export default function Register() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { register, verifyOtp } = useAuth();
+  const { lang, theme, toggleTheme, toggleLanguage, t } = useThemeLanguage();
   const navigate = useNavigate();
 
   const handleRegisterSubmit = async (e) => {
@@ -44,16 +46,36 @@ export default function Register() {
 
   return (
     <div className="auth-page">
+      {/* Dynamic top action switcher bar - optimized with top/right styling for all devices */}
+      <div className="auth-top-actions" style={{ position: 'absolute', top: '16px', right: '16px', display: 'flex', gap: '8px', zIndex: 10 }}>
+        <button 
+          onClick={toggleLanguage}
+          className="theme-switcher-btn-class"
+          title="Switch Language"
+          style={{ padding: '6px 10px', fontSize: '0.75rem', height: '32px' }}
+        >
+          🌐 {lang === 'en' ? 'ಕನ್ನಡ' : 'English'}
+        </button>
+        <button 
+          onClick={toggleTheme}
+          className="theme-switcher-btn-class"
+          title="Toggle Theme"
+          style={{ minWidth: '32px', padding: '0 8px', justifyContent: 'center', height: '32px' }}
+        >
+          {theme === 'dark' ? '☀️' : '🌙'}
+        </button>
+      </div>
+
       <div className="glass-card auth-card" style={{ transition: 'all 0.3s ease' }}>
-        <h1>{step === 1 ? 'Create account' : 'Verify Email'}</h1>
-        <p>{step === 1 ? 'Join Rentova and start managing rentals' : `We sent an OTP to ${email}`}</p>
+        <h1>{step === 1 ? t('registerTitle') : t('verifyTitle')}</h1>
+        <p>{step === 1 ? t('registerSubtitle') : `${t('verifySubtitle')} ${email}`}</p>
 
         {error && <div className="error-message">{error}</div>}
 
         {step === 1 ? (
           <form className="auth-form" onSubmit={handleRegisterSubmit}>
             <div className="input-group">
-              <label htmlFor="name">Full Name</label>
+              <label htmlFor="name">{t('fullNameLabel')}</label>
               <input
                 id="name"
                 type="text"
@@ -65,7 +87,7 @@ export default function Register() {
               />
             </div>
             <div className="input-group">
-              <label htmlFor="reg-email">Email</label>
+              <label htmlFor="reg-email">{t('regEmailLabel')}</label>
               <input
                 id="reg-email"
                 type="email"
@@ -77,12 +99,12 @@ export default function Register() {
               />
             </div>
             <div className="input-group">
-              <label htmlFor="reg-password">Password</label>
+              <label htmlFor="reg-password">{t('regPasswordLabel')}</label>
               <input
                 id="reg-password"
                 type="password"
                 className="input-field"
-                placeholder="Min. 6 characters"
+                placeholder={t('regPasswordPlaceholder')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -90,25 +112,26 @@ export default function Register() {
               />
             </div>
             <div className="input-group">
-              <label htmlFor="role">I am a</label>
+              <label htmlFor="role">{t('roleLabel')}</label>
               <select
                 id="role"
                 className="input-field"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
+                style={{ appearance: 'auto', background: 'var(--input-bg)', color: 'var(--text-primary)' }}
               >
-                <option value="CUSTOMER">Customer — I want to book services</option>
-                <option value="VENDOR">Vendor — I offer services</option>
+                <option value="CUSTOMER">{t('customerOption')}</option>
+                <option value="VENDOR">{t('vendorOption')}</option>
               </select>
             </div>
             <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? 'Creating account...' : 'Create Account'}
+              {loading ? t('loading') : t('createBtn')}
             </button>
           </form>
         ) : (
           <form className="auth-form" onSubmit={handleOtpSubmit}>
             <div className="input-group">
-              <label htmlFor="otp">Enter 6-digit OTP</label>
+              <label htmlFor="otp">{t('otpLabel')}</label>
               <input
                 id="otp"
                 type="text"
@@ -123,14 +146,14 @@ export default function Register() {
               />
             </div>
             <button type="submit" className="btn btn-primary" disabled={loading || otp.length !== 6}>
-              {loading ? 'Verifying...' : 'Verify & Login'}
+              {loading ? t('loading') : t('verifyBtn')}
             </button>
           </form>
         )}
 
         {step === 1 && (
           <div className="auth-footer">
-            Already have an account? <Link to="/login">Sign in</Link>
+            {t('haveAccount')} <Link to="/login">{t('loginLink')}</Link>
           </div>
         )}
       </div>

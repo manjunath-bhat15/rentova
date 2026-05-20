@@ -1,12 +1,14 @@
 import { useNavigate } from 'react-router-dom';
+import { useThemeLanguage } from '../contexts/ThemeLanguageContext';
 import StatusBadge from './StatusBadge';
 
 export default function BookingCard({ booking, userRole }) {
   const navigate = useNavigate();
+  const { t } = useThemeLanguage();
 
   const otherParty = userRole === 'CUSTOMER'
-    ? { label: 'Vendor', name: booking.vendorName }
-    : { label: 'Customer', name: booking.customerName };
+    ? { label: t('vendor'), name: booking.vendorName }
+    : { label: t('customer'), name: booking.customerName };
 
   return (
     <div
@@ -77,7 +79,7 @@ export default function BookingCard({ booking, userRole }) {
           className="btn btn-ghost btn-sm"
           style={{ fontSize: 'var(--font-xs)' }}
         >
-          Details →
+          {t('details')}
         </span>
       </div>
     </div>

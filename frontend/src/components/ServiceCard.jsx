@@ -1,11 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-
-const unitLabels = {
-  HOUR: '/hr',
-  DAY: '/day',
-  PIECE: '/pc',
-  SESSION: '/session',
-};
+import { useThemeLanguage } from '../contexts/ThemeLanguageContext';
 
 const categoryColors = {
   'Equipment': 'var(--accent-primary)',
@@ -18,8 +12,16 @@ const categoryColors = {
 
 export default function ServiceCard({ service, onBook, isVendor }) {
   const navigate = useNavigate();
+  const { t } = useThemeLanguage();
 
   const getCategoryColor = (cat) => categoryColors[cat] || 'var(--accent-primary)';
+
+  const unitLabels = {
+    HOUR: t('unitHr'),
+    DAY: t('unitDay'),
+    PIECE: t('unitPc'),
+    SESSION: t('unitSession'),
+  };
 
   return (
     <div
@@ -42,7 +44,7 @@ export default function ServiceCard({ service, onBook, isVendor }) {
           {service.category}
         </span>
         {!service.active && (
-          <span className="badge badge-red">Inactive</span>
+          <span className="badge badge-red">{t('inactive')}</span>
         )}
       </div>
 
@@ -60,7 +62,7 @@ export default function ServiceCard({ service, onBook, isVendor }) {
           WebkitBoxOrient: 'vertical',
           overflow: 'hidden',
         }}>
-          {service.description || 'No description provided.'}
+          {service.description || t('noDesc')}
         </p>
       </div>
 
@@ -105,7 +107,7 @@ export default function ServiceCard({ service, onBook, isVendor }) {
             className="btn btn-primary btn-sm"
             onClick={(e) => { e.stopPropagation(); onBook(service); }}
           >
-            Book Now
+            {t('bookNow')}
           </button>
         )}
         {isVendor && (
@@ -113,7 +115,7 @@ export default function ServiceCard({ service, onBook, isVendor }) {
             className="btn btn-secondary btn-sm"
             onClick={(e) => { e.stopPropagation(); navigate('/dashboard/services/create'); }}
           >
-            Edit
+            {t('edit')}
           </button>
         )}
       </div>

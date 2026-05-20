@@ -87,6 +87,54 @@
   --header-height: 64px;
 }
 
+html.light-theme {
+  /* Background Colors */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f5f9;
+  --bg-elevated: #e2e8f0;
+
+  /* Glass Effects */
+  --glass-bg: rgba(15, 23, 42, 0.04);
+  --glass-bg-hover: rgba(15, 23, 42, 0.07);
+  --glass-border: rgba(15, 23, 42, 0.08);
+  --glass-border-hover: rgba(15, 23, 42, 0.14);
+
+  /* Text Colors */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-inverse: #ffffff;
+
+  /* Accent Colors */
+  --accent-primary: #6c5ce7;
+  --accent-primary-hover: #5b4db8;
+  --accent-secondary: #00cec9;
+  --accent-secondary-hover: #00a8a5;
+  --accent-warning: #b45309;
+  --accent-danger: #ef4444;
+  --accent-danger-hover: #dc2626;
+  --accent-success: #10b981;
+
+  /* Gradients */
+  --accent-gradient: linear-gradient(135deg, #6c5ce7, #8575f0);
+  --accent-gradient-hover: linear-gradient(135deg, #5b4db8, #7c6ef0);
+  --teal-gradient: linear-gradient(135deg, #00cec9, #00b894);
+  --danger-gradient: linear-gradient(135deg, #ef4444, #b91c1c);
+  --card-gradient: linear-gradient(145deg, rgba(15, 23, 42, 0.02), rgba(15, 23, 42, 0.01));
+
+  /* Glow Effects */
+  --glow-primary: 0 0 20px rgba(108, 92, 231, 0.15);
+  --glow-secondary: 0 0 20px rgba(0, 206, 201, 0.15);
+  --glow-danger: 0 0 20px rgba(239, 68, 68, 0.15);
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 8px 32px rgba(15, 23, 42, 0.12);
+  --shadow-xl: 0 16px 48px rgba(15, 23, 42, 0.16);
+}
+
 /* ===== Reset & Base ===== */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -1599,6 +1647,43 @@ select.input-field {
     position: sticky;
     left: 0;
     top: 0;
+    padding: 0 var(--space-md);
+  }
+
+  .page-content {
+    padding: var(--space-md);
+  }
+
+  .nav-item {
+    padding: 12px var(--space-lg);
+    font-size: var(--font-sm);
+    min-height: 44px; /* Touch target minimum */
+  }
+
+  .sidebar-nav {
+    scrollbar-width: none; /* Hide for Firefox */
+  }
+  .sidebar-nav::-webkit-scrollbar {
+    display: none; /* Hide for Chrome/Safari/Webkit */
+  }
+
+  .metric-grid {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-md) !important;
+  }
+
+  .bento-grid {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-md) !important;
+  }
+
+  .auth-card {
+    padding: var(--space-xl);
+  }
+
+  .auth-top-actions {
+    top: 8px !important;
+    right: 8px !important;
   }
 }
 

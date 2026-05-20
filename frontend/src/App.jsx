@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { SocketProvider } from './contexts/SocketContext';
+import { ThemeLanguageProvider } from './contexts/ThemeLanguageContext';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -31,32 +32,34 @@ function DashboardHome() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <SocketProvider>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/customer/*" element={<RoleRedirect />} />
-            <Route path="/vendor/*" element={<RoleRedirect />} />
-            <Route path="/admin/*" element={<RoleRedirect />} />
-            <Route path="/dashboard" element={<DashboardLayout />}>
-              <Route index element={<DashboardHome />} />
-              <Route path="services" element={<Services />} />
-              <Route path="services/create" element={<CreateService />} />
-              <Route path="bookings" element={<Bookings />} />
-              <Route path="bookings/:id" element={<BookingDetail />} />
-              <Route path="wallet" element={<WalletPage />} />
-              <Route path="chat" element={<ChatPage />} />
-              <Route path="nearby" element={<NearbyVendors />} />
-              <Route path="notifications" element={<NotificationsPage />} />
-              <Route path="admin" element={<AdminPanel />} />
-              <Route path="admin/users" element={<AdminPanel defaultTab="users" />} />
-            </Route>
-          </Routes>
-        </SocketProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <ThemeLanguageProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <SocketProvider>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/customer/*" element={<RoleRedirect />} />
+              <Route path="/vendor/*" element={<RoleRedirect />} />
+              <Route path="/admin/*" element={<RoleRedirect />} />
+              <Route path="/dashboard" element={<DashboardLayout />}>
+                <Route index element={<DashboardHome />} />
+                <Route path="services" element={<Services />} />
+                <Route path="services/create" element={<CreateService />} />
+                <Route path="bookings" element={<Bookings />} />
+                <Route path="bookings/:id" element={<BookingDetail />} />
+                <Route path="wallet" element={<WalletPage />} />
+                <Route path="chat" element={<ChatPage />} />
+                <Route path="nearby" element={<NearbyVendors />} />
+                <Route path="notifications" element={<NotificationsPage />} />
+                <Route path="admin" element={<AdminPanel />} />
+                <Route path="admin/users" element={<AdminPanel defaultTab="users" />} />
+              </Route>
+            </Routes>
+          </SocketProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </ThemeLanguageProvider>
   );
 }

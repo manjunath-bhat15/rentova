@@ -1,30 +1,32 @@
+import { useThemeLanguage } from '../contexts/ThemeLanguageContext';
+
 const statusConfig = {
   PENDING: {
-    label: 'Pending',
+    labelKey: 'statusPending',
     color: 'var(--accent-warning)',
     bg: 'rgba(253, 203, 110, 0.12)',
     icon: '⏳',
   },
   CONFIRMED: {
-    label: 'Confirmed',
+    labelKey: 'statusConfirmed',
     color: 'var(--accent-primary)',
     bg: 'rgba(108, 92, 231, 0.12)',
     icon: '✅',
   },
   IN_PROGRESS: {
-    label: 'In Progress',
+    labelKey: 'statusInProgress',
     color: 'var(--accent-secondary)',
     bg: 'rgba(0, 206, 201, 0.12)',
     icon: '🔄',
   },
   COMPLETED: {
-    label: 'Completed',
+    labelKey: 'statusCompleted',
     color: 'var(--accent-success)',
     bg: 'rgba(0, 184, 148, 0.12)',
     icon: '🎉',
   },
   CANCELLED: {
-    label: 'Cancelled',
+    labelKey: 'statusCancelled',
     color: 'var(--accent-danger)',
     bg: 'rgba(255, 107, 107, 0.12)',
     icon: '❌',
@@ -32,6 +34,7 @@ const statusConfig = {
 };
 
 export default function StatusBadge({ status }) {
+  const { t } = useThemeLanguage();
   const config = statusConfig[status] || statusConfig.PENDING;
 
   return (
@@ -50,7 +53,7 @@ export default function StatusBadge({ status }) {
       }}
     >
       <span style={{ fontSize: '12px' }}>{config.icon}</span>
-      {config.label}
+      {t(config.labelKey)}
     </span>
   );
 }

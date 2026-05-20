@@ -1,17 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useThemeLanguage } from '../contexts/ThemeLanguageContext';
 import api from '../services/api';
 
 const typeConfig = {
-  TOP_UP: { label: 'Top Up', icon: '💳', color: 'var(--accent-success)', sign: '+' },
-  BOOKING_PAYMENT: { label: 'Booking Payment', icon: '🛒', color: 'var(--accent-danger)', sign: '' },
-  BOOKING_PAYOUT: { label: 'Booking Payout', icon: '💰', color: 'var(--accent-success)', sign: '+' },
-  REFUND: { label: 'Refund', icon: '↩️', color: 'var(--accent-warning)', sign: '+' },
-  TRANSFER: { label: 'Transfer', icon: '↔️', color: 'var(--accent-primary)', sign: '' },
+  TOP_UP: { labelKey: 'topUp', icon: '💳', color: 'var(--accent-success)', sign: '+' },
+  BOOKING_PAYMENT: { labelKey: 'bookingPayment', icon: '🛒', color: 'var(--accent-danger)', sign: '' },
+  BOOKING_PAYOUT: { labelKey: 'bookingPayout', icon: '💰', color: 'var(--accent-success)', sign: '+' },
+  REFUND: { labelKey: 'refund', icon: '↩️', color: 'var(--accent-warning)', sign: '+' },
+  TRANSFER: { labelKey: 'transfer', icon: '↔️', color: 'var(--accent-primary)', sign: '' },
 };
 
 export default function WalletPage() {
   const { user } = useAuth();
+  const { t, lang } = useThemeLanguage();
   const [wallet, setWallet] = useState(null);
   const [loading, setLoading] = useState(true);
   const [topUpAmount, setTopUpAmount] = useState('');
@@ -37,7 +39,7 @@ export default function WalletPage() {
   const handleTopUp = async () => {
     const amount = parseFloat(topUpAmount);
     if (!amount || amount < 1) {
-      setError('Minimum top-up is ₹1.00');
+      setError(t('minTopUp'));
       return;
     }
     setError('');
@@ -48,13 +50,25 @@ export default function WalletPage() {
       setTopUpAmount('');
       setShowTopUp(false);
     } catch (err) {
-      setError('Top-up failed. Please try again.');
+      setError(t('topUpFailed'));
     } finally {
       setTopUpLoading(false);
     }
   };
 
   const quickAmounts = [10, 25, 50, 100, 250, 500];
+
+  const getTxnLabel = (type) => {
+    if (lang === 'kn') {
+      if (type === 'TOP_UP') return 'ಹಣ ಸೇರ್ಪಡೆ';
+      if (type === 'BOOKING_PAYMENT') return 'ಬುಕಿಂಗ್ ಪಾವತಿ';
+      if (type === 'BOOKING_PAYOUT') return 'ಬುಕಿಂಗ್ ಜಮೆ';
+      if (type === 'REFUND') return 'ಮರುಪಾವತಿ';
+      if (type === 'TRANSFER') return 'ವರ್ಗಾವಣೆ';
+    }
+    const config = typeConfig[type];
+    return config ? (config.labelKey === 'topUp' ? t('topUp') : type.replace('_', ' ')) : type;
+  };
 
   if (loading) {
     return (
@@ -72,7 +86,7 @@ export default function WalletPage() {
       <div
         className="glass-card"
         style={{
-          padding: 'var(--space-2xl)',
+          padding: 'var(--space-xl)',
           marginBottom: 'var(--space-xl)',
           background: 'linear-gradient(135deg, rgba(108,92,231,0.08), rgba(0,206,201,0.06)), var(--glass-bg)',
           position: 'relative',
@@ -91,7 +105,7 @@ export default function WalletPage() {
 
         <div style={{ position: 'relative', zIndex: 1 }}>
           <p style={{ fontSize: 'var(--font-sm)', color: 'var(--text-muted)', marginBottom: '8px', fontWeight: 500 }}>
-            Available Balance
+            {t('availableBalance')}
           </p>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: 'var(--space-lg)' }}>
             <span style={{ fontSize: '14px', color: 'var(--text-secondary)', fontWeight: 500 }}>₹</span>
@@ -107,7 +121,7 @@ export default function WalletPage() {
           </div>
           <div style={{ display: 'flex', gap: 'var(--space-md)' }}>
             <button className="btn btn-primary" onClick={() => setShowTopUp(true)}>
-              💳 Top Up Wallet
+              💳 {t('topUp')}
             </button>
           </div>
         </div>
@@ -128,10 +142,10 @@ export default function WalletPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <h2 style={{ fontSize: 'var(--font-xl)', fontWeight: 700, marginBottom: 'var(--space-xs)' }}>
-              Top Up Wallet
+              {t('topUp')}
             </h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-sm)', marginBottom: 'var(--space-lg)' }}>
-              Add credits to your Rentova wallet
+              {t('addFunds')}
             </p>
 
             {error && <div className="error-message" style={{ marginBottom: 'var(--space-md)' }}>{error}</div>}
@@ -153,7 +167,7 @@ export default function WalletPage() {
             </div>
 
             <div className="input-group" style={{ marginBottom: 'var(--space-lg)' }}>
-              <label>Custom Amount</label>
+              <label>{t('quickAmount')}</label>
               <div style={{ position: 'relative' }}>
                 <span style={{
                   position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)',
@@ -174,10 +188,10 @@ export default function WalletPage() {
 
             <div style={{ display: 'flex', gap: 'var(--space-md)' }}>
               <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => { setShowTopUp(false); setError(''); }}>
-                Cancel
+                {t('dismiss')}
               </button>
               <button className="btn btn-primary" style={{ flex: 1 }} disabled={topUpLoading} onClick={handleTopUp}>
-                {topUpLoading ? 'Processing...' : `Add ₹${topUpAmount || '0'}`}
+                {topUpLoading ? t('loading') : `${t('topUp')} ₹${topUpAmount || '0'}`}
               </button>
             </div>
           </div>
@@ -187,28 +201,30 @@ export default function WalletPage() {
       {/* Transaction History */}
       <div>
         <h2 style={{ fontSize: 'var(--font-xl)', fontWeight: 600, marginBottom: 'var(--space-md)' }}>
-          Transaction History
+          {t('recentTransactions')}
         </h2>
 
         {transactions.length === 0 ? (
           <div className="glass-card" style={{ padding: 'var(--space-2xl)', textAlign: 'center' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>💳</div>
-            <h3 style={{ fontSize: 'var(--font-lg)', marginBottom: '8px' }}>No transactions yet</h3>
+            <h3 style={{ fontSize: 'var(--font-lg)', marginBottom: '8px' }}>{t('noTransactions')}</h3>
             <p style={{ color: 'var(--text-secondary)' }}>
-              Top up your wallet to start booking services.
+              {t('custEmptyDesc')}
             </p>
           </div>
         ) : (
           <div className="glass-card" style={{ overflow: 'hidden' }}>
             {transactions.map((txn, i) => {
-              const config = typeConfig[txn.type] || { label: txn.type, icon: '💲', color: 'var(--text-secondary)', sign: '' };
+              const config = typeConfig[txn.type] || { icon: '💲', color: 'var(--text-secondary)' };
               const isPositive = parseFloat(txn.amount) > 0;
 
               return (
                 <div
                   key={txn.id}
                   style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
                     padding: 'var(--space-md) var(--space-lg)',
                     borderBottom: i < transactions.length - 1 ? '1px solid var(--glass-border)' : 'none',
                     transition: 'background var(--transition-fast)',
@@ -218,17 +234,23 @@ export default function WalletPage() {
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
                     <div style={{
-                      width: 44, height: 44, borderRadius: 'var(--radius-md)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      background: config.color + '15', fontSize: '20px', flexShrink: 0,
+                      width: 44,
+                      height: 44,
+                      borderRadius: 'var(--radius-md)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: config.color + '15',
+                      fontSize: '20px',
+                      flexShrink: 0,
                     }}>
                       {config.icon}
                     </div>
                     <div>
-                      <p style={{ fontWeight: 600, fontSize: 'var(--font-sm)' }}>{config.label}</p>
+                      <p style={{ fontWeight: 600, fontSize: 'var(--font-sm)' }}>{getTxnLabel(txn.type)}</p>
                       <p style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>
                         {txn.counterpartyName
-                          ? `${txn.type === 'BOOKING_PAYMENT' ? 'To' : 'From'}: ${txn.counterpartyName}`
+                          ? `${txn.type === 'BOOKING_PAYMENT' ? (lang === 'kn' ? 'ಗೆ' : 'To') : (lang === 'kn' ? 'ಇಂದ' : 'From')}: ${txn.counterpartyName}`
                           : txn.description}
                       </p>
                     </div>
