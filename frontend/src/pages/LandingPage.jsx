@@ -106,7 +106,7 @@ export default function LandingPage() {
 
   // Theme & Language State with LocalStorage cache - locked temporarily
   const [lang] = useState('en');
-  const [theme] = useState('dark');
+  const [theme] = useState('light');
 
   const t = (key) => translations[lang][key];
 

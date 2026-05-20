@@ -7,6 +7,7 @@
   --bg-secondary: #1a1a1a;
   --bg-tertiary: #262626;
   --bg-elevated: #333333;
+  --card-bg: rgba(26, 26, 26, 0.78);
 
   /* Glass Effects */
   --glass-bg: rgba(255, 255, 255, 0.03);
@@ -89,10 +90,11 @@
 
 html.light-theme {
   /* Background Colors */
-  --bg-primary: #f8fafc;
-  --bg-secondary: #ffffff;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
   --bg-tertiary: #f1f5f9;
   --bg-elevated: #e2e8f0;
+  --card-bg: #ffffff;
 
   /* Glass Effects */
   --glass-bg: rgba(15, 23, 42, 0.04);
@@ -922,6 +924,7 @@ select.input-field {
   --bg-secondary: #1a1a1a;
   --bg-tertiary: #262626;
   --bg-elevated: #333333;
+  --card-bg: rgba(26, 26, 26, 0.78);
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-bg-hover: rgba(255, 255, 255, 0.06);
   --glass-border: rgba(255, 255, 255, 0.05);
@@ -956,9 +959,9 @@ select.input-field {
 
 .glass-card,
 .bento-card {
-  background: rgba(26, 26, 26, 0.78);
+  background: var(--card-bg);
   border: 1px solid var(--glass-border);
-  box-shadow: 0 16px 40px rgba(2, 6, 23, 0.18);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-primary {
@@ -972,7 +975,7 @@ select.input-field {
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--glass-bg);
   border: 1px solid var(--glass-border);
 }
 
@@ -1047,7 +1050,7 @@ select.input-field {
 }
 
 .hero-metrics > div {
-  background: rgba(26, 26, 26, 0.74);
+  background: var(--card-bg);
   padding: 18px;
 }
 
@@ -1092,9 +1095,9 @@ select.input-field {
 .metric-card,
 .data-table,
 .modal-panel {
-  background: rgba(26, 26, 26, 0.78);
+  background: var(--card-bg);
   border: 1px solid var(--glass-border);
-  box-shadow: 0 18px 44px rgba(2, 6, 23, 0.2);
+  box-shadow: var(--shadow-lg);
 }
 
 .role-grid article {
@@ -1236,7 +1239,7 @@ select.input-field {
 }
 
 .manual-location-bar {
-  background: rgba(26, 26, 26, 0.78);
+  background: var(--card-bg);
   border: 1px solid var(--glass-border);
   border-radius: 8px;
   padding: 14px;
@@ -1962,7 +1965,7 @@ select.input-field {
 
 /* ===== Light Theme Overrides for Premium Landing ===== */
 .premium-landing.light-theme {
-  background: #f8fafc !important;
+  background: #ffffff !important;
   color: #0f172a !important;
 }
 

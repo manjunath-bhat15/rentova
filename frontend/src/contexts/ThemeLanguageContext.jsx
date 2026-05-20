@@ -214,11 +214,11 @@ const translations = {
 export function ThemeLanguageProvider({ children }) {
   // Temporarily locked to English and original Dark theme as requested
   const [lang] = useState('en');
-  const [theme] = useState('dark');
+  const [theme] = useState('light');
 
   useEffect(() => {
-    // Keep document class locked to dark mode (remove light-theme)
-    document.documentElement.classList.remove('light-theme');
+    // Keep document class locked to light mode (add light-theme)
+    document.documentElement.classList.add('light-theme');
   }, []);
 
   const toggleLanguage = () => {
