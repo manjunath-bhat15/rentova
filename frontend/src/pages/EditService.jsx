@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import api from '../services/api';
 import AddressSearchField from '../components/AddressSearchField';
 
@@ -22,8 +22,10 @@ const stockImages = [
   { url: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=500&auto=format&fit=crop&q=60', name: 'Garden Tools (Tools)' },
 ];
 
-export default function CreateService() {
+export default function EditService() {
+  const { id } = useParams();
   const navigate = useNavigate();
+  
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -39,14 +41,47 @@ export default function CreateService() {
     serviceRadiusKm: 10,
     images: '',
   });
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
 
   // Camera settings
   const [cameraActive, setCameraActive] = useState(false);
   const [stream, setStream] = useState(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const fetchService = async () => {
+      try {
+        const res = await api.get(`/api/services/${id}`);
+        const data = res.data;
+        setForm({
+          title: data.title || '',
+          description: data.description || '',
+          category: data.category || 'Equipment',
+          pricePerUnit: (data.pricePerUnit || 0).toString(),
+          securityDeposit: (data.securityDeposit || 0).toString(),
+          allowPickup: data.allowPickup ?? true,
+          allowDelivery: data.allowDelivery ?? false,
+          unit: data.unit || 'HOUR',
+          location: data.location || '',
+          latitude: data.latitude || null,
+          longitude: data.longitude || null,
+          serviceRadiusKm: data.serviceRadiusKm || 10,
+          images: data.images || '',
+        });
+      } catch (err) {
+        setError('Failed to fetch service details.');
+      } finally {
+        setFetching(false);
+      }
+    };
+    fetchService();
+  }, [id]);
+
+  const updateField = (field, value) => setForm(f => ({ ...f, [field]: value }));
 
   const getImagesArray = () => {
     try {
@@ -124,8 +159,6 @@ export default function CreateService() {
     }
   };
 
-  const updateField = (field, value) => setForm(f => ({ ...f, [field]: value }));
-
   const fetchLocation = () => {
     if (!navigator.geolocation) {
       setError('Geolocation is not supported by your browser');
@@ -157,37 +190,48 @@ export default function CreateService() {
 
     setLoading(true);
     try {
-      await api.post('/api/services', {
+      await api.put(`/api/services/${id}`, {
         ...form,
         pricePerUnit: parseFloat(form.pricePerUnit),
         securityDeposit: parseFloat(form.securityDeposit) || 0,
       });
       navigate('/dashboard/services');
     } catch (err) {
-      setError('Failed to create service. Please check all fields.');
+      setError('Failed to update service. Please check all fields.');
     } finally {
       setLoading(false);
     }
   };
 
+  if (fetching) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '60px' }}>
+        <div className="loading-spinner" />
+      </div>
+    );
+  }
+
+  const currentImages = getImagesArray();
+
   return (
-    <div className="animate-fade-in">
-      <div style={{ maxWidth: '640px' }}>
-        <h1 style={{ fontSize: 'var(--font-2xl)', fontWeight: 800, marginBottom: 'var(--space-xs)' }}>
-          Create Service
+    <div className="animate-fade-in" style={{ maxWidth: '640px', margin: '0 auto' }}>
+      <div className="glass-card" style={{ padding: 'var(--space-2xl)' }}>
+        <h1 style={{ fontSize: 'var(--font-xl)', fontWeight: 800, marginBottom: '4px' }}>
+          Edit Service Listing
         </h1>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xl)' }}>
-          Add a new service for customers to book
+        <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xl)', fontSize: 'var(--font-sm)' }}>
+          Update listing details, pricing, fulfillment options, and multiple photos.
         </p>
 
         {error && <div className="error-message" style={{ marginBottom: 'var(--space-md)' }}>{error}</div>}
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
           <div className="input-group">
-            <label>Service Title</label>
+            <label>Service/Tool Title</label>
             <input
+              type="text"
               className="input-field"
-              placeholder="e.g., Professional Camera Kit"
+              placeholder="e.g. Tesla Model 3 / DSLR Camera Rental"
               value={form.title}
               onChange={(e) => updateField('title', e.target.value)}
               required
@@ -199,7 +243,7 @@ export default function CreateService() {
             <textarea
               className="input-field"
               rows="4"
-              placeholder="Describe your service, what's included, conditions, etc."
+              placeholder="Describe the tool/service, specifications, pickup instructions..."
               value={form.description}
               onChange={(e) => updateField('description', e.target.value)}
               style={{ resize: 'vertical' }}
@@ -214,7 +258,7 @@ export default function CreateService() {
                 value={form.category}
                 onChange={(e) => updateField('category', e.target.value)}
               >
-                {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
               </select>
             </div>
 
@@ -316,17 +360,17 @@ export default function CreateService() {
 
           {/* Photo Management Section */}
           <div className="input-group">
-            <label style={{ display: 'block', marginBottom: 'var(--space-xs)' }}>Item Photos ({getImagesArray().length})</label>
+            <label style={{ display: 'block', marginBottom: 'var(--space-xs)' }}>Item Photos ({currentImages.length})</label>
             
             {/* Image Grid Preview with Delete capability */}
-            {getImagesArray().length > 0 && (
+            {currentImages.length > 0 && (
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
                 gap: 'var(--space-sm)',
                 marginBottom: 'var(--space-md)'
               }}>
-                {getImagesArray().map((img, idx) => (
+                {currentImages.map((img, idx) => (
                   <div
                     key={idx}
                     style={{
@@ -334,7 +378,8 @@ export default function CreateService() {
                       height: '80px',
                       borderRadius: 'var(--radius-md)',
                       overflow: 'hidden',
-                      border: '1px solid var(--glass-border)'
+                      border: '1px solid var(--glass-border)',
+                      group: 'true'
                     }}
                   >
                     <img src={img} alt={`Item thumbnail ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -484,53 +529,22 @@ export default function CreateService() {
             />
           </div>
 
-          {/* Preview */}
-          {form.title && (
-            <div className="glass-card" style={{ padding: 'var(--space-lg)' }}>
-              <h4 style={{ fontSize: 'var(--font-sm)', color: 'var(--text-muted)', marginBottom: 'var(--space-sm)' }}>
-                Preview
-              </h4>
-              {getImagesArray().length > 0 && (
-                <div style={{
-                  width: '100%',
-                  height: '120px',
-                  borderRadius: 'var(--radius-sm)',
-                  overflow: 'hidden',
-                  marginBottom: 'var(--space-sm)'
-                }}>
-                  <img src={getImagesArray()[0]} alt={form.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-              )}
-              <h3 style={{ fontSize: 'var(--font-md)', fontWeight: 600 }}>{form.title}</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-sm)', marginTop: '4px' }}>
-                {form.description || 'No description'}
-              </p>
-              {form.location && (
-                <p style={{ color: 'var(--accent-primary)', fontSize: 'var(--font-xs)', marginTop: '4px', fontWeight: 600 }}>
-                  📍 {form.location}
-                </p>
-              )}
-              <div style={{ marginTop: 'var(--space-md)', display: 'flex', gap: 'var(--space-sm)', alignItems: 'baseline' }}>
-                <span style={{ fontSize: 'var(--font-xl)', fontWeight: 800, color: 'var(--accent-secondary)' }}>
-                  ₹{form.pricePerUnit || '0.00'}
-                </span>
-                <span style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>
-                  /{form.unit.toLowerCase()}
-                </span>
-              </div>
-            </div>
-          )}
-
-          <div style={{ display: 'flex', gap: 'var(--space-md)', marginTop: 'var(--space-sm)' }}>
+          <div style={{ display: 'flex', gap: 'var(--space-md)', marginTop: 'var(--space-md)' }}>
             <button
               type="button"
               className="btn btn-secondary"
+              style={{ flex: 1 }}
               onClick={() => navigate('/dashboard/services')}
             >
               Cancel
             </button>
-            <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? 'Creating...' : 'Publish Service'}
+            <button
+              type="submit"
+              className="btn btn-primary"
+              style={{ flex: 1 }}
+              disabled={loading}
+            >
+              {loading ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </form>

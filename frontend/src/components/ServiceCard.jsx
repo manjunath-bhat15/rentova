@@ -16,12 +16,25 @@ export default function ServiceCard({ service, onBook, isVendor }) {
 
   const getCategoryColor = (cat) => categoryColors[cat] || 'var(--accent-primary)';
 
+  const getFirstImage = () => {
+    if (!service.images) return null;
+    try {
+      const parsed = JSON.parse(service.images);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed[0];
+      return service.images;
+    } catch {
+      return service.images;
+    }
+  };
+
   const unitLabels = {
     HOUR: t('unitHr'),
     DAY: t('unitDay'),
     PIECE: t('unitPc'),
     SESSION: t('unitSession'),
   };
+
+  const firstImg = getFirstImage();
 
   return (
     <div
@@ -49,7 +62,7 @@ export default function ServiceCard({ service, onBook, isVendor }) {
       </div>
 
       {/* Service Image */}
-      {service.images && (
+      {firstImg && (
         <div style={{
           width: '100%',
           height: '140px',
@@ -60,7 +73,7 @@ export default function ServiceCard({ service, onBook, isVendor }) {
           marginBottom: '-4px'
         }}>
           <img
-            src={service.images}
+            src={firstImg}
             alt={service.title}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             loading="lazy"
@@ -133,7 +146,7 @@ export default function ServiceCard({ service, onBook, isVendor }) {
         {isVendor && (
           <button
             className="btn btn-secondary btn-sm"
-            onClick={(e) => { e.stopPropagation(); navigate('/dashboard/services/create'); }}
+            onClick={(e) => { e.stopPropagation(); navigate(`/dashboard/services/edit/${service.id}`); }}
           >
             {t('edit')}
           </button>

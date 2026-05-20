@@ -51,6 +51,16 @@ public class Booking {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
 
+    @Column(nullable = false, precision = 10, scale = 2)
+    @Builder.Default
+    private BigDecimal securityDeposit = BigDecimal.ZERO;
+
+    private String fulfillmentModel;
+
+    private String startOtp;
+    
+    private String endOtp;
+
     @Column(nullable = false)
     @Builder.Default
     private Integer quantity = 1;

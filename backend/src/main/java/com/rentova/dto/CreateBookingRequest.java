@@ -23,4 +23,7 @@ public class CreateBookingRequest {
 
     @Size(max = 1000)
     private String notes;
+
+    @NotBlank(message = "Fulfillment model is required (PICKUP or DELIVERY)")
+    private String fulfillmentModel;
 }

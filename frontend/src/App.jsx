@@ -9,6 +9,7 @@ import DashboardLayout from './pages/DashboardLayout';
 import Overview from './pages/Overview';
 import Services from './pages/Services';
 import CreateService from './pages/CreateService';
+import EditService from './pages/EditService';
 import Bookings from './pages/Bookings';
 import BookingDetail from './pages/BookingDetail';
 import WalletPage from './pages/WalletPage';
@@ -47,6 +48,7 @@ export default function App() {
                 <Route index element={<DashboardHome />} />
                 <Route path="services" element={<Services />} />
                 <Route path="services/create" element={<CreateService />} />
+                <Route path="services/edit/:id" element={<EditService />} />
                 <Route path="bookings" element={<Bookings />} />
                 <Route path="bookings/:id" element={<BookingDetail />} />
                 <Route path="wallet" element={<WalletPage />} />

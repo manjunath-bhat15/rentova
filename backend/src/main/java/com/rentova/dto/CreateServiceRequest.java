@@ -34,4 +34,10 @@ public class CreateServiceRequest {
     private Double serviceRadiusKm = 10.0;
 
     private String images;
+
+    private Boolean allowPickup;
+
+    private Boolean allowDelivery;
+
+    private BigDecimal securityDeposit;
 }

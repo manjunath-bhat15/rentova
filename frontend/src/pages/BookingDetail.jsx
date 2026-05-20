@@ -25,9 +25,19 @@ export default function BookingDetail() {
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+  const [otpInput, setOtpInput] = useState('');
+  const [otpError, setOtpError] = useState('');
 
   useEffect(() => {
     loadBooking();
+    // Auto refresh every 5 seconds to get status and OTP updates
+    const interval = setInterval(() => {
+      api.get(`/api/bookings/${id}`)
+        .then(res => setBooking(res.data))
+        .catch(err => console.error('Auto-refresh booking failed', err));
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, [id]);
 
   const loadBooking = async () => {
@@ -49,6 +59,42 @@ export default function BookingDetail() {
       setBooking(res.data);
     } catch (err) {
       alert('Failed to update status. ' + (err.response?.data?.message || ''));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleStartService = async () => {
+    if (!otpInput || otpInput.length !== 6) {
+      setOtpError('Please enter a valid 6-digit verification code.');
+      return;
+    }
+    setActionLoading(true);
+    setOtpError('');
+    try {
+      const res = await api.post(`/api/bookings/${id}/start`, { otp: otpInput });
+      setBooking(res.data);
+      setOtpInput('');
+    } catch (err) {
+      setOtpError(err.response?.data?.message || 'Verification failed. Please try again.');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleEndService = async () => {
+    if (!otpInput || otpInput.length !== 6) {
+      setOtpError('Please enter a valid 6-digit verification code.');
+      return;
+    }
+    setActionLoading(true);
+    setOtpError('');
+    try {
+      const res = await api.post(`/api/bookings/${id}/end`, { otp: otpInput });
+      setBooking(res.data);
+      setOtpInput('');
+    } catch (err) {
+      setOtpError(err.response?.data?.message || 'Verification failed. Please try again.');
     } finally {
       setActionLoading(false);
     }
@@ -106,13 +152,20 @@ export default function BookingDetail() {
             <p style={{ fontWeight: 600 }}>{booking.vendorName}</p>
           </div>
           <div>
-            <p style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)', marginBottom: '4px' }}>Amount</p>
-            <p style={{ fontWeight: 800, fontSize: 'var(--font-lg)', color: 'var(--accent-secondary)' }}>
-              ₹{booking.amount}
-              <span style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)', fontWeight: 400, marginLeft: '4px' }}>
-                × {booking.quantity}
-              </span>
+            <p style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)', marginBottom: '4px' }}>Fulfillment</p>
+            <p style={{ fontWeight: 600 }}>
+              {booking.fulfillmentModel === 'DELIVERY' ? '🚚 Home Delivery' : '🏪 Store Pickup'}
             </p>
+          </div>
+          <div>
+            <p style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)', marginBottom: '4px' }}>Total Escrow Lockin</p>
+            <div style={{ fontWeight: 800, fontSize: 'var(--font-md)', color: 'var(--accent-secondary)' }}>
+              ₹{(parseFloat(booking.amount) + parseFloat(booking.securityDeposit || 0)).toFixed(2)}
+              <div style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)', fontWeight: 400, marginTop: '2px', lineHeight: 1.4 }}>
+                Rent: ₹{parseFloat(booking.amount).toFixed(2)} {booking.quantity > 1 ? `(${booking.quantity} units)` : ''}<br />
+                Deposit: ₹{parseFloat(booking.securityDeposit || 0).toFixed(2)} (Refundable)
+              </div>
+            </div>
           </div>
           <div>
             <p style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)', marginBottom: '4px' }}>Created</p>
@@ -245,6 +298,125 @@ export default function BookingDetail() {
         )}
       </div>
 
+      {/* 2FA OTP Verification Blocks */}
+      {booking.status === 'CONFIRMED' && (
+        <>
+          {isCustomer && (
+            <div className="glass-card" style={{ padding: 'var(--space-xl)', marginBottom: 'var(--space-lg)', border: '1px solid var(--accent-primary)', textAlign: 'center' }}>
+              <h3 style={{ fontSize: 'var(--font-md)', fontWeight: 700, color: 'var(--accent-primary)', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                🔑 Start Service Code
+              </h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-sm)', marginBottom: 'var(--space-md)' }}>
+                Share this 6-digit Start Code with the Vendor to begin the rental/service and authorize payment.
+              </p>
+              <div style={{ 
+                fontSize: '36px', 
+                fontWeight: 800, 
+                letterSpacing: '6px', 
+                color: 'var(--accent-secondary)',
+                background: 'rgba(255,255,255,0.05)',
+                padding: 'var(--space-md)',
+                borderRadius: 'var(--radius-md)',
+                display: 'inline-block',
+                border: '1px dashed var(--glass-border)',
+                fontFamily: 'monospace'
+              }}>
+                {booking.startOtp}
+              </div>
+            </div>
+          )}
+
+          {isVendor && (
+            <div className="glass-card" style={{ padding: 'var(--space-xl)', marginBottom: 'var(--space-lg)', border: '1px solid var(--accent-secondary)' }}>
+              <h3 style={{ fontSize: 'var(--font-md)', fontWeight: 700, color: 'var(--accent-secondary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                🏪 Start Service Verification
+              </h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-sm)', marginBottom: 'var(--space-md)' }}>
+                Ask the customer for their 6-digit Start Code to verify, start the rental, and lock in the rental amount + security deposit.
+              </p>
+              <div style={{ display: 'flex', gap: 'var(--space-md)', alignItems: 'center', flexWrap: 'wrap' }}>
+                <input
+                  type="text"
+                  maxLength="6"
+                  placeholder="Enter 6-digit start code"
+                  className="input-field"
+                  value={otpInput}
+                  onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))}
+                  style={{ maxWidth: '240px', textAlign: 'center', letterSpacing: '4px', fontSize: 'var(--font-lg)', fontFamily: 'monospace' }}
+                />
+                <button
+                  className="btn btn-primary"
+                  disabled={actionLoading}
+                  onClick={handleStartService}
+                >
+                  {actionLoading ? 'Verifying...' : 'Verify & Start Service'}
+                </button>
+              </div>
+              {otpError && <p style={{ color: 'var(--accent-danger)', fontSize: 'var(--font-xs)', marginTop: '8px', fontWeight: 600 }}>❌ {otpError}</p>}
+            </div>
+          )}
+        </>
+      )}
+
+      {booking.status === 'IN_PROGRESS' && (
+        <>
+          {isVendor && (
+            <div className="glass-card" style={{ padding: 'var(--space-xl)', marginBottom: 'var(--space-lg)', border: '1px solid var(--accent-primary)', textAlign: 'center' }}>
+              <h3 style={{ fontSize: 'var(--font-md)', fontWeight: 700, color: 'var(--accent-primary)', marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                🔑 End Service Code
+              </h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-sm)', marginBottom: 'var(--space-md)' }}>
+                Share this 6-digit End Code with the Customer when they return the item to complete the service and release their deposit.
+              </p>
+              <div style={{ 
+                fontSize: '36px', 
+                fontWeight: 800, 
+                letterSpacing: '6px', 
+                color: 'var(--accent-secondary)',
+                background: 'rgba(255,255,255,0.05)',
+                padding: 'var(--space-md)',
+                borderRadius: 'var(--radius-md)',
+                display: 'inline-block',
+                border: '1px dashed var(--glass-border)',
+                fontFamily: 'monospace'
+              }}>
+                {booking.endOtp}
+              </div>
+            </div>
+          )}
+
+          {isCustomer && (
+            <div className="glass-card" style={{ padding: 'var(--space-xl)', marginBottom: 'var(--space-lg)', border: '1px solid var(--accent-secondary)' }}>
+              <h3 style={{ fontSize: 'var(--font-md)', fontWeight: 700, color: 'var(--accent-secondary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                🏁 Complete Service & Refund Deposit
+              </h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-sm)', marginBottom: 'var(--space-md)' }}>
+                Ask the vendor for the 6-digit End Code once you have returned the item/service is done. Verifying this will release the security deposit refund back to your wallet.
+              </p>
+              <div style={{ display: 'flex', gap: 'var(--space-md)', alignItems: 'center', flexWrap: 'wrap' }}>
+                <input
+                  type="text"
+                  maxLength="6"
+                  placeholder="Enter 6-digit end code"
+                  className="input-field"
+                  value={otpInput}
+                  onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ''))}
+                  style={{ maxWidth: '240px', textAlign: 'center', letterSpacing: '4px', fontSize: 'var(--font-lg)', fontFamily: 'monospace' }}
+                />
+                <button
+                  className="btn btn-primary"
+                  disabled={actionLoading}
+                  onClick={handleEndService}
+                >
+                  {actionLoading ? 'Verifying...' : 'Verify & End Service'}
+                </button>
+              </div>
+              {otpError && <p style={{ color: 'var(--accent-danger)', fontSize: 'var(--font-xs)', marginTop: '8px', fontWeight: 600 }}>❌ {otpError}</p>}
+            </div>
+          )}
+        </>
+      )}
+
       {/* Actions */}
       {booking.status !== 'COMPLETED' && booking.status !== 'CANCELLED' && (
         <div className="glass-card" style={{
@@ -271,7 +443,7 @@ export default function BookingDetail() {
               Cancel Booking
             </button>
           )}
-          {action && (
+          {action && action.nextStatus !== 'IN_PROGRESS' && action.nextStatus !== 'COMPLETED' && (
             <button
               className={`btn ${action.style}`}
               disabled={actionLoading}

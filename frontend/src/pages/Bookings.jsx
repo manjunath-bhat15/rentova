@@ -22,6 +22,12 @@ export default function Bookings() {
 
   useEffect(() => {
     loadBookings();
+    const interval = setInterval(() => {
+      api.get('/api/bookings')
+        .then(res => setBookings(res.data))
+        .catch(err => console.error('Failed to auto-refresh bookings', err));
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const loadBookings = async () => {

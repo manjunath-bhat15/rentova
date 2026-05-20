@@ -32,6 +32,9 @@ public class ServiceService {
                 .description(request.getDescription())
                 .category(request.getCategory())
                 .pricePerUnit(request.getPricePerUnit())
+                .securityDeposit(request.getSecurityDeposit() != null ? request.getSecurityDeposit() : BigDecimal.ZERO)
+                .allowPickup(request.getAllowPickup() != null ? request.getAllowPickup() : true)
+                .allowDelivery(request.getAllowDelivery() != null ? request.getAllowDelivery() : false)
                 .unit(unit)
                 .location(request.getLocation())
                 .latitude(request.getLatitude())
@@ -106,6 +109,9 @@ public class ServiceService {
         service.setDescription(request.getDescription());
         service.setCategory(request.getCategory());
         service.setPricePerUnit(request.getPricePerUnit());
+        service.setSecurityDeposit(request.getSecurityDeposit() != null ? request.getSecurityDeposit() : BigDecimal.ZERO);
+        service.setAllowPickup(request.getAllowPickup() != null ? request.getAllowPickup() : true);
+        service.setAllowDelivery(request.getAllowDelivery() != null ? request.getAllowDelivery() : false);
         service.setUnit(parseUnit(request.getUnit()));
         if (request.getLocation() != null) service.setLocation(request.getLocation());
         if (request.getLatitude() != null) service.setLatitude(request.getLatitude());
@@ -162,6 +168,9 @@ public class ServiceService {
                 .description(s.getDescription())
                 .category(s.getCategory())
                 .pricePerUnit(s.getPricePerUnit())
+                .securityDeposit(s.getSecurityDeposit())
+                .allowPickup(s.isAllowPickup())
+                .allowDelivery(s.isAllowDelivery())
                 .unit(s.getUnit().name())
                 .location(s.getLocation())
                 .latitude(s.getLatitude())

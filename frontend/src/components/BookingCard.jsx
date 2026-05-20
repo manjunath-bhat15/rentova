@@ -18,7 +18,21 @@ export default function BookingCard({ booking, userRole }) {
     >
       {/* Top row */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <StatusBadge status={booking.status} />
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <StatusBadge status={booking.status} />
+          {booking.fulfillmentModel && (
+            <span style={{
+              fontSize: '10px',
+              background: booking.fulfillmentModel === 'DELIVERY' ? 'rgba(52, 199, 89, 0.15)' : 'rgba(0, 122, 255, 0.15)',
+              color: booking.fulfillmentModel === 'DELIVERY' ? '#34c759' : '#007aff',
+              padding: '2px 8px',
+              borderRadius: '10px',
+              fontWeight: 700
+            }}>
+              {booking.fulfillmentModel === 'DELIVERY' ? '🚚 Delivery' : '🏪 Pickup'}
+            </span>
+          )}
+        </div>
         <span style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>
           {new Date(booking.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
         </span>
@@ -69,10 +83,10 @@ export default function BookingCard({ booking, userRole }) {
       }}>
         <div>
           <span style={{ fontSize: 'var(--font-lg)', fontWeight: 800, color: 'var(--accent-secondary)' }}>
-            ₹{booking.amount}
+            ₹{(parseFloat(booking.amount) + parseFloat(booking.securityDeposit || 0)).toFixed(2)}
           </span>
-          <span style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)', marginLeft: '4px' }}>
-            × {booking.quantity}
+          <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginLeft: '6px' }}>
+            (incl. ₹{parseFloat(booking.securityDeposit || 0).toFixed(0)} deposit)
           </span>
         </div>
         <span

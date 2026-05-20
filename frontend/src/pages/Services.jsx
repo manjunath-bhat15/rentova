@@ -49,7 +49,16 @@ export default function Services() {
 
   const handleBook = async (service) => {
     setSelectedService(service);
-    setBookingForm({ quantity: 1, scheduledAt: '', notes: '', location: '', latitude: null, longitude: null });
+    const defaultModel = service.allowDelivery && !service.allowPickup ? 'DELIVERY' : 'PICKUP';
+    setBookingForm({
+      quantity: 1,
+      scheduledAt: '',
+      notes: '',
+      location: '',
+      latitude: null,
+      longitude: null,
+      fulfillmentModel: defaultModel
+    });
     setBookingError('');
     setShowBookingModal(true);
     // Fetch wallet balance
@@ -73,6 +82,7 @@ export default function Services() {
         location: bookingForm.location || null,
         latitude: bookingForm.latitude,
         longitude: bookingForm.longitude,
+        fulfillmentModel: bookingForm.fulfillmentModel,
       });
       setShowBookingModal(false);
       navigate('/dashboard/bookings');
@@ -195,6 +205,35 @@ export default function Services() {
                   onChange={(e) => setBookingForm(f => ({ ...f, quantity: parseInt(e.target.value) || 1 }))}
                 />
               </div>
+
+              {(selectedService.allowPickup && selectedService.allowDelivery) ? (
+                <div className="input-group">
+                  <label>Fulfillment Option</label>
+                  <select
+                    className="input-field"
+                    value={bookingForm.fulfillmentModel}
+                    onChange={(e) => setBookingForm(f => ({ ...f, fulfillmentModel: e.target.value }))}
+                  >
+                    <option value="PICKUP">🏪 Store Pickup (Self)</option>
+                    <option value="DELIVERY">🚚 Home Delivery</option>
+                  </select>
+                </div>
+              ) : (
+                <div className="input-group">
+                  <label>Fulfillment Option</label>
+                  <div style={{ 
+                    background: 'rgba(255, 255, 255, 0.05)', 
+                    borderRadius: 'var(--radius-md)', 
+                    padding: '10px 14px', 
+                    fontSize: 'var(--font-sm)',
+                    border: '1px dashed var(--glass-border)',
+                    color: 'var(--text-secondary)'
+                  }}>
+                    {selectedService.allowDelivery ? '🚚 Home Delivery Only' : '🏪 Vendor Pickup Only'}
+                  </div>
+                </div>
+              )}
+
               <div className="input-group">
                 <label>Schedule (optional)</label>
                 <input
@@ -217,7 +256,7 @@ export default function Services() {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
                 <AddressSearchField
-                  label="Delivery/Service Location"
+                  label={bookingForm.fulfillmentModel === 'DELIVERY' ? 'Home Delivery Address' : 'Fulfillment / Service Location'}
                   placeholder="Search address or enter manually..."
                   initialAddress={bookingForm.location}
                   onSelectLocation={(address, lat, lon) => {
@@ -263,20 +302,36 @@ export default function Services() {
               )}
 
               <div style={{
-                padding: 'var(--space-md)', background: 'var(--glass-bg)', borderRadius: 'var(--radius-md)',
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                padding: 'var(--space-md)', 
+                background: 'rgba(255, 255, 255, 0.04)', 
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid var(--glass-border)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px'
               }}>
-                <div>
-                  <span style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-sm)' }}>Total</span>
-                  {walletBalance !== null && (
-                    <p style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)', marginTop: '2px' }}>
-                      Wallet: ₹{parseFloat(walletBalance).toFixed(2)}
-                    </p>
-                  )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--font-sm)', color: 'var(--text-secondary)' }}>
+                  <span>Rental Fee (₹{selectedService.pricePerUnit} × {bookingForm.quantity})</span>
+                  <span>₹{(selectedService.pricePerUnit * bookingForm.quantity).toFixed(2)}</span>
                 </div>
-                <span style={{ fontSize: 'var(--font-xl)', fontWeight: 800, color: 'var(--accent-secondary)' }}>
-                  ₹{(selectedService.pricePerUnit * bookingForm.quantity).toFixed(2)}
-                </span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--font-sm)', color: 'var(--text-secondary)' }}>
+                  <span>Security Deposit (Refundable)</span>
+                  <span>₹{((selectedService.securityDeposit || 0) * bookingForm.quantity).toFixed(2)}</span>
+                </div>
+                <hr style={{ border: 'none', borderTop: '1px solid var(--glass-border)', margin: '4px 0' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <span style={{ fontWeight: 700, fontSize: 'var(--font-md)' }}>Total Lockin Amount</span>
+                    {walletBalance !== null && (
+                      <p style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)', marginTop: '2px' }}>
+                        Wallet Balance: ₹{parseFloat(walletBalance).toFixed(2)}
+                      </p>
+                    )}
+                  </div>
+                  <span style={{ fontSize: 'var(--font-xl)', fontWeight: 800, color: 'var(--accent-secondary)' }}>
+                    ₹{((selectedService.pricePerUnit + (selectedService.securityDeposit || 0)) * bookingForm.quantity).toFixed(2)}
+                  </span>
+                </div>
               </div>
 
               <div style={{ display: 'flex', gap: 'var(--space-md)' }}>

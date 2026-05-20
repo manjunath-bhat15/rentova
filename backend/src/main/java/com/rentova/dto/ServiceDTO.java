@@ -16,6 +16,9 @@ public class ServiceDTO {
     private String description;
     private String category;
     private BigDecimal pricePerUnit;
+    private BigDecimal securityDeposit;
+    private boolean allowPickup;
+    private boolean allowDelivery;
     private String unit;
     private boolean active;
     private String location;

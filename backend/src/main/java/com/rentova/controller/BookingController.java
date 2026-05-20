@@ -59,4 +59,32 @@ public class BookingController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @PostMapping("/{id}/start")
+    public ResponseEntity<?> verifyStartOtp(
+            @PathVariable String id,
+            @RequestBody Map<String, String> body,
+            @AuthenticationPrincipal User user) {
+        try {
+            String otp = body.get("otp");
+            if (otp == null) return ResponseEntity.badRequest().body(Map.of("message", "Verification code is required"));
+            return ResponseEntity.ok(bookingService.verifyStartOtp(id, otp, user));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/{id}/end")
+    public ResponseEntity<?> verifyEndOtp(
+            @PathVariable String id,
+            @RequestBody Map<String, String> body,
+            @AuthenticationPrincipal User user) {
+        try {
+            String otp = body.get("otp");
+            if (otp == null) return ResponseEntity.badRequest().body(Map.of("message", "Verification code is required"));
+            return ResponseEntity.ok(bookingService.verifyEndOtp(id, otp, user));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
 }

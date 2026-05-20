@@ -20,6 +20,10 @@ public class BookingDTO {
     private LocalDateTime scheduledAt;
     private LocalDateTime completedAt;
     private BigDecimal amount;
+    private BigDecimal securityDeposit;
+    private String fulfillmentModel;
+    private String startOtp;
+    private String endOtp;
     private int quantity;
     private String location;
     private Double latitude;

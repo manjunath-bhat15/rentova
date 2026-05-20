@@ -39,6 +39,16 @@ public class ServiceEntity {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal pricePerUnit;
 
+    @Column(nullable = false, precision = 10, scale = 2)
+    @Builder.Default
+    private BigDecimal securityDeposit = BigDecimal.ZERO;
+
+    @Builder.Default
+    private boolean allowPickup = true;
+
+    @Builder.Default
+    private boolean allowDelivery = false;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ServiceUnit unit;
@@ -55,6 +65,7 @@ public class ServiceEntity {
     @Builder.Default
     private Double serviceRadiusKm = 10.0;
     
+    @Column(columnDefinition = "TEXT")
     private String images;
 
     @Column(nullable = false, updatable = false)
