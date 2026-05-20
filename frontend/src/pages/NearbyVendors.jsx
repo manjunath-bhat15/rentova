@@ -2,25 +2,51 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MapPanel, { mapsDirectionsUrl } from '../components/MapPanel';
 import AddressSearchField from '../components/AddressSearchField';
-import { useLocationContext } from '../contexts/LocationContext';
 import api from '../services/api';
 
 export default function NearbyVendors() {
   const navigate = useNavigate();
-  const { coords, selectedAddress, updateLocation, resetToGPS } = useLocationContext();
+  const [coords, setCoords] = useState(null);
   const [radiusKm, setRadiusKm] = useState(10);
   const [services, setServices] = useState([]);
   const [selected, setSelected] = useState(null);
+  const [searchAddress, setSearchAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    requestLocation();
+  }, []);
 
   useEffect(() => {
     if (coords) loadNearby();
   }, [coords, radiusKm]);
 
+  const requestLocation = () => {
+    setError('');
+    if (!navigator.geolocation) {
+      setError('Your browser does not support location access.');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setCoords({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+        setSearchAddress('My GPS Location');
+      },
+      () => {
+        setCoords({ latitude: 12.9716, longitude: 77.5946 });
+        setSearchAddress('Default (Bangalore)');
+      },
+      { enableHighAccuracy: true, timeout: 12000 }
+    );
+  };
+
   const loadNearby = async () => {
     setLoading(true);
-    setError('');
     try {
       const res = await api.get('/api/services/nearby', {
         params: {
@@ -63,7 +89,7 @@ export default function NearbyVendors() {
             <option value={50}>50 km</option>
             <option value={999999}>Unlimited (Show All)</option>
           </select>
-          <button className="btn btn-secondary" onClick={resetToGPS}>Refresh GPS</button>
+          <button className="btn btn-secondary" onClick={requestLocation}>Refresh Location</button>
         </div>
       </div>
 
@@ -71,16 +97,17 @@ export default function NearbyVendors() {
         <AddressSearchField
           label="Search and Set Custom Location"
           placeholder="Type an address, city, or country to update your location..."
-          initialAddress={selectedAddress}
+          initialAddress={searchAddress}
           onSelectLocation={(address, lat, lon) => {
             if (lat !== null && lon !== null) {
-              updateLocation(address, lat, lon);
+              setCoords({ latitude: lat, longitude: lon });
+              setSearchAddress(address);
             }
           }}
         />
         <button 
           className="btn btn-secondary" 
-          onClick={resetToGPS}
+          onClick={requestLocation}
           style={{ height: '42px', display: 'flex', alignItems: 'center', gap: '6px' }}
         >
           📍 Reset to My GPS
@@ -94,9 +121,7 @@ export default function NearbyVendors() {
           <div className="panel-heading">
             <div>
               <h2>Your search area</h2>
-              <p style={{ fontSize: 'var(--font-xs)', color: 'var(--text-secondary)' }}>
-                {selectedAddress} {coords && `(${coords.latitude.toFixed(4)}, ${coords.longitude.toFixed(4)})`}
-              </p>
+              <p>{searchAddress} {coords && `(${coords.latitude.toFixed(4)}, ${coords.longitude.toFixed(4)})`}</p>
             </div>
             {closestService && <span className="status-chip">Closest: {closestService.distanceKm} km</span>}
           </div>

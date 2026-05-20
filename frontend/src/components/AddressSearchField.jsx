@@ -1,34 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
-
-let googleScriptLoading = false;
-
-function loadGoogleMapsScript(apiKey, callback) {
-  if (window.google && window.google.maps && window.google.maps.places) {
-    callback();
-    return;
-  }
-  if (!apiKey) {
-    return;
-  }
-  if (googleScriptLoading) {
-    const interval = setInterval(() => {
-      if (window.google && window.google.maps && window.google.maps.places) {
-        clearInterval(interval);
-        callback();
-      }
-    }, 100);
-    return;
-  }
-  googleScriptLoading = true;
-  const script = document.createElement('script');
-  script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-  script.async = true;
-  script.defer = true;
-  script.onload = () => {
-    callback();
-  };
-  document.head.appendChild(script);
-}
+import { useState, useEffect } from 'react';
 
 export default function AddressSearchField({ label, placeholder, initialAddress, onSelectLocation }) {
   const [query, setQuery] = useState(initialAddress || '');
@@ -36,43 +6,16 @@ export default function AddressSearchField({ label, placeholder, initialAddress,
   const [searching, setSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [error, setError] = useState('');
-  const [isGoogleActive, setIsGoogleActive] = useState(false);
-  
-  const inputRef = useRef(null);
-  const autocompleteRef = useRef(null);
 
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || window.VITE_GOOGLE_MAPS_API_KEY;
-
+  // Keep internal query synchronized if initialAddress changes
   useEffect(() => {
     if (initialAddress !== undefined) {
       setQuery(initialAddress || '');
     }
   }, [initialAddress]);
 
-  useEffect(() => {
-    if (apiKey) {
-      loadGoogleMapsScript(apiKey, () => {
-        setIsGoogleActive(true);
-        if (inputRef.current && !autocompleteRef.current) {
-          autocompleteRef.current = new window.google.maps.places.Autocomplete(inputRef.current, {
-            types: ['geocode', 'establishment']
-          });
-          autocompleteRef.current.addListener('place_changed', () => {
-            const place = autocompleteRef.current.getPlace();
-            if (place && place.geometry) {
-              const lat = place.geometry.location.lat();
-              const lon = place.geometry.location.lng();
-              const address = place.formatted_address || place.name;
-              setQuery(address);
-              onSelectLocation(address, lat, lon);
-            }
-          });
-        }
-      });
-    }
-  }, [apiKey]);
-
-  const handleOSMSearch = async () => {
+  const handleSearch = async (e) => {
+    if (e) e.preventDefault();
     if (!query.trim()) return;
 
     setSearching(true);
@@ -107,44 +50,35 @@ export default function AddressSearchField({ label, placeholder, initialAddress,
 
   return (
     <div className="input-group" style={{ position: 'relative' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-        {label && <label style={{ margin: 0 }}>{label}</label>}
-        <span style={{ fontSize: '10px', color: 'var(--text-secondary)', background: 'var(--glass-bg)', padding: '2px 6px', borderRadius: '4px' }}>
-          {isGoogleActive ? '⚡ Google Maps' : 'Nominatim'}
-        </span>
-      </div>
+      {label && <label>{label}</label>}
       <div style={{ display: 'flex', gap: '8px' }}>
         <input
-          ref={inputRef}
           type="text"
           className="input-field"
           placeholder={placeholder || "Search address..."}
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
+            // Report string changes immediately, coordinates will resolve on select
             onSelectLocation(e.target.value, null, null);
           }}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();
-              if (!isGoogleActive) {
-                handleOSMSearch();
-              }
+              handleSearch();
             }
           }}
           style={{ flex: 1 }}
         />
-        {!isGoogleActive && (
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={handleOSMSearch}
-            disabled={searching}
-            style={{ minWidth: '90px' }}
-          >
-            {searching ? 'Searching...' : '🔍 Search'}
-          </button>
-        )}
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={handleSearch}
+          disabled={searching}
+          style={{ minWidth: '90px' }}
+        >
+          {searching ? 'Searching...' : '🔍 Search'}
+        </button>
       </div>
 
       {error && (
@@ -155,6 +89,7 @@ export default function AddressSearchField({ label, placeholder, initialAddress,
 
       {showDropdown && results.length > 0 && (
         <>
+          {/* Backdrop to close dropdown */}
           <div 
             style={{ position: 'fixed', inset: 0, zIndex: 998 }} 
             onClick={() => setShowDropdown(false)} 

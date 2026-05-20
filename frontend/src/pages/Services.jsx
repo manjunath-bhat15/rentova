@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import ServiceCard from '../components/ServiceCard';
 import AddressSearchField from '../components/AddressSearchField';
-import { useLocationContext } from '../contexts/LocationContext';
 import api from '../services/api';
 
 const categories = ['All', 'Equipment', 'Vehicles', 'Spaces', 'Tools', 'Electronics', 'Other'];
@@ -11,21 +10,13 @@ const categories = ['All', 'Equipment', 'Vehicles', 'Spaces', 'Tools', 'Electron
 export default function Services() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { coords, selectedAddress } = useLocationContext();
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
-  const [bookingForm, setBookingForm] = useState({
-    quantity: 1,
-    scheduledAt: '',
-    notes: '',
-    location: selectedAddress || '',
-    latitude: coords?.latitude || null,
-    longitude: coords?.longitude || null
-  });
+  const [bookingForm, setBookingForm] = useState({ quantity: 1, scheduledAt: '', notes: '', location: '', latitude: null, longitude: null });
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingError, setBookingError] = useState('');  
   const [walletBalance, setWalletBalance] = useState(null);
@@ -58,14 +49,7 @@ export default function Services() {
 
   const handleBook = async (service) => {
     setSelectedService(service);
-    setBookingForm({
-      quantity: 1,
-      scheduledAt: '',
-      notes: '',
-      location: selectedAddress || '',
-      latitude: coords?.latitude || null,
-      longitude: coords?.longitude || null
-    });
+    setBookingForm({ quantity: 1, scheduledAt: '', notes: '', location: '', latitude: null, longitude: null });
     setBookingError('');
     setShowBookingModal(true);
     // Fetch wallet balance
