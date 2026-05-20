@@ -8,6 +8,7 @@
   --bg-tertiary: #262626;
   --bg-elevated: #333333;
   --card-bg: rgba(26, 26, 26, 0.78);
+  --header-bg: rgba(15, 15, 15, 0.8);
 
   /* Glass Effects */
   --glass-bg: rgba(255, 255, 255, 0.03);
@@ -95,6 +96,7 @@ html.light-theme {
   --bg-tertiary: #f1f5f9;
   --bg-elevated: #e2e8f0;
   --card-bg: #ffffff;
+  --header-bg: rgba(255, 255, 255, 0.8);
 
   /* Glass Effects */
   --glass-bg: rgba(15, 23, 42, 0.04);
@@ -570,7 +572,7 @@ select.input-field {
   left: var(--sidebar-width);
   right: 0;
   height: var(--header-height);
-  background: rgba(15, 15, 15, 0.8);
+  background: var(--header-bg);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--glass-border);
   display: flex;
@@ -925,6 +927,7 @@ select.input-field {
   --bg-tertiary: #262626;
   --bg-elevated: #333333;
   --card-bg: rgba(26, 26, 26, 0.78);
+  --header-bg: rgba(15, 15, 15, 0.8);
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-bg-hover: rgba(255, 255, 255, 0.06);
   --glass-border: rgba(255, 255, 255, 0.05);
@@ -1165,7 +1168,7 @@ select.input-field {
 }
 
 .header {
-  background: rgba(15, 15, 15, 0.84);
+  background: var(--header-bg);
 }
 
 .header-kicker {
