@@ -212,28 +212,21 @@ const translations = {
 };
 
 export function ThemeLanguageProvider({ children }) {
-  const [lang, setLang] = useState(() => localStorage.getItem('rentova_lang') || 'en');
-  const [theme, setTheme] = useState(() => localStorage.getItem('rentova_theme') || 'dark');
+  // Temporarily locked to English and original Dark theme as requested
+  const [lang] = useState('en');
+  const [theme] = useState('dark');
 
   useEffect(() => {
-    localStorage.setItem('rentova_lang', lang);
-  }, [lang]);
-
-  useEffect(() => {
-    localStorage.setItem('rentova_theme', theme);
-    if (theme === 'light') {
-      document.documentElement.classList.add('light-theme');
-    } else {
-      document.documentElement.classList.remove('light-theme');
-    }
-  }, [theme]);
+    // Keep document class locked to dark mode (remove light-theme)
+    document.documentElement.classList.remove('light-theme');
+  }, []);
 
   const toggleLanguage = () => {
-    setLang((prev) => (prev === 'en' ? 'kn' : 'en'));
+    // Temporarily disabled
   };
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+    // Temporarily disabled
   };
 
   const t = (key) => {

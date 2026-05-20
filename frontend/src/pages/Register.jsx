@@ -46,7 +46,7 @@ export default function Register() {
 
   return (
     <div className="auth-page">
-      {/* Dynamic top action switcher bar - optimized with top/right styling for all devices */}
+      {/* Dynamic top action switcher bar - temporarily commented out
       <div className="auth-top-actions" style={{ position: 'absolute', top: '16px', right: '16px', display: 'flex', gap: '8px', zIndex: 10 }}>
         <button 
           onClick={toggleLanguage}
@@ -65,6 +65,7 @@ export default function Register() {
           {theme === 'dark' ? '☀️' : '🌙'}
         </button>
       </div>
+      */}
 
       <div className="glass-card auth-card" style={{ transition: 'all 0.3s ease' }}>
         <h1>{step === 1 ? t('registerTitle') : t('verifyTitle')}</h1>

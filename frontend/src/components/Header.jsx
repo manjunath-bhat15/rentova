@@ -82,7 +82,7 @@ export default function Header({ title }) {
       </div>
 
       <div className="header-right">
-        {/* Language Switcher */}
+        {/* Language Switcher - Temporarily commented out
         <button 
           onClick={toggleLanguage}
           className="theme-switcher-btn-class"
@@ -90,8 +90,9 @@ export default function Header({ title }) {
         >
           🌐 {lang === 'en' ? 'ಕನ್ನಡ' : 'English'}
         </button>
+        */}
         
-        {/* Theme Switcher */}
+        {/* Theme Switcher - Temporarily commented out
         <button 
           onClick={toggleTheme}
           className="theme-switcher-btn-class"
@@ -100,6 +101,7 @@ export default function Header({ title }) {
         >
           {theme === 'dark' ? '☀️' : '🌙'}
         </button>
+        */}
 
         <button
           className="notification-bell"
