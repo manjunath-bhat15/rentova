@@ -24,19 +24,20 @@ public class DevDataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        seedUser("customer@rentova.local", "Customer Demo", Role.CUSTOMER, new BigDecimal("5000.00"));
-        seedUser("vendor@rentova.local", "Vendor Demo", Role.VENDOR, BigDecimal.ZERO);
-        seedUser("admin@rentova.local", "Admin Demo", Role.ADMIN, BigDecimal.ZERO);
+        seedUser("customer@rentova.local", "Customer Demo", Role.CUSTOMER, new BigDecimal("5000.00"), "password123");
+        seedUser("vendor@rentova.local", "Vendor Demo", Role.VENDOR, BigDecimal.ZERO, "password123");
+        seedUser("admin@rentova.local", "Admin Demo", Role.ADMIN, BigDecimal.ZERO, "password123");
+        seedUser("admin@rentova.com", "System Administrator", Role.ADMIN, BigDecimal.ZERO, "admin123");
     }
 
-    private void seedUser(String email, String name, Role role, BigDecimal balance) {
+    private void seedUser(String email, String name, Role role, BigDecimal balance, String plainPassword) {
         userRepository.findByEmail(email).ifPresentOrElse(
                 user -> ensureWallet(user, balance),
                 () -> {
                     User user = User.builder()
                             .email(email)
                             .name(name)
-                            .password(passwordEncoder.encode("password123"))
+                            .password(passwordEncoder.encode(plainPassword))
                             .role(role)
                             .isVerified(true)
                             .build();
