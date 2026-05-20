@@ -6,7 +6,7 @@ const categoryColors = {
   'Vehicles': 'var(--accent-secondary)',
   'Spaces': 'var(--accent-warning)',
   'Tools': 'var(--accent-success)',
-  'Electronics': '#a29bfe',
+  'Electronics': 'var(--accent-primary)',
   'Other': 'var(--text-muted)',
 };
 

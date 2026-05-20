@@ -107,8 +107,8 @@ html.light-theme {
   --text-inverse: #ffffff;
 
   /* Accent Colors */
-  --accent-primary: #6c5ce7;
-  --accent-primary-hover: #5b4db8;
+  --accent-primary: #ff7a00;
+  --accent-primary-hover: #ff9a3d;
   --accent-secondary: #00cec9;
   --accent-secondary-hover: #00a8a5;
   --accent-warning: #b45309;
@@ -117,14 +117,14 @@ html.light-theme {
   --accent-success: #10b981;
 
   /* Gradients */
-  --accent-gradient: linear-gradient(135deg, #6c5ce7, #8575f0);
-  --accent-gradient-hover: linear-gradient(135deg, #5b4db8, #7c6ef0);
+  --accent-gradient: linear-gradient(135deg, #ff7a00, #ff9f43);
+  --accent-gradient-hover: linear-gradient(135deg, #ff9a3d, #ffb066);
   --teal-gradient: linear-gradient(135deg, #00cec9, #00b894);
   --danger-gradient: linear-gradient(135deg, #ef4444, #b91c1c);
   --card-gradient: linear-gradient(145deg, rgba(15, 23, 42, 0.02), rgba(15, 23, 42, 0.01));
 
   /* Glow Effects */
-  --glow-primary: 0 0 20px rgba(108, 92, 231, 0.15);
+  --glow-primary: 0 0 20px rgba(255, 122, 0, 0.25);
   --glow-secondary: 0 0 20px rgba(0, 206, 201, 0.15);
   --glow-danger: 0 0 20px rgba(239, 68, 68, 0.15);
 
@@ -218,7 +218,7 @@ img { max-width: 100%; display: block; }
 .btn-primary:hover {
   background: var(--accent-gradient-hover);
   transform: translateY(-1px);
-  box-shadow: 0 0 30px rgba(108, 92, 231, 0.4);
+  box-shadow: 0 0 30px rgba(255, 122, 0, 0.4);
 }
 
 .btn-secondary {
@@ -283,7 +283,7 @@ img { max-width: 100%; display: block; }
 .input-field::placeholder { color: var(--text-muted); }
 .input-field:focus {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+  box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.15);
 }
 
 select.input-field {
@@ -305,7 +305,7 @@ select.input-field {
   letter-spacing: 0.03em;
 }
 
-.badge-purple { background: rgba(108, 92, 231, 0.15); color: #a29bfe; }
+.badge-purple { background: rgba(255, 122, 0, 0.15); color: var(--accent-primary); }
 .badge-teal { background: rgba(0, 206, 201, 0.15); color: #00cec9; }
 .badge-amber { background: rgba(253, 203, 110, 0.15); color: #fdcb6e; }
 .badge-red { background: rgba(255, 107, 107, 0.15); color: #ff6b6b; }
@@ -364,8 +364,8 @@ select.input-field {
 }
 
 @keyframes glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(108, 92, 231, 0.3); }
-  50% { box-shadow: 0 0 40px rgba(108, 92, 231, 0.5); }
+  0%, 100% { box-shadow: 0 0 20px rgba(255, 122, 0, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(255, 122, 0, 0.5); }
 }
 
 @keyframes countUp {
@@ -396,7 +396,7 @@ select.input-field {
   justify-content: center;
   padding: var(--space-lg);
   background:
-    radial-gradient(ellipse at 20% 50%, rgba(108, 92, 231, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 50%, rgba(255, 122, 0, 0.08) 0%, transparent 50%),
     radial-gradient(ellipse at 80% 20%, rgba(0, 206, 201, 0.06) 0%, transparent 50%),
     var(--bg-primary);
 }
@@ -550,9 +550,9 @@ select.input-field {
   color: var(--text-primary);
 }
 .nav-item.active {
-  background: rgba(108, 92, 231, 0.1);
+  background: rgba(255, 122, 0, 0.1);
   color: var(--accent-primary);
-  border-color: rgba(108, 92, 231, 0.2);
+  border-color: rgba(255, 122, 0, 0.2);
 }
 .nav-item .nav-icon {
   width: 20px;
@@ -669,7 +669,7 @@ select.input-field {
 }
 
 .landing::before {
-  background: rgba(108, 92, 231, 0.15);
+  background: rgba(255, 122, 0, 0.15);
   top: -100px;
   left: -100px;
 }
@@ -718,7 +718,7 @@ select.input-field {
 }
 
 .text-gradient-premium {
-  background: linear-gradient(to right, #fff, #a29bfe, #00cec9);
+  background: linear-gradient(to right, #fff, var(--accent-primary), #00cec9);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-size: 200% auto;

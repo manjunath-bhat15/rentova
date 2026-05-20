@@ -178,7 +178,7 @@ export default function LandingPage() {
   return (
     <div className={`premium-landing ${theme === 'light' ? 'light-theme' : ''}`}>
       {/* Premium Ambient Background Glows */}
-      <div style={{ position: 'absolute', top: '-10%', left: '20%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(108, 92, 231, 0.15) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
+      <div style={{ position: 'absolute', top: '-10%', left: '20%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(255, 122, 0, 0.15) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
       <div style={{ position: 'absolute', top: '40%', right: '-10%', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(0, 206, 201, 0.1) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
 
       {/* --- NAVIGATION BAR --- */}
@@ -247,7 +247,7 @@ export default function LandingPage() {
               <Link to="/login" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontWeight: 500, fontSize: '0.9rem', padding: '10px 20px' }} className="theme-switcher-btn-class">{t('signIn')}</Link>
               <Link to="/register" style={{ 
                 background: '#ffffff', 
-                color: '#030303', 
+                color: 'var(--bg-primary)', 
                 padding: '10px 24px', 
                 borderRadius: '100px', 
                 fontWeight: 600, 
@@ -468,7 +468,7 @@ export default function LandingPage() {
       {/* --- FOOTER --- */}
       <footer className="premium-landing-footer">
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ width: '24px', height: '24px', background: 'linear-gradient(135deg, #6c5ce7, #00cec9)', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '11px' }}>R</div>
+          <div style={{ width: '24px', height: '24px', background: 'var(--accent-gradient)', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '11px' }}>R</div>
           <span style={{ fontWeight: 600, fontSize: '0.95rem', color: '#fff', letterSpacing: '-0.02em' }}>Rentova</span>
         </div>
         <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem', textAlign: 'center', letterSpacing: '0.02em' }}>
@@ -510,26 +510,26 @@ export default function LandingPage() {
               {isIOS ? (
                 <>
                   <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
-                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(108, 92, 231, 0.2)', color: '#a29bfe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>1</div>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(255, 122, 0, 0.2)', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>1</div>
                     <span style={{ fontSize: '0.9rem', color: theme === 'light' ? '#0f172a' : '#fff' }}>{t('iosStep1')}</span>
                   </div>
                   <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
-                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(108, 92, 231, 0.2)', color: '#a29bfe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>2</div>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(255, 122, 0, 0.2)', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>2</div>
                     <span style={{ fontSize: '0.9rem', color: theme === 'light' ? '#0f172a' : '#fff' }}>{t('iosStep2')}</span>
                   </div>
                   <div style={{ display: 'flex', gap: '12px' }}>
-                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(108, 92, 231, 0.2)', color: '#a29bfe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>3</div>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(255, 122, 0, 0.2)', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>3</div>
                     <span style={{ fontSize: '0.9rem', color: theme === 'light' ? '#0f172a' : '#fff' }}>{t('iosStep3')}</span>
                   </div>
                 </>
               ) : (
                 <>
                   <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
-                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(108, 92, 231, 0.2)', color: '#a29bfe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>1</div>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(255, 122, 0, 0.2)', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>1</div>
                     <span style={{ fontSize: '0.9rem', color: theme === 'light' ? '#0f172a' : '#fff' }}>{t('otherStep1')}</span>
                   </div>
                   <div style={{ display: 'flex', gap: '12px' }}>
-                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(108, 92, 231, 0.2)', color: '#a29bfe', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>2</div>
+                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'rgba(255, 122, 0, 0.2)', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.85rem', flexShrink: 0 }}>2</div>
                     <span style={{ fontSize: '0.9rem', color: theme === 'light' ? '#0f172a' : '#fff' }}>{t('otherStep2')}</span>
                   </div>
                 </>
@@ -545,7 +545,7 @@ export default function LandingPage() {
                 borderRadius: '12px',
                 fontSize: '0.95rem',
                 fontWeight: 600,
-                background: 'linear-gradient(135deg, #6c5ce7, #4834d4)',
+                background: 'var(--accent-gradient)',
                 cursor: 'pointer',
                 border: 'none',
                 color: '#fff'

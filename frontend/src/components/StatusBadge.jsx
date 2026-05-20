@@ -10,7 +10,7 @@ const statusConfig = {
   CONFIRMED: {
     labelKey: 'statusConfirmed',
     color: 'var(--accent-primary)',
-    bg: 'rgba(108, 92, 231, 0.12)',
+    bg: 'rgba(255, 122, 0, 0.12)',
     icon: '✅',
   },
   IN_PROGRESS: {
