@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MapPanel, { mapsDirectionsUrl } from '../components/MapPanel';
+import AddressSearchField from '../components/AddressSearchField';
 import api from '../services/api';
 
 export default function NearbyVendors() {
@@ -9,7 +10,7 @@ export default function NearbyVendors() {
   const [radiusKm, setRadiusKm] = useState(10);
   const [services, setServices] = useState([]);
   const [selected, setSelected] = useState(null);
-  const [manualCoords, setManualCoords] = useState({ latitude: '12.9716', longitude: '77.5946' });
+  const [searchAddress, setSearchAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -34,8 +35,12 @@ export default function NearbyVendors() {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         });
+        setSearchAddress('My GPS Location');
       },
-      () => setError('Allow location access to see vendors around you.'),
+      () => {
+        setCoords({ latitude: 12.9716, longitude: 77.5946 });
+        setSearchAddress('Default (Bangalore)');
+      },
       { enableHighAccuracy: true, timeout: 12000 }
     );
   };
@@ -58,16 +63,7 @@ export default function NearbyVendors() {
     }
   };
 
-  const applyManualCoords = () => {
-    const latitude = Number(manualCoords.latitude);
-    const longitude = Number(manualCoords.longitude);
-    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-      setError('Enter valid latitude and longitude values.');
-      return;
-    }
-    setError('');
-    setCoords({ latitude, longitude });
-  };
+
 
   const closestService = useMemo(() => services[0], [services]);
 
@@ -91,29 +87,31 @@ export default function NearbyVendors() {
             <option value={10}>10 km</option>
             <option value={25}>25 km</option>
             <option value={50}>50 km</option>
+            <option value={999999}>Unlimited (Show All)</option>
           </select>
           <button className="btn btn-secondary" onClick={requestLocation}>Refresh Location</button>
         </div>
       </div>
 
-      <div className="manual-location-bar">
-        <div className="input-group">
-          <label>Latitude</label>
-          <input
-            className="input-field"
-            value={manualCoords.latitude}
-            onChange={(event) => setManualCoords((current) => ({ ...current, latitude: event.target.value }))}
-          />
-        </div>
-        <div className="input-group">
-          <label>Longitude</label>
-          <input
-            className="input-field"
-            value={manualCoords.longitude}
-            onChange={(event) => setManualCoords((current) => ({ ...current, longitude: event.target.value }))}
-          />
-        </div>
-        <button className="btn btn-primary" onClick={applyManualCoords}>Use Coordinates</button>
+      <div className="manual-location-bar" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 'var(--space-md)', alignItems: 'end', background: 'var(--glass-bg)', padding: 'var(--space-md)', borderRadius: 'var(--radius-md)', border: '1px solid var(--glass-border)', marginBottom: 'var(--space-md)' }}>
+        <AddressSearchField
+          label="Search and Set Custom Location"
+          placeholder="Type an address, city, or country to update your location..."
+          initialAddress={searchAddress}
+          onSelectLocation={(address, lat, lon) => {
+            if (lat !== null && lon !== null) {
+              setCoords({ latitude: lat, longitude: lon });
+              setSearchAddress(address);
+            }
+          }}
+        />
+        <button 
+          className="btn btn-secondary" 
+          onClick={requestLocation}
+          style={{ height: '42px', display: 'flex', alignItems: 'center', gap: '6px' }}
+        >
+          📍 Reset to My GPS
+        </button>
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -123,7 +121,7 @@ export default function NearbyVendors() {
           <div className="panel-heading">
             <div>
               <h2>Your search area</h2>
-              <p>{coords ? `${coords.latitude.toFixed(4)}, ${coords.longitude.toFixed(4)}` : 'Waiting for location permission'}</p>
+              <p>{searchAddress} {coords && `(${coords.latitude.toFixed(4)}, ${coords.longitude.toFixed(4)})`}</p>
             </div>
             {closestService && <span className="status-chip">Closest: {closestService.distanceKm} km</span>}
           </div>
