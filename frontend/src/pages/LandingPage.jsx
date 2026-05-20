@@ -187,16 +187,16 @@ export default function LandingPage() {
           <div style={{ 
             width: '36px', 
             height: '36px', 
-            background: 'linear-gradient(135deg, #6c5ce7, #00cec9)', 
+            background: 'var(--accent-gradient)', 
             borderRadius: '10px', 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center', 
             fontWeight: 800, 
             color: '#fff',
-            boxShadow: '0 0 20px rgba(108, 92, 231, 0.4)'
+            boxShadow: 'var(--glow-primary)'
           }}>R</div>
-          <span style={{ fontWeight: 700, fontSize: '1.25rem', letterSpacing: '-0.03em', background: 'linear-gradient(to right, #fff, #a29bfe)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Rentova</span>
+          <span style={{ fontWeight: 700, fontSize: '1.25rem', letterSpacing: '-0.03em', background: 'linear-gradient(to right, #fff, var(--accent-primary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Rentova</span>
         </div>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -230,14 +230,14 @@ export default function LandingPage() {
 
           {isAuthenticated ? (
             <Link to={`/${user?.role?.toLowerCase() || 'customer'}`} className="btn" style={{ 
-              background: 'linear-gradient(135deg, #6c5ce7, #4834d4)', 
+              background: 'var(--accent-gradient)', 
               color: '#fff', 
               padding: '10px 24px', 
               borderRadius: '100px', 
               fontWeight: 600, 
               fontSize: '0.9rem', 
               textDecoration: 'none',
-              boxShadow: '0 4px 20px rgba(108, 92, 231, 0.3)',
+              boxShadow: 'var(--glow-primary)',
               transition: 'transform 0.2s'
             }}>
               {t('goToDashboard')}
@@ -279,8 +279,8 @@ export default function LandingPage() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="premium-landing-badge"
         >
-          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#00cec9', boxShadow: '0 0 10px #00cec9' }}></span>
-          <span style={{ fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#a29bfe' }}>{t('badge')}</span>
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent-primary)', boxShadow: 'var(--glow-primary)' }}></span>
+          <span style={{ fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--accent-primary)' }}>{t('badge')}</span>
         </motion.div>
 
         {/* Master Copy */}
@@ -291,7 +291,7 @@ export default function LandingPage() {
           className="premium-landing-title"
         >
           {t('title')}<br />
-          <span style={{ background: 'linear-gradient(180deg, #ffffff 30%, #a29bfe 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t('titleSpan')}</span>
+          <span style={{ background: 'linear-gradient(180deg, #ffffff 30%, var(--accent-primary) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t('titleSpan')}</span>
         </motion.h1>
 
         <motion.p 
@@ -310,7 +310,7 @@ export default function LandingPage() {
           transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
           className="premium-landing-ctas"
         >
-          <Link to="/register" style={{ background: 'linear-gradient(135deg, #6c5ce7, #4834d4)', color: '#fff', padding: '16px 40px', borderRadius: '12px', fontWeight: 600, fontSize: '1.05rem', textDecoration: 'none', boxShadow: '0 20px 40px rgba(108, 92, 231, 0.25)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+          <Link to="/register" style={{ background: 'var(--accent-gradient)', color: '#fff', padding: '16px 40px', borderRadius: '12px', fontWeight: 600, fontSize: '1.05rem', textDecoration: 'none', boxShadow: 'var(--glow-primary)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
             {t('ctaDeploy')}
           </Link>
           <button onClick={handleInstallClick} style={{ background: 'rgba(255,255,255,0.02)', color: '#fff', padding: '16px 40px', borderRadius: '12px', fontWeight: 600, fontSize: '1.05rem', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(10px)', cursor: 'pointer' }}>
@@ -369,11 +369,11 @@ export default function LandingPage() {
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
             <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)' }}>{t('clusterNode')}</span>
-            <span style={{ fontSize: '0.75rem', background: 'rgba(108,92,231,0.1)', color: '#a29bfe', padding: '2px 8px', borderRadius: '4px', fontWeight: 600 }}>DELHI_09</span>
+            <span style={{ fontSize: '0.75rem', background: 'rgba(255, 122, 0, 0.1)', color: 'var(--accent-primary)', padding: '2px 8px', borderRadius: '4px', fontWeight: 600 }}>DELHI_09</span>
           </div>
           <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>{t('bookingSynced')}</div>
           <div style={{ marginTop: '12px', height: '2px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
-            <div style={{ width: '100%', height: '100%', background: 'linear-gradient(90deg, #6c5ce7, #00cec9)' }}></div>
+            <div style={{ width: '100%', height: '100%', background: 'var(--accent-gradient)' }}></div>
           </div>
         </motion.div>
       </motion.section>
@@ -390,7 +390,7 @@ export default function LandingPage() {
               transition={{ duration: 0.5, delay: idx * 0.1 }}
               className="premium-landing-metric-item"
             >
-              <div style={{ fontSize: '2.5rem', fontWeight: 800, letterSpacing: '-0.02em', background: 'linear-gradient(180deg, #ffffff, #a29bfe)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{m.value}</div>
+              <div style={{ fontSize: '2.5rem', fontWeight: 800, letterSpacing: '-0.02em', background: 'linear-gradient(180deg, #ffffff, var(--accent-primary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{m.value}</div>
               <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)', fontWeight: 500, marginTop: '4px' }}>{m.label}</div>
               <div style={{ fontSize: '0.7rem', color: '#00cec9', marginTop: '4px', letterSpacing: '0.02em' }}>{m.trend}</div>
             </motion.div>
@@ -422,7 +422,7 @@ export default function LandingPage() {
           {/* Bento Experience One: Customer Workspace */}
           <div className="premium-landing-bento-card">
             <div>
-              <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(108, 92, 231, 0.1)', border: '1px solid rgba(108, 92, 231, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', marginBottom: '40px' }}>⚡</div>
+              <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(255, 122, 0, 0.1)', border: '1px solid rgba(255, 122, 0, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', marginBottom: '40px' }}>⚡</div>
               <h3 style={{ fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '16px' }}>{t('forCustomers')}</h3>
               <p style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, fontSize: '1.05rem', marginBottom: '40px' }}>
                 {t('customerBody')}

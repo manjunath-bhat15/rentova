@@ -3,26 +3,26 @@
 /* ===== CSS Custom Properties (Design Tokens) ===== */
 :root {
   /* Background Colors */
-  --bg-primary: #0f0f13;
-  --bg-secondary: #1a1a24;
-  --bg-tertiary: #242435;
-  --bg-elevated: #2a2a3d;
+  --bg-primary: #0f0f0f;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #262626;
+  --bg-elevated: #333333;
 
   /* Glass Effects */
-  --glass-bg: rgba(255, 255, 255, 0.04);
-  --glass-bg-hover: rgba(255, 255, 255, 0.07);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-border-hover: rgba(255, 255, 255, 0.14);
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-bg-hover: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.05);
+  --glass-border-hover: rgba(255, 255, 255, 0.1);
 
   /* Text Colors */
-  --text-primary: #f0f0f5;
-  --text-secondary: #9999b3;
-  --text-muted: #666680;
-  --text-inverse: #0f0f13;
+  --text-primary: #fafafa;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-inverse: #0f0f0f;
 
   /* Accent Colors */
-  --accent-primary: #6c5ce7;
-  --accent-primary-hover: #7c6ef0;
+  --accent-primary: #ff7a00;
+  --accent-primary-hover: #ff9a3d;
   --accent-secondary: #00cec9;
   --accent-secondary-hover: #00e0db;
   --accent-warning: #fdcb6e;
@@ -31,16 +31,16 @@
   --accent-success: #00b894;
 
   /* Gradients */
-  --accent-gradient: linear-gradient(135deg, #6c5ce7, #a29bfe);
-  --accent-gradient-hover: linear-gradient(135deg, #7c6ef0, #b8b0ff);
+  --accent-gradient: linear-gradient(135deg, #ff7a00, #ff9f43);
+  --accent-gradient-hover: linear-gradient(135deg, #ff9a3d, #ffb066);
   --teal-gradient: linear-gradient(135deg, #00cec9, #55efc4);
   --danger-gradient: linear-gradient(135deg, #ff6b6b, #ee5a24);
-  --card-gradient: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+  --card-gradient: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
 
   /* Glow Effects */
-  --glow-primary: 0 0 20px rgba(108, 92, 231, 0.3);
-  --glow-secondary: 0 0 20px rgba(0, 206, 201, 0.3);
-  --glow-danger: 0 0 20px rgba(255, 107, 107, 0.3);
+  --glow-primary: 0 0 20px rgba(255, 122, 0, 0.25);
+  --glow-secondary: 0 0 20px rgba(0, 206, 201, 0.25);
+  --glow-danger: 0 0 20px rgba(255, 107, 107, 0.25);
 
   /* Shadows */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
