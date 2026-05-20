@@ -268,6 +268,34 @@ public class AdminController {
                 .count();
     }
 
+    @PatchMapping("/users/{id}/verify-id")
+    public ResponseEntity<UserDTO> verifyUserGovtId(
+            @PathVariable String id,
+            @RequestBody Map<String, Boolean> body) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        boolean approve = body.getOrDefault("approve", false);
+        user.setGovtIdVerified(approve);
+        if (approve) {
+            user.setTrustScore(user.getTrustScore() + 40);
+        }
+        return ResponseEntity.ok(toDTO(userRepository.save(user)));
+    }
+
+    @PatchMapping("/users/{id}/verify-gst")
+    public ResponseEntity<UserDTO> verifyUserGst(
+            @PathVariable String id,
+            @RequestBody Map<String, Boolean> body) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        boolean approve = body.getOrDefault("approve", false);
+        user.setGstVerified(approve);
+        if (approve) {
+            user.setTrustScore(user.getTrustScore() + 20);
+        }
+        return ResponseEntity.ok(toDTO(userRepository.save(user)));
+    }
+
     private UserDTO toDTO(User user) {
         BigDecimal walletBalance = walletRepository.findByUserId(user.getId())
                 .map(Wallet::getBalance)
@@ -279,6 +307,15 @@ public class AdminController {
                 .role(user.getRole().name())
                 .avatar(user.getAvatar())
                 .walletBalance(walletBalance)
+                .isVerified(user.isVerified())
+                .phoneVerified(user.isPhoneVerified())
+                .phoneNumber(user.getPhoneNumber())
+                .govtIdVerified(user.isGovtIdVerified())
+                .govtIdNumber(user.getGovtIdNumber())
+                .govtIdUrl(user.getGovtIdUrl())
+                .gstVerified(user.isGstVerified())
+                .gstNumber(user.getGstNumber())
+                .trustScore(user.getTrustScore())
                 .createdAt(user.getCreatedAt())
                 .build();
     }

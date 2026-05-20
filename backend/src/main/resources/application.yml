@@ -2,6 +2,18 @@ spring:
   application:
     name: rentova
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: admin.rentova@gmail.com
+    password: vbqamnaifabfzgcb
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
   # Default profile uses H2 in-memory database for local development
   datasource:
     url: jdbc:h2:mem:rentova
@@ -46,6 +58,18 @@ spring:
   config:
     activate:
       on-profile: prod
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
   datasource:
     url: ${SPRING_DATASOURCE_URL}

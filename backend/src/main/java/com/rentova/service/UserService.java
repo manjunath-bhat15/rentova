@@ -22,6 +22,7 @@ public class UserService {
     private final WalletRepository walletRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
+    private final EmailService emailService;
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -40,6 +41,8 @@ public class UserService {
         System.out.println("========== OTP FOR " + request.getEmail() + " ==========");
         System.out.println("OTP: " + otp);
         System.out.println("==============================================");
+        
+        emailService.sendVerificationOtp(request.getEmail(), otp);
 
         User user = User.builder()
                 .email(request.getEmail())
@@ -137,6 +140,64 @@ public class UserService {
         return toDTO(user, balance);
     }
 
+    @Transactional
+    public void requestPhoneVerify(User user, String phoneNumber) {
+        User dbUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        String otp = String.format("%06d", new java.util.Random().nextInt(999999));
+        dbUser.setOtpCode(otp);
+        dbUser.setPhoneNumber(phoneNumber);
+        userRepository.save(dbUser);
+        emailService.sendPhoneVerificationOtp(dbUser.getEmail(), otp);
+    }
+
+    @Transactional
+    public UserDTO verifyPhone(User user, String otp) {
+        User dbUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        if (dbUser.getOtpCode() == null || !dbUser.getOtpCode().equals(otp)) {
+            throw new RuntimeException("Invalid OTP code");
+        }
+        dbUser.setPhoneVerified(true);
+        dbUser.setOtpCode(null);
+        dbUser.setTrustScore(dbUser.getTrustScore() + 10);
+        dbUser = userRepository.save(dbUser);
+        
+        BigDecimal balance = walletRepository.findByUserId(dbUser.getId())
+                .map(Wallet::getBalance)
+                .orElse(BigDecimal.ZERO);
+        return toDTO(dbUser, balance);
+    }
+
+    @Transactional
+    public UserDTO submitGovtId(User user, String idNumber, String idUrl) {
+        User dbUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        dbUser.setGovtIdNumber(idNumber);
+        dbUser.setGovtIdUrl(idUrl);
+        dbUser.setGovtIdVerified(false);
+        dbUser = userRepository.save(dbUser);
+
+        BigDecimal balance = walletRepository.findByUserId(dbUser.getId())
+                .map(Wallet::getBalance)
+                .orElse(BigDecimal.ZERO);
+        return toDTO(dbUser, balance);
+    }
+
+    @Transactional
+    public UserDTO submitGst(User user, String gstNumber) {
+        User dbUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        dbUser.setGstNumber(gstNumber);
+        dbUser.setGstVerified(false);
+        dbUser = userRepository.save(dbUser);
+
+        BigDecimal balance = walletRepository.findByUserId(dbUser.getId())
+                .map(Wallet::getBalance)
+                .orElse(BigDecimal.ZERO);
+        return toDTO(dbUser, balance);
+    }
+
     private UserDTO toDTO(User user, BigDecimal walletBalance) {
         return UserDTO.builder()
                 .id(user.getId())
@@ -145,6 +206,15 @@ public class UserService {
                 .role(user.getRole().name())
                 .avatar(user.getAvatar())
                 .walletBalance(walletBalance)
+                .isVerified(user.isVerified())
+                .phoneVerified(user.isPhoneVerified())
+                .phoneNumber(user.getPhoneNumber())
+                .govtIdVerified(user.isGovtIdVerified())
+                .govtIdNumber(user.getGovtIdNumber())
+                .govtIdUrl(user.getGovtIdUrl())
+                .gstVerified(user.isGstVerified())
+                .gstNumber(user.getGstNumber())
+                .trustScore(user.getTrustScore())
                 .createdAt(user.getCreatedAt())
                 .build();
     }

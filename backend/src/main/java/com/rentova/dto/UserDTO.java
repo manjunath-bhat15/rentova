@@ -17,5 +17,14 @@ public class UserDTO {
     private String role;
     private String avatar;
     private BigDecimal walletBalance;
+    private boolean isVerified;
+    private boolean phoneVerified;
+    private String phoneNumber;
+    private boolean govtIdVerified;
+    private String govtIdNumber;
+    private String govtIdUrl;
+    private boolean gstVerified;
+    private String gstNumber;
+    private int trustScore;
     private LocalDateTime createdAt;
 }

@@ -63,8 +63,13 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('rentova_user');
   }, []);
 
+  const updateUser = useCallback((userData) => {
+    setUser(userData);
+    localStorage.setItem('rentova_user', JSON.stringify(userData));
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, verifyOtp, logout, isAuthenticated: !!token }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, verifyOtp, logout, updateUser, isAuthenticated: !!token }}>
       {children}
     </AuthContext.Provider>
   );
