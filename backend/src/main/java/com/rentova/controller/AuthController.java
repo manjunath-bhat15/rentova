@@ -48,6 +48,20 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/resend-otp")
+    public ResponseEntity<Void> resendOtp(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        if (email == null || email.trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        try {
+            userService.resendOtp(email);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @GetMapping("/me")
     public ResponseEntity<UserDTO> getCurrentUser(@AuthenticationPrincipal User user) {
         if (user == null) {

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useThemeLanguage } from '../contexts/ThemeLanguageContext';
+import api from '../services/api';
 
 export default function Register() {
   const [step, setStep] = useState(1);
@@ -11,10 +12,25 @@ export default function Register() {
   const [role, setRole] = useState('CUSTOMER');
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const { register, verifyOtp } = useAuth();
   const { lang, theme, toggleTheme, toggleLanguage, t } = useThemeLanguage();
   const navigate = useNavigate();
+
+  const handleResendOtp = async () => {
+    setError('');
+    setSuccess('');
+    setLoading(true);
+    try {
+      await api.post('/api/auth/resend-otp', { email });
+      setSuccess('Verification code resent successfully!');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to resend OTP.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
@@ -72,6 +88,20 @@ export default function Register() {
         <p>{step === 1 ? t('registerSubtitle') : `${t('verifySubtitle')} ${email}`}</p>
 
         {error && <div className="error-message">{error}</div>}
+        {success && (
+          <div style={{
+            color: '#10b981',
+            background: 'rgba(16, 185, 129, 0.1)',
+            padding: '10px 14px',
+            fontSize: '0.875rem',
+            borderRadius: '6px',
+            marginBottom: '16px',
+            border: '1px solid rgba(16, 185, 129, 0.2)',
+            textAlign: 'center'
+          }}>
+            {success}
+          </div>
+        )}
 
         {step === 1 ? (
           <form className="auth-form" onSubmit={handleRegisterSubmit}>
@@ -149,6 +179,25 @@ export default function Register() {
             <button type="submit" className="btn btn-primary" disabled={loading || otp.length !== 6}>
               {loading ? t('loading') : t('verifyBtn')}
             </button>
+            <div style={{ textAlign: 'center', marginTop: '16px' }}>
+              <button
+                type="button"
+                className="link-btn"
+                onClick={handleResendOtp}
+                disabled={loading}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--accent)',
+                  cursor: 'pointer',
+                  fontSize: '0.875rem',
+                  textDecoration: 'underline',
+                  padding: 0
+                }}
+              >
+                {loading ? 'Sending...' : 'Resend Verification Code'}
+              </button>
+            </div>
           </form>
         )}
 

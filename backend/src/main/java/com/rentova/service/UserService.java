@@ -121,6 +121,26 @@ public class UserService {
                 .build();
     }
 
+    @Transactional
+    public void resendOtp(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.isVerified()) {
+            throw new RuntimeException("User is already verified");
+        }
+
+        String otp = String.format("%06d", new java.util.Random().nextInt(999999));
+        user.setOtpCode(otp);
+        userRepository.save(user);
+
+        System.out.println("========== RESEND OTP FOR " + email + " ==========");
+        System.out.println("OTP: " + otp);
+        System.out.println("==============================================");
+
+        emailService.sendVerificationOtp(email, otp);
+    }
+
     public UserDTO getCurrentUser(User user) {
         BigDecimal balance = walletRepository.findByUserId(user.getId())
                 .map(Wallet::getBalance)
