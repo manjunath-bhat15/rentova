@@ -2010,4 +2010,16 @@ select.input-field {
   color: rgba(15, 23, 42, 0.4) !important;
 }
 
+/* All Browser and Touch Compatibility Optimization */
+.theme-switcher-btn-class,
+.premium-landing-nav-install-btn,
+.premium-landing-ctas button,
+.premium-landing-ctas a,
+.premium-landing-nav a {
+  flex-shrink: 0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+
 
