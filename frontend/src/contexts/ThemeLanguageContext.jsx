@@ -33,6 +33,9 @@ const translations = {
     // Navigation and Page Titles
     overview: "Overview",
     myListings: "My Listings",
+    browseListings: "Browse Listings",
+    allListings: "All Listings",
+    allBookings: "All Bookings",
     addListing: "Add Listing",
     myBookings: "My Bookings",
     wallet: "Wallet",
@@ -136,6 +139,9 @@ const translations = {
     // Navigation and Page Titles
     overview: "ಅವಲೋಕನ",
     myListings: "ನನ್ನ ಸೇವೆಗಳು",
+    browseListings: "ಸೇವೆಗಳನ್ನು ಹುಡುಕಿ",
+    allListings: "ಎಲ್ಲಾ ಸೇವೆಗಳು",
+    allBookings: "ಎಲ್ಲಾ ಬುಕಿಂಗ್ಸ್",
     addListing: "ಹೊಸ ಸೇವೆ ಸೇರಿಸಿ",
     myBookings: "ನನ್ನ ಬುಕಿಂಗ್ಸ್",
     wallet: "ವ್ಯಾಲೆಟ್",

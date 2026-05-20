@@ -1,43 +1,32 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import Sidebar from '../components/Sidebar';
+import { useEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+import AdminSidebar from '../components/AdminSidebar';
 import Header from '../components/Header';
 
 const pageTitles = {
-  '/admin': 'Overview',
-  '/admin/users': 'User Management',
-  '/admin/services': 'All Services',
-  '/admin/bookings': 'All Bookings',
-  '/admin/wallet': 'Platform Wallet',
-  '/admin/chat': 'Chat',
-  '/admin/notifications': 'Notifications',
-  '/admin/profile': 'Profile',
+  '/dashboard': 'Admin Command Center',
+  '/dashboard/admin/users': 'User Management Control',
+  '/dashboard/services': 'All Registered Listings',
+  '/dashboard/bookings': 'All Platform Bookings',
+  '/dashboard/chat': 'Global Chat Audits',
+  '/dashboard/notifications': 'Global Alerts',
 };
 
 export default function AdminLayout() {
-  const { user, isAuthenticated, loading } = useAuth();
   const location = useLocation();
 
-  if (loading) {
-    return (
-      <div className="loading-page">
-        <div className="loading-spinner" />
-      </div>
-    );
-  }
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
-  if (!isAuthenticated || user?.role !== 'ADMIN') {
-    return <Navigate to="/login" replace />;
-  }
-
-  let title = pageTitles[location.pathname] || 'Dashboard';
-  if (location.pathname.startsWith('/admin/bookings/') && location.pathname !== '/admin/bookings') {
+  let title = pageTitles[location.pathname] || 'Admin HQ';
+  if (location.pathname.startsWith('/dashboard/bookings/') && location.pathname !== '/dashboard/bookings') {
     title = 'Booking Details';
   }
 
   return (
-    <div className="dashboard">
-      <Sidebar role="ADMIN" basePath="/admin" />
+    <div className="dashboard admin-dashboard-layout">
+      <AdminSidebar />
       <div className="dashboard-content">
         <Header title={title} />
         <div className="page-content">

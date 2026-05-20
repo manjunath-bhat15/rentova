@@ -1,42 +1,33 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import Sidebar from '../components/Sidebar';
+import { useEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+import CustomerSidebar from '../components/CustomerSidebar';
 import Header from '../components/Header';
 
 const pageTitles = {
-  '/customer': 'Overview',
-  '/customer/services': 'Services',
-  '/customer/bookings': 'Bookings',
-  '/customer/wallet': 'Wallet',
-  '/customer/chat': 'Chat',
-  '/customer/notifications': 'Notifications',
-  '/customer/profile': 'Profile',
+  '/dashboard': 'Overview',
+  '/dashboard/services': 'Browse Services',
+  '/dashboard/bookings': 'My Bookings',
+  '/dashboard/wallet': 'My Wallet',
+  '/dashboard/chat': 'Customer Support Chat',
+  '/dashboard/nearby': 'Nearby Vendors',
+  '/dashboard/notifications': 'Notifications',
 };
 
 export default function CustomerLayout() {
-  const { user, isAuthenticated, loading } = useAuth();
   const location = useLocation();
 
-  if (loading) {
-    return (
-      <div className="loading-page">
-        <div className="loading-spinner" />
-      </div>
-    );
-  }
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
-  if (!isAuthenticated || user?.role !== 'CUSTOMER') {
-    return <Navigate to="/login" replace />;
-  }
-
-  let title = pageTitles[location.pathname] || 'Dashboard';
-  if (location.pathname.startsWith('/customer/bookings/') && location.pathname !== '/customer/bookings') {
+  let title = pageTitles[location.pathname] || 'Customer Space';
+  if (location.pathname.startsWith('/dashboard/bookings/') && location.pathname !== '/dashboard/bookings') {
     title = 'Booking Details';
   }
 
   return (
-    <div className="dashboard">
-      <Sidebar role="CUSTOMER" basePath="/customer" />
+    <div className="dashboard customer-dashboard-layout">
+      <CustomerSidebar />
       <div className="dashboard-content">
         <Header title={title} />
         <div className="page-content">
