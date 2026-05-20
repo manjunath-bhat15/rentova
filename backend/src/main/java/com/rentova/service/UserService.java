@@ -26,10 +26,7 @@ public class UserService {
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered");
-        }
-
+        User user = userRepository.findByEmail(request.getEmail()).orElse(null);
         Role role;
         try {
             role = Role.valueOf(request.getRole().toUpperCase());
@@ -38,29 +35,44 @@ public class UserService {
         }
 
         String otp = String.format("%06d", new java.util.Random().nextInt(999999));
+
+        if (user != null) {
+            if (user.isVerified()) {
+                throw new RuntimeException("Email already registered");
+            }
+            // Update existing unverified user info and password
+            user.setName(request.getName());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setRole(role);
+            user.setOtpCode(otp);
+            user = userRepository.save(user);
+        } else {
+            // Create new user
+            user = User.builder()
+                    .email(request.getEmail())
+                    .name(request.getName())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .role(role)
+                    .isVerified(false)
+                    .otpCode(otp)
+                    .build();
+            user = userRepository.save(user);
+        }
+
         System.out.println("========== OTP FOR " + request.getEmail() + " ==========");
         System.out.println("OTP: " + otp);
         System.out.println("==============================================");
         
         emailService.sendVerificationOtp(request.getEmail(), otp);
 
-        User user = User.builder()
-                .email(request.getEmail())
-                .name(request.getName())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(role)
-                .isVerified(false)
-                .otpCode(otp)
-                .build();
-
-        user = userRepository.save(user);
-
-        // Create wallet with zero balance
-        Wallet wallet = Wallet.builder()
-                .user(user)
-                .balance(BigDecimal.ZERO)
-                .build();
-        walletRepository.save(wallet);
+        // Ensure wallet with zero balance exists
+        if (!walletRepository.findByUserId(user.getId()).isPresent()) {
+            Wallet wallet = Wallet.builder()
+                    .user(user)
+                    .balance(BigDecimal.ZERO)
+                    .build();
+            walletRepository.save(wallet);
+        }
 
         return AuthResponse.builder()
                 .token(null) // Token is null until verified

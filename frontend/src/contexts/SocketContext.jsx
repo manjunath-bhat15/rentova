@@ -5,7 +5,10 @@ import { useAuth } from './AuthContext';
 
 const SocketContext = createContext(null);
 
-const WS_URL = import.meta.env.VITE_WS_URL || 'http://localhost:8080/ws';
+let WS_URL = import.meta.env.VITE_WS_URL || 'http://localhost:8080/ws';
+if (window.location.protocol === 'https:' && WS_URL.startsWith('http://')) {
+  WS_URL = WS_URL.replace('http://', 'https://');
+}
 
 export function SocketProvider({ children }) {
   const { token, isAuthenticated } = useAuth();
