@@ -4,17 +4,10 @@ function hasCoordinates(lat, lng) {
   return Number.isFinite(Number(lat)) && Number.isFinite(Number(lng));
 }
 
-function osmEmbedUrl(lat, lng) {
+function googleMapsEmbedUrl(lat, lng) {
   const latitude = Number(lat);
   const longitude = Number(lng);
-  const delta = 0.035;
-  const bbox = [
-    longitude - delta,
-    latitude - delta,
-    longitude + delta,
-    latitude + delta,
-  ].join(',');
-  return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${latitude},${longitude}`;
+  return `https://maps.google.com/maps?q=${latitude},${longitude}&t=&z=14&ie=UTF8&iwloc=&output=embed`;
 }
 
 export function mapsDirectionsUrl(fromLat, fromLng, toLat, toLng) {
@@ -45,7 +38,7 @@ export default function MapPanel({ latitude, longitude, label = 'Location', heig
     <div className="map-panel" style={{ height }}>
       <iframe
         title={label}
-        src={osmEmbedUrl(latitude, longitude)}
+        src={googleMapsEmbedUrl(latitude, longitude)}
         loading="lazy"
         referrerPolicy="no-referrer-when-downgrade"
       />
