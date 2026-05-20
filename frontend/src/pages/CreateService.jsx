@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import AddressSearchField from '../components/AddressSearchField';
+import { useLocationContext } from '../contexts/LocationContext';
 
 const categories = ['Equipment', 'Vehicles', 'Spaces', 'Tools', 'Electronics', 'Other'];
 const units = [
@@ -24,15 +25,16 @@ const stockImages = [
 
 export default function CreateService() {
   const navigate = useNavigate();
+  const { coords, selectedAddress } = useLocationContext();
   const [form, setForm] = useState({
     title: '',
     description: '',
     category: 'Equipment',
     pricePerUnit: '',
     unit: 'HOUR',
-    location: '',
-    latitude: null,
-    longitude: null,
+    location: selectedAddress || '',
+    latitude: coords?.latitude || null,
+    longitude: coords?.longitude || null,
     serviceRadiusKm: 10,
     images: '',
   });
