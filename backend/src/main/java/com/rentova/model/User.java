@@ -45,26 +45,26 @@ public class User {
     @Builder.Default
     private boolean isVerified = false;
 
-    @Column(nullable = false)
+    @Column
     @Builder.Default
     private boolean phoneVerified = false;
 
     private String phoneNumber;
 
-    @Column(nullable = false)
+    @Column
     @Builder.Default
     private boolean govtIdVerified = false;
 
     private String govtIdNumber;
     private String govtIdUrl;
 
-    @Column(nullable = false)
+    @Column
     @Builder.Default
     private boolean gstVerified = false;
 
     private String gstNumber;
 
-    @Column(nullable = false)
+    @Column
     @Builder.Default
     private int trustScore = 10;
     
