@@ -104,22 +104,18 @@ export default function LandingPage() {
   const [showInstallModal, setShowInstallModal] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
 
-  // Theme & Language State with LocalStorage cache
-  const [lang, setLang] = useState(() => localStorage.getItem('rentova_lang') || 'en');
-  const [theme, setTheme] = useState(() => localStorage.getItem('rentova_theme') || 'dark');
+  // Theme & Language State with LocalStorage cache - locked temporarily
+  const [lang] = useState('en');
+  const [theme] = useState('dark');
 
   const t = (key) => translations[lang][key];
 
   const toggleTheme = () => {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nextTheme);
-    localStorage.setItem('rentova_theme', nextTheme);
+    // Temporarily disabled
   };
 
   const toggleLanguage = () => {
-    const nextLang = lang === 'en' ? 'kn' : 'en';
-    setLang(nextLang);
-    localStorage.setItem('rentova_lang', nextLang);
+    // Temporarily disabled
   };
 
   // Metrics configurations
@@ -204,7 +200,7 @@ export default function LandingPage() {
         </div>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {/* Language Switcher */}
+          {/* Language Switcher - temporarily commented out
           <button 
             onClick={toggleLanguage}
             className="theme-switcher-btn-class"
@@ -212,8 +208,9 @@ export default function LandingPage() {
           >
             🌐 {lang === 'en' ? 'ಕನ್ನಡ' : 'English'}
           </button>
+          */}
 
-          {/* Theme Switcher */}
+          {/* Theme Switcher - temporarily commented out
           <button 
             onClick={toggleTheme}
             className="theme-switcher-btn-class"
@@ -221,6 +218,7 @@ export default function LandingPage() {
           >
             {theme === 'dark' ? '☀️' : '🌙'}
           </button>
+          */}
 
           {/* Install App Button */}
           <button 
