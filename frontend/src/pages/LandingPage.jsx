@@ -93,16 +93,7 @@ export default function LandingPage() {
           {/* Install App Button */}
           <button 
             onClick={handleInstallClick}
-            className="btn btn-secondary" 
-            style={{ 
-              borderRadius: '100px', 
-              padding: '8px 18px', 
-              fontSize: '0.85rem', 
-              border: '1px solid rgba(108, 92, 231, 0.4)',
-              background: 'rgba(108, 92, 231, 0.05)',
-              color: '#a29bfe',
-              cursor: 'pointer'
-            }}
+            className="premium-landing-nav-install-btn"
           >
             Install App
           </button>

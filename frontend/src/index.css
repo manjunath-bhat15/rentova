@@ -1821,3 +1821,26 @@ select.input-field {
   gap: 24px;
 }
 
+.premium-landing-nav-install-btn {
+  border-radius: 100px;
+  padding: 8px 18px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(108, 92, 231, 0.4);
+  background: rgba(108, 92, 231, 0.05);
+  color: #a29bfe;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.premium-landing-nav-install-btn:hover {
+  background: rgba(108, 92, 231, 0.15);
+  border-color: rgba(108, 92, 231, 0.6);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .premium-landing-nav-install-btn {
+    display: none !important; /* Hide in navbar on mobile/tablet to prevent layout overflow */
+  }
+}
+
