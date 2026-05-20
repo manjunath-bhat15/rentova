@@ -48,6 +48,26 @@ export default function ServiceCard({ service, onBook, isVendor }) {
         )}
       </div>
 
+      {/* Service Image */}
+      {service.images && (
+        <div style={{
+          width: '100%',
+          height: '140px',
+          borderRadius: 'var(--radius-md)',
+          overflow: 'hidden',
+          border: '1px solid var(--glass-border)',
+          marginTop: '-4px',
+          marginBottom: '-4px'
+        }}>
+          <img
+            src={service.images}
+            alt={service.title}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            loading="lazy"
+          />
+        </div>
+      )}
+
       {/* Title & Description */}
       <div>
         <h3 style={{ fontSize: 'var(--font-md)', fontWeight: 600, marginBottom: '4px' }}>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import ServiceCard from '../components/ServiceCard';
+import AddressSearchField from '../components/AddressSearchField';
 import api from '../services/api';
 
 const categories = ['All', 'Equipment', 'Vehicles', 'Spaces', 'Tools', 'Electronics', 'Other'];
@@ -214,38 +215,42 @@ export default function Services() {
                   style={{ resize: 'vertical' }}
                 />
               </div>
-              <div className="input-group">
-                <label>Delivery/Service Location</label>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <input
-                    className="input-field"
-                    placeholder="e.g., Address or GPS coordinates"
-                    value={bookingForm.location}
-                    onChange={(e) => setBookingForm(f => ({ ...f, location: e.target.value }))}
-                    style={{ flex: 1 }}
-                  />
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => {
-                      if (!navigator.geolocation) {
-                        setBookingError('Geolocation not supported by browser.');
-                        return;
-                      }
-                      navigator.geolocation.getCurrentPosition(
-                        (pos) => setBookingForm(f => ({
-                          ...f,
-                          location: `${pos.coords.latitude}, ${pos.coords.longitude}`,
-                          latitude: pos.coords.latitude,
-                          longitude: pos.coords.longitude,
-                        })),
-                        () => setBookingError('Unable to fetch location.')
-                      );
-                    }}
-                  >
-                    📍 Get Location
-                  </button>
-                </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+                <AddressSearchField
+                  label="Delivery/Service Location"
+                  placeholder="Search address or enter manually..."
+                  initialAddress={bookingForm.location}
+                  onSelectLocation={(address, lat, lon) => {
+                    setBookingForm(f => ({
+                      ...f,
+                      location: address,
+                      latitude: lat !== null ? lat : f.latitude,
+                      longitude: lon !== null ? lon : f.longitude
+                    }));
+                  }}
+                />
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => {
+                    if (!navigator.geolocation) {
+                      setBookingError('Geolocation not supported by browser.');
+                      return;
+                    }
+                    navigator.geolocation.getCurrentPosition(
+                      (pos) => setBookingForm(f => ({
+                        ...f,
+                        location: `${pos.coords.latitude}, ${pos.coords.longitude}`,
+                        latitude: pos.coords.latitude,
+                        longitude: pos.coords.longitude,
+                      })),
+                      () => setBookingError('Unable to fetch location.')
+                    );
+                  }}
+                  style={{ alignSelf: 'flex-start' }}
+                >
+                  📍 Use Current GPS Location
+                </button>
               </div>
 
               {bookingError && (

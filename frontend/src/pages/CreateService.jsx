@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import AddressSearchField from '../components/AddressSearchField';
 
 const categories = ['Equipment', 'Vehicles', 'Spaces', 'Tools', 'Electronics', 'Other'];
 const units = [
@@ -8,6 +9,17 @@ const units = [
   { value: 'DAY', label: 'Per Day' },
   { value: 'PIECE', label: 'Per Piece' },
   { value: 'SESSION', label: 'Per Session' },
+];
+
+const stockImages = [
+  { url: 'https://images.unsplash.com/photo-1563720223185-11003d516935?w=500&auto=format&fit=crop&q=60', name: 'Car/Tesla (Vehicles)' },
+  { url: 'https://images.unsplash.com/photo-1516576882236-1634b8c6a6f6?w=500&auto=format&fit=crop&q=60', name: 'Cargo Van (Vehicles)' },
+  { url: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=500&auto=format&fit=crop&q=60', name: 'Scooter (Vehicles)' },
+  { url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500&auto=format&fit=crop&q=60', name: 'DSLR Camera (Equipment)' },
+  { url: 'https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=500&auto=format&fit=crop&q=60', name: 'Drone (Equipment)' },
+  { url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=500&auto=format&fit=crop&q=60', name: 'Office Room (Spaces)' },
+  { url: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=500&auto=format&fit=crop&q=60', name: 'Power Drill (Tools)' },
+  { url: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=500&auto=format&fit=crop&q=60', name: 'Garden Tools (Tools)' },
 ];
 
 export default function CreateService() {
@@ -22,6 +34,7 @@ export default function CreateService() {
     latitude: null,
     longitude: null,
     serviceRadiusKm: 10,
+    images: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -139,20 +152,95 @@ export default function CreateService() {
             />
           </div>
 
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+            <AddressSearchField
+              label="Location (Search or enter manually)"
+              placeholder="Search city, address or landmark..."
+              initialAddress={form.location}
+              onSelectLocation={(address, lat, lon) => {
+                setForm(current => ({
+                  ...current,
+                  location: address,
+                  latitude: lat !== null ? lat : current.latitude,
+                  longitude: lon !== null ? lon : current.longitude
+                }));
+              }}
+            />
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={fetchLocation}
+              style={{ alignSelf: 'flex-start' }}
+            >
+              📍 Use Current GPS Location
+            </button>
+          </div>
+
           <div className="input-group">
-            <label>Location</label>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <input
-                className="input-field"
-                placeholder="e.g., City, Address or GPS coordinates"
-                value={form.location}
-                onChange={(e) => updateField('location', e.target.value)}
-                style={{ flex: 1 }}
-              />
-              <button type="button" className="btn btn-secondary" onClick={fetchLocation}>
-                📍 Get Location
-              </button>
+            <label>Item Image (URL suggestion or custom link)</label>
+            <input
+              type="text"
+              className="input-field"
+              placeholder="Paste custom image URL here..."
+              value={form.images}
+              onChange={(e) => updateField('images', e.target.value)}
+            />
+            
+            <div style={{ marginTop: 'var(--space-sm)' }}>
+              <span style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>
+                Or select a high-quality stock photo suggestion:
+              </span>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(70px, 1fr))',
+                gap: '8px',
+                marginTop: '6px'
+              }}>
+                {stockImages.map((img) => (
+                  <button
+                    key={img.url}
+                    type="button"
+                    onClick={() => updateField('images', img.url)}
+                    style={{
+                      padding: 0,
+                      border: form.images === img.url ? '2px solid var(--accent-primary)' : '1px solid var(--glass-border)',
+                      borderRadius: 'var(--radius-md)',
+                      overflow: 'hidden',
+                      height: '50px',
+                      cursor: 'pointer',
+                      background: 'none',
+                      transition: 'border var(--transition-fast)'
+                    }}
+                    title={img.name}
+                  >
+                    <img src={img.url} alt={img.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </button>
+                ))}
+              </div>
             </div>
+
+            {form.images && (
+              <div style={{ marginTop: 'var(--space-md)' }}>
+                <span style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>Image Preview:</span>
+                <div style={{
+                  width: '100%',
+                  height: '180px',
+                  borderRadius: 'var(--radius-md)',
+                  overflow: 'hidden',
+                  marginTop: '4px',
+                  border: '1px solid var(--glass-border)'
+                }}>
+                  <img
+                    src={form.images}
+                    alt="Preview"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="input-group">
@@ -173,6 +261,17 @@ export default function CreateService() {
               <h4 style={{ fontSize: 'var(--font-sm)', color: 'var(--text-muted)', marginBottom: 'var(--space-sm)' }}>
                 Preview
               </h4>
+              {form.images && (
+                <div style={{
+                  width: '100%',
+                  height: '120px',
+                  borderRadius: 'var(--radius-sm)',
+                  overflow: 'hidden',
+                  marginBottom: 'var(--space-sm)'
+                }}>
+                  <img src={form.images} alt={form.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+              )}
               <h3 style={{ fontSize: 'var(--font-md)', fontWeight: 600 }}>{form.title}</h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-sm)', marginTop: '4px' }}>
                 {form.description || 'No description'}
