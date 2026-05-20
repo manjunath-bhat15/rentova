@@ -1689,8 +1689,8 @@ select.input-field {
 
 /* ===== Premium Landing Page 2.0 Responsive Styles ===== */
 .premium-landing {
-  background: #030303;
-  color: #ffffff;
+  background: var(--bg-primary);
+  color: var(--text-primary);
   font-family: var(--font-sans, system-ui, sans-serif);
   overflow-x: hidden;
   position: relative;
@@ -1704,7 +1704,7 @@ select.input-field {
   justify-content: space-between;
   align-items: center;
   padding: 20px 40px;
-  background: rgba(3, 3, 3, 0.7);
+  background: rgba(15, 15, 15, 0.7);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -1779,7 +1779,7 @@ select.input-field {
 
 .premium-landing-hud {
   position: absolute;
-  background: rgba(10, 10, 15, 0.6);
+  background: rgba(26, 26, 26, 0.6);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
   border-radius: 16px;
@@ -1886,8 +1886,8 @@ select.input-field {
 }
 
 .premium-landing-bento-card:hover {
-  border-color: rgba(108, 92, 231, 0.25);
-  box-shadow: 0 30px 60px rgba(108, 92, 231, 0.08);
+  border-color: rgba(255, 122, 0, 0.25);
+  box-shadow: 0 30px 60px rgba(255, 122, 0, 0.08);
 }
 
 @media (max-width: 560px) {
@@ -1899,7 +1899,7 @@ select.input-field {
 .premium-landing-footer {
   padding: 80px 40px 40px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
-  background: #010101;
+  background: var(--bg-primary);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1910,16 +1910,16 @@ select.input-field {
   border-radius: 100px;
   padding: 8px 18px;
   font-size: 0.85rem;
-  border: 1px solid rgba(108, 92, 231, 0.4);
-  background: rgba(108, 92, 231, 0.05);
-  color: #a29bfe;
+  border: 1px solid rgba(255, 122, 0, 0.4);
+  background: rgba(255, 122, 0, 0.05);
+  color: var(--accent-primary);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .premium-landing-nav-install-btn:hover {
-  background: rgba(108, 92, 231, 0.15);
-  border-color: rgba(108, 92, 231, 0.6);
+  background: rgba(255, 122, 0, 0.15);
+  border-color: rgba(255, 122, 0, 0.6);
   transform: translateY(-1px);
 }
 
@@ -1972,19 +1972,19 @@ select.input-field {
 }
 
 .premium-landing.light-theme .premium-landing-nav span {
-  background: linear-gradient(to right, #0f172a, #4834d4) !important;
+  background: linear-gradient(to right, #0f172a, var(--accent-primary)) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
 }
 
 .premium-landing.light-theme .premium-landing-nav-install-btn {
-  background: rgba(108, 92, 231, 0.05) !important;
-  color: #6c5ce7 !important;
-  border-color: rgba(108, 92, 231, 0.3) !important;
+  background: rgba(255, 122, 0, 0.05) !important;
+  color: var(--accent-primary) !important;
+  border-color: rgba(255, 122, 0, 0.3) !important;
 }
 
 .premium-landing.light-theme .premium-landing-nav-install-btn:hover {
-  background: rgba(108, 92, 231, 0.1) !important;
+  background: rgba(255, 122, 0, 0.1) !important;
 }
 
 .premium-landing.light-theme .premium-landing-badge {
@@ -1997,7 +1997,7 @@ select.input-field {
 }
 
 .premium-landing.light-theme .premium-landing-title span {
-  background: linear-gradient(180deg, #0f172a 30%, #4834d4 100%) !important;
+  background: linear-gradient(180deg, #0f172a 30%, var(--accent-primary) 100%) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
 }
@@ -2043,7 +2043,7 @@ select.input-field {
 }
 
 .premium-landing.light-theme .premium-landing-metric-item div:first-child {
-  background: linear-gradient(180deg, #0f172a, #4834d4) !important;
+  background: linear-gradient(180deg, #0f172a, var(--accent-primary)) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
 }
