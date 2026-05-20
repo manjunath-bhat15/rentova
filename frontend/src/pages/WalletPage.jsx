@@ -88,7 +88,7 @@ export default function WalletPage() {
         style={{
           padding: 'var(--space-xl)',
           marginBottom: 'var(--space-xl)',
-          background: 'linear-gradient(135deg, rgba(108,92,231,0.08), rgba(0,206,201,0.06)), var(--glass-bg)',
+          background: 'linear-gradient(135deg, rgba(255,122,0,0.08), rgba(0,206,201,0.06)), var(--glass-bg)',
           position: 'relative',
           overflow: 'hidden',
         }}
@@ -96,7 +96,7 @@ export default function WalletPage() {
         {/* Decorative circles */}
         <div style={{
           position: 'absolute', top: -40, right: -40, width: 160, height: 160,
-          borderRadius: '50%', background: 'rgba(108,92,231,0.06)',
+          borderRadius: '50%', background: 'rgba(255,122,0,0.06)',
         }} />
         <div style={{
           position: 'absolute', bottom: -30, right: 80, width: 100, height: 100,

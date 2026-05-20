@@ -133,13 +133,13 @@ export default function NotificationsPage() {
                   display: 'flex', alignItems: 'flex-start', gap: 'var(--space-md)',
                   padding: 'var(--space-md) var(--space-lg)',
                   borderBottom: i < notifications.length - 1 ? '1px solid var(--glass-border)' : 'none',
-                  background: notif.read ? 'transparent' : 'rgba(108,92,231,0.04)',
+                  background: notif.read ? 'transparent' : 'rgba(255,122,0,0.04)',
                   cursor: 'pointer',
                   transition: 'background var(--transition-fast)',
                 }}
                 onClick={() => handleClick(notif)}
                 onMouseEnter={(e) => e.currentTarget.style.background = 'var(--glass-bg)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = notif.read ? 'transparent' : 'rgba(108,92,231,0.04)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = notif.read ? 'transparent' : 'rgba(255,122,0,0.04)'}
               >
                 <div style={{
                   width: 44, height: 44, borderRadius: 'var(--radius-md)', flexShrink: 0,

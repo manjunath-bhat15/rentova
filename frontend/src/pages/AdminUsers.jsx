@@ -63,7 +63,7 @@ export default function AdminUsers() {
                   <span style={{
                     padding: '4px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 700,
                     background: u.role === 'ADMIN' ? 'rgba(255,107,107,0.1)' :
-                               u.role === 'VENDOR' ? 'rgba(108,92,231,0.1)' : 'rgba(0,184,148,0.1)',
+                               u.role === 'VENDOR' ? 'rgba(255,122,0,0.1)' : 'rgba(0,184,148,0.1)',
                     color: u.role === 'ADMIN' ? 'var(--accent-danger)' :
                            u.role === 'VENDOR' ? 'var(--accent-primary)' : 'var(--accent-success)',
                   }}>

@@ -104,7 +104,7 @@ export default function AdminOverview() {
                     <span style={{
                       padding: '4px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 700,
                       background: booking.status === 'COMPLETED' ? 'rgba(0,184,148,0.1)' : 
-                                 booking.status === 'CANCELLED' ? 'rgba(255,107,107,0.1)' : 'rgba(108,92,231,0.1)',
+                                 booking.status === 'CANCELLED' ? 'rgba(255,107,107,0.1)' : 'rgba(255,122,0,0.1)',
                       color: booking.status === 'COMPLETED' ? 'var(--accent-success)' : 
                              booking.status === 'CANCELLED' ? 'var(--accent-danger)' : 'var(--accent-primary)',
                     }}>

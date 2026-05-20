@@ -141,7 +141,7 @@ export default function ChatPage() {
               padding: 'var(--space-md) var(--space-lg)',
               cursor: 'pointer',
               borderBottom: '1px solid var(--glass-border)',
-              background: conv.bookingId === activeBookingId ? 'rgba(108,92,231,0.1)' : 'transparent',
+              background: conv.bookingId === activeBookingId ? 'rgba(255,122,0,0.1)' : 'transparent',
               borderLeft: conv.bookingId === activeBookingId ? '3px solid var(--accent-primary)' : '3px solid transparent',
               transition: 'all var(--transition-fast)',
             }}

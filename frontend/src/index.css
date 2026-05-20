@@ -568,7 +568,7 @@ select.input-field {
   left: var(--sidebar-width);
   right: 0;
   height: var(--header-height);
-  background: rgba(15, 15, 19, 0.8);
+  background: rgba(15, 15, 15, 0.8);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--glass-border);
   display: flex;
@@ -693,7 +693,7 @@ select.input-field {
 }
 
 .premium-card {
-  background: rgba(20, 20, 30, 0.6);
+  background: rgba(26, 26, 26, 0.6);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -956,7 +956,7 @@ select.input-field {
 
 .glass-card,
 .bento-card {
-  background: rgba(15, 23, 42, 0.78);
+  background: rgba(26, 26, 26, 0.78);
   border: 1px solid var(--glass-border);
   box-shadow: 0 16px 40px rgba(2, 6, 23, 0.18);
 }
@@ -977,7 +977,7 @@ select.input-field {
 }
 
 .landing {
-  background: #070b14;
+  background: var(--bg-primary);
 }
 
 .enterprise-nav {
@@ -993,9 +993,9 @@ select.input-field {
   align-items: flex-end;
   padding: 120px max(24px, calc((100vw - 1180px) / 2)) 72px;
   background:
-    linear-gradient(90deg, rgba(7, 11, 20, 0.92) 0%, rgba(7, 11, 20, 0.74) 44%, rgba(7, 11, 20, 0.3) 100%),
+    linear-gradient(90deg, rgba(15, 15, 15, 0.92) 0%, rgba(15, 15, 15, 0.74) 44%, rgba(15, 15, 15, 0.3) 100%),
     url('./assets/hero.png') center right / min(760px, 68vw) no-repeat,
-    #070b14;
+    var(--bg-primary);
 }
 
 .enterprise-hero::after {
@@ -1047,7 +1047,7 @@ select.input-field {
 }
 
 .hero-metrics > div {
-  background: rgba(15, 23, 42, 0.74);
+  background: rgba(26, 26, 26, 0.74);
   padding: 18px;
 }
 
@@ -1092,7 +1092,7 @@ select.input-field {
 .metric-card,
 .data-table,
 .modal-panel {
-  background: rgba(15, 23, 42, 0.78);
+  background: rgba(26, 26, 26, 0.78);
   border: 1px solid var(--glass-border);
   box-shadow: 0 18px 44px rgba(2, 6, 23, 0.2);
 }
@@ -1140,7 +1140,7 @@ select.input-field {
 }
 
 .sidebar {
-  background: #08111f;
+  background: var(--bg-secondary);
 }
 
 .sidebar-role {
@@ -1162,7 +1162,7 @@ select.input-field {
 }
 
 .header {
-  background: rgba(8, 17, 31, 0.84);
+  background: rgba(15, 15, 15, 0.84);
 }
 
 .header-kicker {
@@ -1236,7 +1236,7 @@ select.input-field {
 }
 
 .manual-location-bar {
-  background: rgba(15, 23, 42, 0.78);
+  background: rgba(26, 26, 26, 0.78);
   border: 1px solid var(--glass-border);
   border-radius: 8px;
   padding: 14px;
@@ -1400,7 +1400,7 @@ select.input-field {
   bottom: 12px;
   padding: 6px 10px;
   border-radius: 6px;
-  background: rgba(8, 17, 31, 0.86);
+  background: rgba(26, 26, 26, 0.86);
   color: var(--text-primary);
   font-size: 12px;
   font-weight: 700;
@@ -1442,8 +1442,8 @@ select.input-field {
   width: 46px;
   height: 46px;
   border-radius: 8px;
-  background: rgba(79, 70, 229, 0.16);
-  color: #c7d2fe;
+  background: rgba(255, 122, 0, 0.16);
+  color: #ffb066;
   font-weight: 900;
   font-size: 11px;
 }
@@ -1456,7 +1456,7 @@ select.input-field {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: rgba(2, 6, 23, 0.74);
+  background: rgba(15, 15, 15, 0.74);
 }
 
 .modal-panel {
@@ -1553,9 +1553,9 @@ select.input-field {
     min-height: 78vh;
     padding-top: 112px;
     background:
-      linear-gradient(180deg, rgba(7, 11, 20, 0.84), rgba(7, 11, 20, 0.94)),
+      linear-gradient(180deg, rgba(15, 15, 15, 0.84), rgba(15, 15, 15, 0.94)),
       url('./assets/hero.png') center 22% / 360px auto no-repeat,
-      #070b14;
+      var(--bg-primary);
   }
 
   .hero-metrics,
