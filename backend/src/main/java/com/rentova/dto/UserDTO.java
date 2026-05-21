@@ -16,6 +16,8 @@ public class UserDTO {
     private String name;
     private String role;
     private String avatar;
+    private String bio;
+    private String address;
     private BigDecimal walletBalance;
     private boolean isVerified;
     private boolean phoneVerified;

@@ -34,7 +34,13 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @Column(columnDefinition = "TEXT")
     private String avatar;
+
+    @Column(columnDefinition = "TEXT")
+    private String bio;
+
+    private String address;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -56,6 +62,8 @@ public class User {
     private boolean govtIdVerified = false;
 
     private String govtIdNumber;
+    
+    @Column(columnDefinition = "TEXT")
     private String govtIdUrl;
 
     @Column(nullable = true)

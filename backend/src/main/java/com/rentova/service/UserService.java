@@ -167,6 +167,8 @@ public class UserService {
         dbUser.setName(request.getName());
         if (request.getAvatar() != null) dbUser.setAvatar(request.getAvatar());
         if (request.getPhone() != null) dbUser.setPhoneNumber(request.getPhone());
+        if (request.getBio() != null) dbUser.setBio(request.getBio());
+        if (request.getAddress() != null) dbUser.setAddress(request.getAddress());
         dbUser = userRepository.save(dbUser);
 
         BigDecimal balance = walletRepository.findByUserId(dbUser.getId())
@@ -240,6 +242,8 @@ public class UserService {
                 .name(user.getName())
                 .role(user.getRole().name())
                 .avatar(user.getAvatar())
+                .bio(user.getBio())
+                .address(user.getAddress())
                 .walletBalance(walletBalance)
                 .isVerified(user.isVerified())
                 .phoneVerified(user.isPhoneVerified())
