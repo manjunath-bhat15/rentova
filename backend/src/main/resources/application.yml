@@ -69,10 +69,10 @@ spring:
     activate:
       on-profile: prod
 
-  # Gmail SMTP
+  # Gmail SMTP configured for Render-safe SSL over Port 465
   mail:
     host: smtp.gmail.com
-    port: 587
+    port: 465 # 👈 Changed from 587 to bypass Render's firewall block
     username: ${SPRING_MAIL_USERNAME}
     password: ${SPRING_MAIL_PASSWORD}
 
@@ -80,8 +80,12 @@ spring:
       mail:
         smtp:
           auth: true
-          starttls:
-            enable: true
+          socketFactory: # 👈 Explicitly forces JavaMail to use an SSL Socket Factory
+            class: javax.net.ssl.SSLSocketFactory
+            fallback: false
+            port: 465
+          ssl:
+            enable: true # 👈 Enabled native SSL encryption instead of starttls
           connectiontimeout: 10000
           timeout: 10000
           writetimeout: 10000
