@@ -28,5 +28,8 @@ public class UserDTO {
     private boolean gstVerified;
     private String gstNumber;
     private int trustScore;
+    private int totalOrders;
+    private int totalRatings;
+    private double rating;
     private LocalDateTime createdAt;
 }

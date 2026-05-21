@@ -15,4 +15,5 @@ public class ConversationDTO {
     private String lastMessage;
     private String lastMessageTime;
     private long unreadCount;
+    private String bookingStatus;
 }

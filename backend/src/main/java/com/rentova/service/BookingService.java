@@ -4,6 +4,8 @@ import com.rentova.dto.*;
 import com.rentova.model.*;
 import com.rentova.repository.BookingRepository;
 import com.rentova.repository.ServiceRepository;
+import com.rentova.repository.UserRepository;
+import com.rentova.repository.WalletRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,8 @@ public class BookingService {
 
     private final BookingRepository bookingRepository;
     private final ServiceRepository serviceRepository;
+    private final WalletRepository walletRepository;
+    private final UserRepository userRepository;
     private final WalletService walletService;
     private final NotificationService notificationService;
 
@@ -185,6 +189,15 @@ public class BookingService {
                 booking.getCustomer(), booking.getSecurityDeposit(),
                 booking.getId(), booking.getVendor().getName());
 
+        // Increment total orders for Customer and Vendor
+        User c = booking.getCustomer();
+        c.setTotalOrders(c.getTotalOrders() + 1);
+        userRepository.save(c);
+
+        User v = booking.getVendor();
+        v.setTotalOrders(v.getTotalOrders() + 1);
+        userRepository.save(v);
+
         // Notifications
         notificationService.createNotification(
                 booking.getCustomer().getId(),
@@ -202,6 +215,30 @@ public class BookingService {
 
         booking = bookingRepository.save(booking);
         return toDTO(booking, customer);
+    }
+
+    @Transactional
+    public void rateVendor(String id, RateRequest request, User customer) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        if (!booking.getCustomer().getId().equals(customer.getId())) {
+            throw new RuntimeException("Only the customer can rate this booking");
+        }
+
+        if (booking.getStatus() != BookingStatus.COMPLETED) {
+            throw new RuntimeException("Can only rate COMPLETED bookings");
+        }
+
+        User vendor = booking.getVendor();
+        int currentTotalRatings = vendor.getTotalRatings();
+        double currentRating = vendor.getRating();
+
+        double newRating = ((currentRating * currentTotalRatings) + request.getRating()) / (currentTotalRatings + 1);
+        
+        vendor.setTotalRatings(currentTotalRatings + 1);
+        vendor.setRating(newRating);
+        userRepository.save(vendor);
     }
 
     @Transactional
@@ -293,6 +330,14 @@ public class BookingService {
             case COMPLETED -> {
                 if (current != BookingStatus.IN_PROGRESS)
                     throw new RuntimeException("Can only complete IN_PROGRESS bookings");
+                
+                User c = booking.getCustomer();
+                c.setTotalOrders(c.getTotalOrders() + 1);
+                userRepository.save(c);
+
+                User v = booking.getVendor();
+                v.setTotalOrders(v.getTotalOrders() + 1);
+                userRepository.save(v);
             }
             default -> throw new RuntimeException("Invalid status transition");
         }

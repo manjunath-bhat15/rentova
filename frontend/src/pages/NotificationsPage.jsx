@@ -4,15 +4,15 @@ import api from '../services/api';
 import { useSocket } from '../contexts/SocketContext';
 
 const typeConfig = {
-  BOOKING_CREATED:    { emoji: '📋', color: '#fc8019', bg: 'rgba(252,128,25,0.08)' },
-  BOOKING_CONFIRMED:  { emoji: '✅', color: '#3b82f6', bg: 'rgba(59,130,246,0.08)' },
-  BOOKING_IN_PROGRESS:{ emoji: '🔄', color: '#8b5cf6', bg: 'rgba(139,92,246,0.08)' },
-  BOOKING_COMPLETED:  { emoji: '🎉', color: '#10b981', bg: 'rgba(16,185,129,0.08)' },
-  BOOKING_CANCELLED:  { emoji: '❌', color: '#ef4444', bg: 'rgba(239,68,68,0.08)' },
-  WALLET_TOPUP:       { emoji: '💰', color: '#10b981', bg: 'rgba(16,185,129,0.08)' },
-  WALLET_PAYOUT:      { emoji: '💸', color: '#10b981', bg: 'rgba(16,185,129,0.08)' },
-  WALLET_REFUND:      { emoji: '↩️', color: '#f59e0b', bg: 'rgba(245,158,11,0.08)' },
-  CHAT_MESSAGE:       { emoji: '💬', color: '#fc8019', bg: 'rgba(252,128,25,0.08)' },
+  BOOKING_CREATED:    { emoji: '📋', colorClass: 'text-brand', bgClass: 'bg-brand/10' },
+  BOOKING_CONFIRMED:  { emoji: '✅', colorClass: 'text-blue-500', bgClass: 'bg-blue-50' },
+  BOOKING_IN_PROGRESS:{ emoji: '🔄', colorClass: 'text-purple-500', bgClass: 'bg-purple-50' },
+  BOOKING_COMPLETED:  { emoji: '🎉', colorClass: 'text-emerald-500', bgClass: 'bg-emerald-50' },
+  BOOKING_CANCELLED:  { emoji: '❌', colorClass: 'text-red-500', bgClass: 'bg-red-50' },
+  WALLET_TOPUP:       { emoji: '💰', colorClass: 'text-emerald-500', bgClass: 'bg-emerald-50' },
+  WALLET_PAYOUT:      { emoji: '💸', colorClass: 'text-emerald-500', bgClass: 'bg-emerald-50' },
+  WALLET_REFUND:      { emoji: '↩️', colorClass: 'text-amber-500', bgClass: 'bg-amber-50' },
+  CHAT_MESSAGE:       { emoji: '💬', colorClass: 'text-brand', bgClass: 'bg-brand/10' },
 };
 
 export default function NotificationsPage() {
@@ -71,41 +71,32 @@ export default function NotificationsPage() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '80px', flexDirection: 'column', gap: '12px' }}>
-        <div style={{ width: 40, height: 40, border: '3px solid #f0f0f0', borderTopColor: '#fc8019', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
-        <p style={{ color: '#93959f', fontSize: '14px' }}>Loading notifications...</p>
+      <div className="flex justify-center items-center py-20 flex-col gap-3">
+        <div className="w-10 h-10 border-4 border-gray-100 border-t-brand rounded-full animate-spin" />
+        <p className="text-gray-400 text-sm m-0">Loading notifications...</p>
       </div>
     );
   }
 
   return (
-    <div style={{ fontFamily: "'Inter', -apple-system, sans-serif" }}>
+    <div className="animate-in fade-in duration-300">
       {/* Page hero */}
-      <div style={{
-        background: 'linear-gradient(135deg, #fc8019 0%, #ff9f43 100%)',
-        borderRadius: '20px', padding: '28px 32px',
-        marginBottom: '24px',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px',
-      }}>
-        <div>
-          <h1 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#fff', margin: '0 0 4px', letterSpacing: '-0.03em' }}>
+      <div className="bg-gradient-to-br from-brand to-brand-light rounded-3xl p-6 md:p-8 mb-6 flex justify-between items-center flex-wrap gap-4 shadow-sm relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3" />
+        <div className="relative z-10">
+          <h1 className="text-[1.6rem] font-black text-white m-0 mb-1 tracking-tight">
             🔔 Notifications
           </h1>
-          <p style={{ color: 'rgba(255,255,255,0.85)', margin: 0, fontSize: '14px' }}>
+          <p className="text-white/80 m-0 text-sm">
             {unreadCount > 0
-              ? <><strong style={{ color: '#fff' }}>{unreadCount}</strong> unread notification{unreadCount > 1 ? 's' : ''}</>
+              ? <><strong className="text-white">{unreadCount}</strong> unread notification{unreadCount > 1 ? 's' : ''}</>
               : 'All caught up! 🎉'}
           </p>
         </div>
         {unreadCount > 0 && (
           <button
             onClick={markAllAsRead}
-            style={{
-              background: '#fff', color: '#fc8019', border: 'none',
-              padding: '10px 22px', borderRadius: '999px',
-              fontWeight: 700, fontSize: '13px', cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-            }}
+            className="relative z-10 bg-white text-brand border-none px-5 py-2.5 rounded-full font-bold text-[13px] cursor-pointer shadow-[0_4px_12px_rgba(0,0,0,0.12)] hover:bg-gray-50 transition-colors focus:outline-none"
           >
             ✓ Mark all read
           </button>
@@ -114,69 +105,46 @@ export default function NotificationsPage() {
 
       {/* Notifications list */}
       {notifications.length === 0 ? (
-        <div style={{
-          textAlign: 'center', padding: '80px 20px',
-          background: '#fafafa', borderRadius: '20px',
-          border: '2px dashed #e8e8e8',
-        }}>
-          <div style={{ fontSize: '56px', marginBottom: '16px' }}>🔔</div>
-          <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#1c1c1c', marginBottom: '8px', letterSpacing: '-0.02em' }}>
+        <div className="text-center py-20 px-5 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+          <div className="text-5xl mb-4">🔔</div>
+          <h3 className="text-lg font-extrabold text-gray-900 mb-2 tracking-tight">
             No notifications yet
           </h3>
-          <p style={{ color: '#686b78', fontSize: '14px' }}>
+          <p className="text-gray-500 text-sm">
             You'll receive updates here for bookings, payments, and messages.
           </p>
         </div>
       ) : (
-        <div style={{ background: '#fff', borderRadius: '20px', border: '1px solid #f0f0f0', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
           {notifications.map((notif, i) => {
-            const cfg = typeConfig[notif.type] || { emoji: '📌', color: '#686b78', bg: '#f5f5f5' };
+            const cfg = typeConfig[notif.type] || { emoji: '📌', colorClass: 'text-gray-500', bgClass: 'bg-gray-50' };
             return (
               <div
                 key={notif.id}
                 onClick={() => handleClick(notif)}
-                style={{
-                  display: 'flex', alignItems: 'flex-start', gap: '16px',
-                  padding: '16px 20px',
-                  borderBottom: i < notifications.length - 1 ? '1px solid #f5f5f5' : 'none',
-                  background: notif.read ? 'transparent' : 'rgba(252,128,25,0.03)',
-                  cursor: 'pointer',
-                  transition: 'background 0.15s ease',
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.background = '#fafafa'}
-                onMouseLeave={(e) => e.currentTarget.style.background = notif.read ? 'transparent' : 'rgba(252,128,25,0.03)'}
+                className={`flex items-start gap-4 p-4 md:p-5 transition-colors cursor-pointer ${
+                  i < notifications.length - 1 ? 'border-b border-gray-50' : ''
+                } ${notif.read ? 'bg-transparent hover:bg-gray-50' : 'bg-brand/5 hover:bg-brand/10'}`}
               >
                 {/* Icon */}
-                <div style={{
-                  width: 44, height: 44, borderRadius: '12px', flexShrink: 0,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: cfg.bg, fontSize: '20px',
-                }}>
+                <div className={`w-11 h-11 rounded-xl shrink-0 flex items-center justify-center text-xl ${cfg.bgClass}`}>
                   {cfg.emoji}
                 </div>
 
                 {/* Content */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
-                    <p style={{
-                      fontWeight: notif.read ? 500 : 700,
-                      fontSize: '14px',
-                      color: '#1c1c1c',
-                      margin: '0 0 2px',
-                    }}>
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-start gap-2">
+                    <p className={`text-sm text-gray-900 m-0 mb-0.5 ${notif.read ? 'font-medium' : 'font-bold'}`}>
                       {notif.title}
                     </p>
                     {!notif.read && (
-                      <div style={{
-                        width: 8, height: 8, borderRadius: '50%',
-                        background: '#fc8019', flexShrink: 0, marginTop: '5px',
-                      }} />
+                      <div className="w-2 h-2 rounded-full bg-brand shrink-0 mt-1.5" />
                     )}
                   </div>
-                  <p style={{ fontSize: '13px', color: '#686b78', lineHeight: 1.5, margin: '0 0 4px' }}>
+                  <p className="text-[13px] text-gray-500 leading-relaxed m-0 mb-1.5">
                     {notif.message}
                   </p>
-                  <p style={{ fontSize: '11px', color: '#93959f' }}>
+                  <p className="text-[11px] font-medium text-gray-400 m-0">
                     {new Date(notif.createdAt).toLocaleDateString('en-IN', {
                       month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
                     })}

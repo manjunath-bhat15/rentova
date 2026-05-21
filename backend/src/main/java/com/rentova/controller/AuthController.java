@@ -108,6 +108,21 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(
+            @AuthenticationPrincipal User user,
+            @Valid @RequestBody ChangePasswordRequest request) {
+        if (user == null) {
+            return ResponseEntity.status(401).body(Map.of("message", "Unauthorized"));
+        }
+        try {
+            userService.changePassword(user, request);
+            return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
     @PostMapping("/verify-id")
     public ResponseEntity<UserDTO> verifyGovtId(@AuthenticationPrincipal User user, @RequestBody Map<String, String> body) {
         if (user == null) {

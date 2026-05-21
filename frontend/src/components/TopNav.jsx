@@ -16,27 +16,18 @@ const roleNav = {
   ],
   VENDOR: [
     { path: '/dashboard', label: 'Console', emoji: '🏠', exact: true },
-    { path: '/dashboard/services', label: 'Listings', emoji: '🏪' },
+    { path: '/dashboard/services', label: 'Listings', emoji: '📦' },
     { path: '/dashboard/services/create', label: 'Add', emoji: '➕' },
-    { path: '/dashboard/bookings', label: 'Bookings', emoji: '📋' },
-    { path: '/dashboard/wallet', label: 'Wallet', emoji: '💰' },
+    { path: '/dashboard/bookings', label: 'Bookings', emoji: '📅' },
+    { path: '/dashboard/analytics', label: 'Stats', emoji: '📈' },
     { path: '/dashboard/chat', label: 'Messages', emoji: '💬' },
     { path: '/dashboard/notifications', label: 'Alerts', emoji: '🔔' },
-  ],
-  ADMIN: [
-    { path: '/dashboard', label: 'HQ', emoji: '⚡', exact: true },
-    { path: '/dashboard/admin/users', label: 'Users', emoji: '👥' },
-    { path: '/dashboard/bookings', label: 'Bookings', emoji: '📋' },
-    { path: '/dashboard/services', label: 'Listings', emoji: '🏪' },
-    { path: '/dashboard/chat', label: 'Chat', emoji: '💬' },
-    { path: '/dashboard/notifications', label: 'Alerts', emoji: '🔔' },
-  ],
+  ]
 };
 
 const roleMeta = {
   CUSTOMER: { color: '#3b82f6', bg: 'rgba(59,130,246,0.1)', label: 'Customer' },
   VENDOR:   { color: '#fc8019', bg: 'rgba(252,128,25,0.1)',  label: 'Vendor' },
-  ADMIN:    { color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)',  label: 'Admin' },
 };
 
 export default function TopNav() {
@@ -73,146 +64,88 @@ export default function TopNav() {
     return () => document.removeEventListener('mousedown', handleOutside);
   }, []);
 
-  const navLinkStyle = (isActive) => ({
-    display: 'flex', alignItems: 'center', gap: '6px',
-    padding: '7px 14px', borderRadius: '999px',
-    textDecoration: 'none', fontSize: '13px', fontWeight: isActive ? 700 : 500,
-    color: isActive ? '#fc8019' : '#686b78',
-    background: isActive ? 'rgba(252,128,25,0.1)' : 'transparent',
-    transition: 'all 0.15s ease', whiteSpace: 'nowrap',
-    border: isActive ? '1px solid rgba(252,128,25,0.2)' : '1px solid transparent',
-  });
+  const getNavLinkClass = (isActive) => 
+    `flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[13px] whitespace-nowrap transition-all duration-150 ` +
+    (isActive 
+      ? `font-bold text-brand bg-brand/10 border border-brand/20` 
+      : `font-medium text-gray-500 bg-transparent border border-transparent hover:bg-gray-50 hover:text-gray-900`);
 
   return (
-    <header style={{
-      position: 'fixed', top: 0, left: 0, right: 0, height: '56px',
-      background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(12px)',
-      borderBottom: '1px solid #f0f0f0', zIndex: 100,
-      display: 'flex', alignItems: 'center',
-      padding: '0 16px', gap: '8px',
-      boxShadow: '0 1px 8px rgba(0,0,0,0.04)',
-    }}>
+    <header className="fixed top-0 left-0 right-0 h-14 bg-white/95 backdrop-blur-md border-b border-gray-100 z-50 flex items-center px-4 md:px-6 gap-2 shadow-sm transition-all duration-300 w-full">
+      
       {/* Logo */}
       <div
         onClick={() => navigate('/')}
-        style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', flexShrink: 0 }}
+        className="flex items-center gap-2 cursor-pointer shrink-0"
       >
-        <div style={{
-          width: 32, height: 32, borderRadius: 8, background: '#fc8019',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontWeight: 900, fontSize: 14, color: '#fff',
-          boxShadow: '0 3px 10px rgba(252,128,25,0.3)',
-        }}>R</div>
-        <span style={{ fontWeight: 800, fontSize: '15px', color: '#1c1c1c', letterSpacing: '-0.03em', display: 'none' }} className="nav-brand-text">
-          Rentova
-        </span>
+        <div className="w-8 h-8 rounded-lg bg-brand flex items-center justify-center font-black text-sm text-white shadow-[0_3px_10px_rgba(252,128,25,0.3)]">R</div>
+        <span className="hidden md:block font-extrabold text-[15px] text-gray-900 tracking-tight">Rentova</span>
       </div>
 
       {/* Role badge — desktop only */}
-      <span className="nav-desktop" style={{
-        padding: '3px 10px', borderRadius: '999px', fontSize: '11px',
-        fontWeight: 700, background: meta.bg, color: meta.color,
-        marginRight: '4px', flexShrink: 0,
-      }}>
+      <span className="hidden md:inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold shrink-0 mr-1" style={{ background: meta.bg, color: meta.color }}>
         {meta.label}
       </span>
 
-      {/* Nav links — desktop */}
-      <nav className="nav-desktop" style={{ display: 'flex', alignItems: 'center', gap: '2px', flex: 1, overflowX: 'auto' }}>
+      {/* Nav links — desktop only */}
+      <nav className="hidden md:flex items-center gap-0.5 flex-1 overflow-x-auto no-scrollbar ml-2">
         {items.map(item => (
           <NavLink
             key={item.path}
             to={item.path}
             end={item.exact}
-            style={({ isActive }) => navLinkStyle(isActive)}
+            className={({ isActive }) => getNavLinkClass(isActive)}
           >
-            {({ isActive }) => (
-              <>
-                <span style={{ fontSize: '14px' }}>{item.emoji}</span>
-                <span>{item.label}</span>
-              </>
-            )}
+            <span className="text-sm">{item.emoji}</span>
+            <span>{item.label}</span>
           </NavLink>
         ))}
       </nav>
 
       {/* Spacer mobile */}
-      <div style={{ flex: 1 }} className="nav-mobile" />
+      <div className="flex-1 md:hidden" />
 
       {/* Right actions */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+      <div className="flex items-center gap-3 shrink-0">
 
         {/* Bell */}
         <button
           onClick={() => navigate('/dashboard/notifications')}
-          style={{
-            position: 'relative', width: 36, height: 36, borderRadius: '10px',
-            border: '1.5px solid #f0f0f0', background: '#fff',
-            cursor: 'pointer', display: 'flex', alignItems: 'center',
-            justifyContent: 'center', fontSize: '16px',
-            transition: 'all 0.15s ease',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = '#fff3e8'; e.currentTarget.style.borderColor = 'rgba(252,128,25,0.3)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#f0f0f0'; }}
+          className="relative w-9 h-9 rounded-xl border-1.5 border-gray-100 bg-white flex items-center justify-center text-base hover:bg-brand-50 hover:border-brand/30 transition-all duration-150 focus:outline-none"
         >
           🔔
           {unread > 0 && (
-            <span style={{
-              position: 'absolute', top: -4, right: -4,
-              background: '#fc8019', color: '#fff',
-              fontSize: '9px', fontWeight: 800,
-              width: 16, height: 16, borderRadius: '50%',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              border: '2px solid #fff',
-            }}>{unread > 9 ? '9+' : unread}</span>
+            <span className="absolute -top-1 -right-1 bg-brand text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">
+              {unread > 9 ? '9+' : unread}
+            </span>
           )}
         </button>
 
         {/* Avatar + profile dropdown */}
-        <div ref={profileRef} style={{ position: 'relative' }}>
+        <div ref={profileRef} className="relative">
           <button
             onClick={() => setShowProfile(v => !v)}
-            style={{
-              width: 36, height: 36, borderRadius: '50%',
-              background: 'linear-gradient(135deg, #fc8019, #ff9f43)',
-              border: 'none', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '12px', fontWeight: 800, color: '#fff',
-              overflow: 'hidden', flexShrink: 0,
-            }}
+            className="w-9 h-9 rounded-full bg-gradient-to-br from-brand to-brand-light flex items-center justify-center text-xs font-black text-white overflow-hidden shrink-0 focus:outline-none focus:ring-2 focus:ring-brand/50 focus:ring-offset-2"
           >
-            {user?.avatar ? <img src={user.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : initials}
+            {user?.avatar ? <img src={user.avatar} alt="" className="w-full h-full object-cover" /> : initials}
           </button>
 
           {showProfile && (
-            <div style={{
-              position: 'absolute', right: 0, top: '44px',
-              background: '#fff', borderRadius: '16px',
-              border: '1px solid #f0f0f0',
-              boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
-              padding: '8px', minWidth: '220px', zIndex: 200,
-              animation: 'slideUp 0.2s ease',
-            }}>
+            <div className="absolute right-0 top-11 bg-white rounded-2xl border border-gray-100 shadow-[0_12px_40px_rgba(0,0,0,0.15)] p-2 min-w-[220px] z-[200] animate-in fade-in slide-in-from-top-2 duration-200">
               {/* User info */}
-              <div style={{ padding: '12px 12px 8px', borderBottom: '1px solid #f5f5f5', marginBottom: '4px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{
-                    width: 40, height: 40, borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #fc8019, #ff9f43)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '14px', fontWeight: 800, color: '#fff', flexShrink: 0,
-                  }}>{initials}</div>
-                  <div>
-                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#1c1c1c' }}>{user?.name}</div>
-                    <div style={{ fontSize: '11px', color: '#93959f' }}>{user?.email}</div>
+              <div className="px-3 py-2 pb-3 border-b border-gray-50 mb-1">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand to-brand-light flex items-center justify-center text-sm font-black text-white shrink-0">
+                    {initials}
+                  </div>
+                  <div className="overflow-hidden">
+                    <div className="text-[13px] font-bold text-gray-900 truncate">{user?.name}</div>
+                    <div className="text-[11px] text-gray-500 truncate">{user?.email}</div>
                   </div>
                 </div>
-                <span style={{
-                  display: 'inline-block', marginTop: '8px',
-                  padding: '2px 10px', borderRadius: '999px',
-                  fontSize: '11px', fontWeight: 700,
-                  background: meta.bg, color: meta.color,
-                }}>{meta.label}</span>
+                <span className="inline-block mt-2 px-2.5 py-0.5 rounded-full text-[11px] font-bold" style={{ background: meta.bg, color: meta.color }}>
+                  {meta.label}
+                </span>
               </div>
 
               {[
@@ -223,32 +156,16 @@ export default function TopNav() {
                 <button
                   key={item.path}
                   onClick={() => { navigate(item.path); setShowProfile(false); }}
-                  style={{
-                    width: '100%', padding: '10px 12px', borderRadius: '10px',
-                    border: 'none', background: 'transparent',
-                    color: '#1c1c1c', fontSize: '13px', fontWeight: 500,
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px',
-                    transition: 'background 0.15s ease', textAlign: 'left',
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f8f8f8'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                  className="w-full px-3 py-2.5 rounded-xl border-none bg-transparent text-gray-900 text-[13px] font-medium flex items-center gap-2.5 hover:bg-gray-50 transition-colors duration-150 text-left focus:outline-none"
                 >
-                  <span style={{ fontSize: '15px' }}>{item.emoji}</span> {item.label}
+                  <span className="text-[15px]">{item.emoji}</span> {item.label}
                 </button>
               ))}
 
-              <div style={{ borderTop: '1px solid #f5f5f5', marginTop: '4px', paddingTop: '4px' }}>
+              <div className="border-t border-gray-50 mt-1 pt-1">
                 <button
                   onClick={() => { logout(); navigate('/'); }}
-                  style={{
-                    width: '100%', padding: '10px 12px', borderRadius: '10px',
-                    border: 'none', background: 'transparent',
-                    color: '#ef4444', fontSize: '13px', fontWeight: 600,
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px',
-                    transition: 'background 0.15s ease', textAlign: 'left',
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(239,68,68,0.06)'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                  className="w-full px-3 py-2.5 rounded-xl border-none bg-transparent text-red-500 text-[13px] font-semibold flex items-center gap-2.5 hover:bg-red-50 transition-colors duration-150 text-left focus:outline-none"
                 >
                   🚪 Sign Out
                 </button>

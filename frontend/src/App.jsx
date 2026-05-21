@@ -6,6 +6,7 @@ import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import DashboardLayout from './pages/DashboardLayout';
+import AdminRootLayout from './pages/AdminRootLayout';
 import Overview from './pages/Overview';
 import Services from './pages/Services';
 import CreateService from './pages/CreateService';
@@ -20,18 +21,20 @@ import NotificationsPage from './pages/NotificationsPage';
 import NearbyVendors from './pages/NearbyVendors';
 import AdminPanel from './pages/AdminPanel';
 import Profile from './pages/Profile';
+import VendorAnalytics from './pages/VendorAnalytics';
 import './index.css';
 
 function RoleRedirect() {
   const location = useLocation();
   const [role, ...rest] = location.pathname.split('/').filter(Boolean);
-  const normalized = role === 'admin' ? ['admin', ...rest] : rest;
-  return <Navigate to={`/dashboard${normalized.length ? `/${normalized.join('/')}` : ''}`} replace />;
+  return <Navigate to={`/dashboard${rest.length ? `/${rest.join('/')}` : ''}`} replace />;
 }
+
+import { Toaster } from 'react-hot-toast';
 
 function DashboardHome() {
   const { user } = useAuth();
-  return user?.role === 'ADMIN' ? <AdminPanel /> : <Overview />;
+  return user?.role === 'ADMIN' ? <Navigate to="/admin" replace /> : <Overview />;
 }
 
 export default function App() {
@@ -40,13 +43,22 @@ export default function App() {
       <BrowserRouter>
         <AuthProvider>
           <SocketProvider>
+            <Toaster position="bottom-right" />
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/customer/*" element={<RoleRedirect />} />
               <Route path="/vendor/*" element={<RoleRedirect />} />
-              <Route path="/admin/*" element={<RoleRedirect />} />
+              
+              {/* ADMIN ROUTES */}
+              <Route path="/admin" element={<AdminRootLayout />}>
+                <Route index element={<AdminPanel defaultTab="overview" />} />
+                <Route path="users" element={<AdminPanel defaultTab="users" />} />
+                <Route path="services" element={<AdminPanel defaultTab="services" />} />
+                <Route path="bookings" element={<AdminPanel defaultTab="bookings" />} />
+                <Route path="verifications" element={<AdminPanel defaultTab="verifications" />} />
+              </Route>
               <Route path="/dashboard" element={<DashboardLayout />}>
                 <Route index element={<DashboardHome />} />
                 <Route path="services" element={<Services />} />
@@ -59,10 +71,9 @@ export default function App() {
                 <Route path="wallet" element={<WalletPage />} />
                 <Route path="chat" element={<ChatPage />} />
                 <Route path="nearby" element={<NearbyVendors />} />
+                <Route path="analytics" element={<VendorAnalytics />} />
                 <Route path="notifications" element={<NotificationsPage />} />
                 <Route path="profile" element={<Profile />} />
-                <Route path="admin" element={<AdminPanel />} />
-                <Route path="admin/users" element={<AdminPanel defaultTab="users" />} />
               </Route>
             </Routes>
           </SocketProvider>

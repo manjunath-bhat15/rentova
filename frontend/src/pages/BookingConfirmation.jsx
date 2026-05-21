@@ -12,9 +12,9 @@ export default function BookingConfirmation() {
     // Simple confetti burst using CSS animation
     const el = confettiRef.current;
     if (el) {
-      el.style.animation = 'none';
+      el.classList.remove('animate-in', 'zoom-in-50', 'duration-500');
       void el.offsetHeight;
-      el.style.animation = '';
+      el.classList.add('animate-in', 'zoom-in-50', 'duration-500');
     }
   }, [booking, navigate]);
 
@@ -23,42 +23,36 @@ export default function BookingConfirmation() {
   const total = (parseFloat(booking.amount || 0) + parseFloat(booking.securityDeposit || 0)).toFixed(2);
 
   return (
-    <div style={{ fontFamily: "'Inter', -apple-system, sans-serif", maxWidth: '520px', margin: '0 auto', textAlign: 'center', paddingTop: '16px' }}>
+    <div className="max-w-[520px] mx-auto text-center pt-4 md:pt-8 px-4 animate-in fade-in duration-500 pb-10">
 
       {/* Success animation */}
-      <div ref={confettiRef} style={{ marginBottom: '28px' }}>
-        <div style={{
-          width: 96, height: 96, borderRadius: '50%', margin: '0 auto 16px',
-          background: 'linear-gradient(135deg, #10b981, #34d399)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '44px',
-          boxShadow: '0 8px 32px rgba(16,185,129,0.4)',
-          animation: 'popIn 0.5s cubic-bezier(0.34,1.56,0.64,1)',
-        }}>
+      <div className="mb-8">
+        <div 
+          ref={confettiRef}
+          className="w-24 h-24 rounded-full mx-auto mb-4 bg-gradient-to-br from-emerald-400 to-emerald-500 flex items-center justify-center text-[44px] shadow-[0_8px_32px_rgba(16,185,129,0.4)]"
+        >
           🎉
         </div>
-        <h1 style={{ fontSize: '1.8rem', fontWeight: 900, color: '#1c1c1c', margin: '0 0 8px', letterSpacing: '-0.03em' }}>
+        <h1 className="text-3xl font-black text-gray-900 m-0 mb-2 tracking-tight">
           Booking Confirmed!
         </h1>
-        <p style={{ color: '#686b78', fontSize: '14px', margin: 0, lineHeight: 1.6 }}>
+        <p className="text-gray-500 text-[15px] m-0 leading-relaxed max-w-sm mx-auto">
           Your rental request has been placed successfully. The vendor will confirm shortly.
         </p>
       </div>
 
       {/* Booking ID card */}
-      <div style={{
-        background: 'linear-gradient(135deg, #1c1c1c, #2d2d2d)',
-        borderRadius: '20px', padding: '24px 28px',
-        marginBottom: '20px', position: 'relative', overflow: 'hidden',
-      }}>
-        <div style={{ position: 'absolute', top: -40, right: -40, width: 120, height: 120, borderRadius: '50%', background: 'rgba(252,128,25,0.1)', pointerEvents: 'none' }} />
-        <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 6px' }}>
+      <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-6 md:p-8 mb-5 relative overflow-hidden text-left shadow-lg">
+        <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-brand/20 blur-2xl pointer-events-none" />
+        
+        <p className="text-[11px] font-bold text-white/40 uppercase tracking-widest m-0 mb-1.5">
           Booking ID
         </p>
-        <p style={{ fontSize: '1.4rem', fontWeight: 900, color: '#fc8019', margin: '0 0 20px', letterSpacing: '0.05em', fontFamily: 'monospace' }}>
+        <p className="text-2xl font-black text-brand m-0 mb-6 tracking-wide font-mono">
           #{booking.id}
         </p>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', textAlign: 'left' }}>
+        
+        <div className="grid grid-cols-2 gap-y-5 gap-x-4">
           {[
             { label: 'Service',    value: booking.serviceTitle || service?.title },
             { label: 'Vendor',     value: booking.vendorName },
@@ -66,10 +60,10 @@ export default function BookingConfirmation() {
             { label: 'Status',     value: '⏳ Pending Confirmation' },
           ].map(item => (
             <div key={item.label}>
-              <p style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 3px' }}>
+              <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest m-0 mb-1">
                 {item.label}
               </p>
-              <p style={{ fontSize: '13px', fontWeight: 600, color: '#fff', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <p className="text-[13px] font-semibold text-white m-0 truncate pr-2">
                 {item.value}
               </p>
             </div>
@@ -78,86 +72,69 @@ export default function BookingConfirmation() {
       </div>
 
       {/* Payment locked card */}
-      <div style={{
-        background: '#fff', borderRadius: '16px', padding: '20px 24px',
-        border: '1px solid #f0f0f0', marginBottom: '20px', textAlign: 'left',
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-          <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#1c1c1c', margin: 0 }}>💳 Payment</h3>
-          <span style={{ fontSize: '11px', fontWeight: 700, color: '#10b981', background: 'rgba(16,185,129,0.1)', padding: '3px 10px', borderRadius: '999px' }}>
+      <div className="bg-white rounded-2xl p-5 md:p-6 border border-gray-100 mb-5 text-left shadow-sm">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-[15px] font-extrabold text-gray-900 m-0">💳 Payment</h3>
+          <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full shadow-sm">
             🔒 In Escrow
           </span>
         </div>
-        {[
-          { label: `Rental (qty: ${booking.quantity || 1})`, value: `₹${parseFloat(booking.amount).toFixed(2)}` },
-          parseFloat(booking.securityDeposit || 0) > 0 && {
-            label: 'Security Deposit (Refundable)',
-            value: `₹${parseFloat(booking.securityDeposit).toFixed(2)}`,
-          },
-        ].filter(Boolean).map(row => (
-          <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-            <span style={{ fontSize: '13px', color: '#686b78' }}>{row.label}</span>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: '#1c1c1c' }}>{row.value}</span>
-          </div>
-        ))}
-        <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '10px', borderTop: '1px solid #f0f0f0' }}>
-          <span style={{ fontWeight: 700, color: '#1c1c1c' }}>Total Locked</span>
-          <span style={{ fontSize: '18px', fontWeight: 900, color: '#fc8019', letterSpacing: '-0.02em' }}>₹{total}</span>
+        <div className="flex flex-col gap-2.5 mb-4">
+          {[
+            { label: `Rental (qty: ${booking.quantity || 1})`, value: `₹${parseFloat(booking.amount).toFixed(2)}` },
+            parseFloat(booking.securityDeposit || 0) > 0 && {
+              label: 'Security Deposit (Refundable)',
+              value: `₹${parseFloat(booking.securityDeposit).toFixed(2)}`,
+            },
+          ].filter(Boolean).map(row => (
+            <div key={row.label} className="flex justify-between items-center">
+              <span className="text-[13px] text-gray-500 font-medium">{row.label}</span>
+              <span className="text-[13px] font-bold text-gray-900">{row.value}</span>
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+          <span className="font-extrabold text-[15px] text-gray-900">Total Locked</span>
+          <span className="text-xl font-black text-brand tracking-tight">₹{total}</span>
         </div>
       </div>
 
       {/* What's next */}
-      <div style={{ background: '#fff', borderRadius: '16px', padding: '20px 24px', border: '1px solid #f0f0f0', marginBottom: '24px', textAlign: 'left' }}>
-        <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#1c1c1c', margin: '0 0 16px' }}>What happens next?</h3>
-        {[
-          { emoji: '1️⃣', title: 'Vendor confirms',    desc: 'The vendor will review and accept your booking.' },
-          { emoji: '2️⃣', title: 'Share Start Code',   desc: 'You\'ll receive a 6-digit code. Share it with the vendor to begin.' },
-          { emoji: '3️⃣', title: 'Service in progress', desc: 'Rental runs. Funds stay locked in escrow.' },
-          { emoji: '4️⃣', title: 'Vendor ends service', desc: 'Vendor shares End Code. Enter it to release deposit refund.' },
-        ].map(step => (
-          <div key={step.title} style={{ display: 'flex', gap: '12px', marginBottom: '14px', alignItems: 'flex-start' }}>
-            <span style={{ fontSize: '18px', lineHeight: 1, flexShrink: 0, marginTop: '2px' }}>{step.emoji}</span>
-            <div>
-              <p style={{ fontWeight: 700, fontSize: '13px', color: '#1c1c1c', margin: '0 0 2px' }}>{step.title}</p>
-              <p style={{ fontSize: '12px', color: '#686b78', margin: 0, lineHeight: 1.5 }}>{step.desc}</p>
+      <div className="bg-white rounded-2xl p-5 md:p-6 border border-gray-100 mb-6 text-left shadow-sm">
+        <h3 className="text-[15px] font-extrabold text-gray-900 m-0 mb-5">What happens next?</h3>
+        <div className="flex flex-col gap-4">
+          {[
+            { emoji: '1️⃣', title: 'Vendor confirms',    desc: 'The vendor will review and accept your booking.' },
+            { emoji: '2️⃣', title: 'Share Start Code',   desc: 'You\'ll receive a 6-digit code. Share it with the vendor to begin.' },
+            { emoji: '3️⃣', title: 'Service in progress', desc: 'Rental runs. Funds stay locked in escrow.' },
+            { emoji: '4️⃣', title: 'Vendor ends service', desc: 'Vendor shares End Code. Enter it to release deposit refund.' },
+          ].map((step, idx, arr) => (
+            <div key={step.title} className={`flex gap-3.5 items-start ${idx < arr.length - 1 ? 'pb-4 border-b border-gray-50' : ''}`}>
+              <span className="text-xl leading-none mt-0.5 shrink-0">{step.emoji}</span>
+              <div>
+                <p className="font-bold text-[14px] text-gray-900 m-0 mb-1">{step.title}</p>
+                <p className="text-[13px] text-gray-500 m-0 leading-relaxed">{step.desc}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* Actions */}
-      <div style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
+      <div className="flex flex-col gap-3">
         <button
           onClick={() => navigate(`/dashboard/bookings/${booking.id}`)}
-          style={{
-            width: '100%', padding: '15px', borderRadius: '14px', border: 'none',
-            background: '#fc8019', color: '#fff', fontWeight: 800, fontSize: '15px',
-            cursor: 'pointer', boxShadow: '0 4px 16px rgba(252,128,25,0.35)',
-            transition: 'all 0.2s ease',
-          }}
-          onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
-          onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+          className="w-full py-4 rounded-xl border-none bg-brand text-white font-extrabold text-base cursor-pointer shadow-[0_4px_16px_rgba(252,128,25,0.35)] transition-transform duration-200 hover:-translate-y-0.5 focus:outline-none"
         >
           View Booking Details →
         </button>
         <button
           onClick={() => navigate('/dashboard/services')}
-          style={{
-            width: '100%', padding: '14px', borderRadius: '14px',
-            border: '1.5px solid #e8e8e8', background: '#fff',
-            color: '#686b78', fontWeight: 600, fontSize: '14px', cursor: 'pointer',
-          }}
+          className="w-full py-4 rounded-xl border-1.5 border-gray-200 bg-white text-gray-600 font-bold text-sm cursor-pointer hover:bg-gray-50 transition-colors focus:outline-none"
         >
           Browse More Services
         </button>
       </div>
-
-      <style>{`
-        @keyframes popIn {
-          from { transform: scale(0.5); opacity: 0; }
-          to   { transform: scale(1);   opacity: 1; }
-        }
-      `}</style>
     </div>
   );
 }

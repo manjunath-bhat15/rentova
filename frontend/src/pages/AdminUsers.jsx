@@ -42,8 +42,9 @@ export default function AdminUsers() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', padding: '80px' }}>
-        <div className="loading-spinner" />
+      <div className="flex justify-center items-center py-20 flex-col gap-3">
+        <div className="w-10 h-10 border-4 border-gray-100 border-t-brand rounded-full animate-spin" />
+        <p className="text-gray-400 text-sm">Loading users...</p>
       </div>
     );
   }
@@ -53,45 +54,54 @@ export default function AdminUsers() {
   const pendingGstUsers = users.filter(u => u.gstNumber && !u.gstVerified);
 
   return (
-    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xl)' }}>
+    <div className="animate-in fade-in duration-300 pb-10 flex flex-col gap-6">
       <div>
-        <button className="btn btn-ghost btn-sm" onClick={() => navigate('/dashboard/admin')} style={{ marginBottom: '8px' }}>
+        <button 
+          className="bg-transparent border-none text-gray-500 font-semibold cursor-pointer mb-2 hover:text-gray-900 transition-colors focus:outline-none flex items-center gap-1.5 text-sm" 
+          onClick={() => navigate('/dashboard/admin')}
+        >
           ← Back to Overview
         </button>
-        <h1 style={{ fontSize: 'var(--font-2xl)', fontWeight: 800, marginBottom: 'var(--space-xs)' }}>
+        <h1 className="text-2xl md:text-3xl font-black text-gray-900 m-0 mb-1 tracking-tight">
           User Management & KYC Queue
         </h1>
-        <p style={{ color: 'var(--text-secondary)' }}>Approve government identity documents and view user trust scores.</p>
+        <p className="text-gray-500 m-0 text-sm">Approve government identity documents and view user trust scores.</p>
       </div>
 
       {/* KYC identity approval queue */}
       {(pendingIdUsers.length > 0 || pendingGstUsers.length > 0) && (
-        <div className="glass-card animate-fade-in" style={{ padding: 'var(--space-lg)', border: '1px solid var(--accent-primary)20' }}>
-          <h2 style={{ fontSize: 'var(--font-lg)', fontWeight: 700, marginBottom: 'var(--space-md)', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent-primary)' }}></span>
+        <div className="bg-orange-50 border border-brand/20 rounded-2xl p-5 md:p-6 shadow-sm animate-in slide-in-from-bottom-4 duration-300">
+          <h2 className="text-lg font-bold text-brand mb-4 flex items-center gap-2 m-0 tracking-tight">
+            <span className="inline-block w-2.5 h-2.5 rounded-full bg-brand" />
             KYC Pending Verification Queue ({pendingIdUsers.length + pendingGstUsers.length})
           </h2>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+          <div className="flex flex-col gap-4">
             {/* Govt ID Queue */}
             {pendingIdUsers.map(u => (
-              <div key={u.id} style={{ padding: 'var(--space-md)', background: 'rgba(255,255,255,0.01)', border: '1px solid var(--glass-border)', borderRadius: 'var(--radius-md)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-md)' }}>
+              <div key={u.id} className="bg-white border border-orange-100 rounded-xl p-4 md:p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm">
                 <div>
-                  <div style={{ fontWeight: 600, fontSize: 'var(--font-base)' }}>{u.name} ({u.email})</div>
-                  <div style={{ fontSize: 'var(--font-sm)', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                    Govt ID Card (Aadhaar/PAN): <span style={{ fontFamily: 'monospace', fontWeight: 'bold', color: 'var(--text-primary)' }}>{u.govtIdNumber}</span>
+                  <div className="font-bold text-gray-900 mb-1">{u.name} ({u.email})</div>
+                  <div className="text-sm text-gray-500">
+                    Govt ID Card (Aadhaar/PAN): <span className="font-mono font-bold text-gray-900">{u.govtIdNumber}</span>
                   </div>
                   {u.govtIdUrl && (
-                    <a href={u.govtIdUrl} target="_blank" rel="noreferrer" style={{ fontSize: 'var(--font-xs)', color: 'var(--accent-secondary)', textDecoration: 'underline', marginTop: '6px', display: 'inline-block' }}>
+                    <a href={u.govtIdUrl} target="_blank" rel="noreferrer" className="text-xs font-semibold text-brand underline mt-2 inline-block hover:text-brand-dark transition-colors">
                       View Uploaded Document Image ↗
                     </a>
                   )}
                 </div>
-                <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
-                  <button className="btn btn-primary btn-sm" onClick={() => handleVerifyId(u.id, true)} style={{ background: 'var(--accent-success)', border: 'none' }}>
+                <div className="flex gap-2 w-full md:w-auto">
+                  <button 
+                    className="flex-1 md:flex-none px-4 py-2 bg-emerald-500 text-white font-bold rounded-lg border-none cursor-pointer hover:bg-emerald-600 transition-colors focus:outline-none" 
+                    onClick={() => handleVerifyId(u.id, true)}
+                  >
                     Approve ID
                   </button>
-                  <button className="btn btn-secondary btn-sm" onClick={() => handleVerifyId(u.id, false)} style={{ color: 'var(--accent-danger)' }}>
+                  <button 
+                    className="flex-1 md:flex-none px-4 py-2 bg-red-50 text-red-500 font-bold rounded-lg border-none cursor-pointer hover:bg-red-100 transition-colors focus:outline-none" 
+                    onClick={() => handleVerifyId(u.id, false)}
+                  >
                     Reject
                   </button>
                 </div>
@@ -100,18 +110,24 @@ export default function AdminUsers() {
 
             {/* GST Queue */}
             {pendingGstUsers.map(u => (
-              <div key={u.id} style={{ padding: 'var(--space-md)', background: 'rgba(255,255,255,0.01)', border: '1px solid var(--glass-border)', borderRadius: 'var(--radius-md)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--space-md)' }}>
+              <div key={u.id} className="bg-white border border-orange-100 rounded-xl p-4 md:p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm">
                 <div>
-                  <div style={{ fontWeight: 600, fontSize: 'var(--font-base)' }}>{u.name} ({u.email})</div>
-                  <div style={{ fontSize: 'var(--font-sm)', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                    Business Tax Registry ID (GSTIN): <span style={{ fontFamily: 'monospace', fontWeight: 'bold', color: 'var(--text-primary)' }}>{u.gstNumber}</span>
+                  <div className="font-bold text-gray-900 mb-1">{u.name} ({u.email})</div>
+                  <div className="text-sm text-gray-500">
+                    Business Tax Registry ID (GSTIN): <span className="font-mono font-bold text-gray-900">{u.gstNumber}</span>
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
-                  <button className="btn btn-primary btn-sm" onClick={() => handleVerifyGst(u.id, true)} style={{ background: 'var(--accent-success)', border: 'none' }}>
+                <div className="flex gap-2 w-full md:w-auto">
+                  <button 
+                    className="flex-1 md:flex-none px-4 py-2 bg-emerald-500 text-white font-bold rounded-lg border-none cursor-pointer hover:bg-emerald-600 transition-colors focus:outline-none" 
+                    onClick={() => handleVerifyGst(u.id, true)}
+                  >
                     Approve GST
                   </button>
-                  <button className="btn btn-secondary btn-sm" onClick={() => handleVerifyGst(u.id, false)} style={{ color: 'var(--accent-danger)' }}>
+                  <button 
+                    className="flex-1 md:flex-none px-4 py-2 bg-red-50 text-red-500 font-bold rounded-lg border-none cursor-pointer hover:bg-red-100 transition-colors focus:outline-none" 
+                    onClick={() => handleVerifyGst(u.id, false)}
+                  >
                     Reject
                   </button>
                 </div>
@@ -122,80 +138,71 @@ export default function AdminUsers() {
       )}
 
       {/* Main Users Table */}
-      <div className="glass-card" style={{ overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.02)' }}>
-              <th style={{ padding: 'var(--space-md) var(--space-lg)', fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>Name</th>
-              <th style={{ padding: 'var(--space-md) var(--space-lg)', fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>Email</th>
-              <th style={{ padding: 'var(--space-md) var(--space-lg)', fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>Role</th>
-              <th style={{ padding: 'var(--space-md) var(--space-lg)', fontSize: 'var(--font-xs)', color: 'var(--text-muted)', textAlign: 'center' }}>Trust Score</th>
-              <th style={{ padding: 'var(--space-md) var(--space-lg)', fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>Verification Flags</th>
-              <th style={{ padding: 'var(--space-md) var(--space-lg)', fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>Joined Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((u) => (
-              <tr key={u.id} style={{ borderBottom: '1px solid var(--glass-border)' }}>
-                <td style={{ padding: 'var(--space-md) var(--space-lg)', fontWeight: 600 }}>{u.name}</td>
-                <td style={{ padding: 'var(--space-md) var(--space-lg)', color: 'var(--text-secondary)' }}>{u.email}</td>
-                <td style={{ padding: 'var(--space-md) var(--space-lg)' }}>
-                  <span style={{
-                    padding: '4px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 700,
-                    background: u.role === 'ADMIN' ? 'rgba(255,107,107,0.1)' :
-                               u.role === 'VENDOR' ? 'rgba(255,122,0,0.1)' : 'rgba(0,184,148,0.1)',
-                    color: u.role === 'ADMIN' ? 'var(--accent-danger)' :
-                           u.role === 'VENDOR' ? 'var(--accent-primary)' : 'var(--accent-success)',
-                  }}>
-                    {u.role}
-                  </span>
-                </td>
-                <td style={{ padding: 'var(--space-md) var(--space-lg)', textAlign: 'center', fontWeight: 'bold', color: u.trustScore >= 60 ? 'var(--accent-success)' : 'var(--text-primary)' }}>
-                  {u.trustScore || 10} / 100
-                </td>
-                <td style={{ padding: 'var(--space-md) var(--space-lg)' }}>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <span style={{
-                      fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px',
-                      background: u.isVerified ? 'rgba(0, 184, 148, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                      color: u.isVerified ? 'var(--accent-success)' : 'var(--text-muted)'
-                    }}>
-                      Email
-                    </span>
-                    <span style={{
-                      fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px',
-                      background: u.phoneVerified ? 'rgba(0, 184, 148, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                      color: u.phoneVerified ? 'var(--accent-success)' : 'var(--text-muted)'
-                    }}>
-                      Phone
-                    </span>
-                    <span style={{
-                      fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px',
-                      background: u.govtIdVerified ? 'rgba(0, 184, 148, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                      color: u.govtIdVerified ? 'var(--accent-success)' : 'var(--text-muted)'
-                    }}>
-                      Govt ID
-                    </span>
-                    {u.role === 'VENDOR' && (
-                      <span style={{
-                        fontSize: '9px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px',
-                        background: u.gstVerified ? 'rgba(0, 184, 148, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                        color: u.gstVerified ? 'var(--accent-success)' : 'var(--text-muted)'
-                      }}>
-                        GST
-                      </span>
-                    )}
-                  </div>
-                </td>
-                <td style={{ padding: 'var(--space-md) var(--space-lg)', fontSize: 'var(--font-xs)', color: 'var(--text-secondary)' }}>
-                  {new Date(u.createdAt).toLocaleDateString('en-US', {
-                    year: 'numeric', month: 'short', day: 'numeric'
-                  })}
-                </td>
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[800px]">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-100">
+                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">Name</th>
+                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">Email</th>
+                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">Role</th>
+                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap text-center">Trust Score</th>
+                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">Verification Flags</th>
+                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">Joined Date</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {users.map((u) => (
+                <tr key={u.id} className="hover:bg-gray-50/50 transition-colors">
+                  <td className="p-4 font-bold text-sm text-gray-900 whitespace-nowrap">{u.name}</td>
+                  <td className="p-4 text-sm text-gray-500 whitespace-nowrap">{u.email}</td>
+                  <td className="p-4 whitespace-nowrap">
+                    <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold ${
+                      u.role === 'ADMIN' ? 'bg-red-50 text-red-500' :
+                      u.role === 'VENDOR' ? 'bg-orange-50 text-brand' : 'bg-emerald-50 text-emerald-500'
+                    }`}>
+                      {u.role}
+                    </span>
+                  </td>
+                  <td className={`p-4 text-center font-bold text-sm whitespace-nowrap ${u.trustScore >= 60 ? 'text-emerald-500' : 'text-gray-900'}`}>
+                    {u.trustScore || 10} / 100
+                  </td>
+                  <td className="p-4 whitespace-nowrap">
+                    <div className="flex gap-1.5 flex-wrap">
+                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${
+                        u.isVerified ? 'bg-emerald-50 text-emerald-500' : 'bg-gray-100 text-gray-400'
+                      }`}>
+                        Email
+                      </span>
+                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${
+                        u.phoneVerified ? 'bg-emerald-50 text-emerald-500' : 'bg-gray-100 text-gray-400'
+                      }`}>
+                        Phone
+                      </span>
+                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${
+                        u.govtIdVerified ? 'bg-emerald-50 text-emerald-500' : 'bg-gray-100 text-gray-400'
+                      }`}>
+                        Govt ID
+                      </span>
+                      {u.role === 'VENDOR' && (
+                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${
+                          u.gstVerified ? 'bg-emerald-50 text-emerald-500' : 'bg-gray-100 text-gray-400'
+                        }`}>
+                          GST
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="p-4 text-xs text-gray-500 whitespace-nowrap">
+                    {new Date(u.createdAt).toLocaleDateString('en-US', {
+                      year: 'numeric', month: 'short', day: 'numeric'
+                    })}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

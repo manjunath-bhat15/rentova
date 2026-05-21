@@ -1,6 +1,8 @@
 package com.rentova.controller;
 
-import com.rentova.dto.*;
+import com.rentova.dto.BookingDTO;
+import com.rentova.dto.CreateBookingRequest;
+import com.rentova.dto.RateRequest;
 import com.rentova.model.User;
 import com.rentova.service.BookingService;
 import jakarta.validation.Valid;
@@ -83,6 +85,19 @@ public class BookingController {
             String otp = body.get("otp");
             if (otp == null) return ResponseEntity.badRequest().body(Map.of("message", "Verification code is required"));
             return ResponseEntity.ok(bookingService.verifyEndOtp(id, otp, user));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/{id}/rate")
+    public ResponseEntity<?> rateVendor(
+            @PathVariable String id,
+            @Valid @RequestBody RateRequest request,
+            @AuthenticationPrincipal User user) {
+        try {
+            bookingService.rateVendor(id, request, user);
+            return ResponseEntity.ok(Map.of("message", "Rating submitted successfully"));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }

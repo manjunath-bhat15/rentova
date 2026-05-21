@@ -11,16 +11,7 @@ const units = [
   { value: 'SESSION', label: 'Per Session' },
 ];
 
-const stockImages = [
-  { url: 'https://images.unsplash.com/photo-1563720223185-11003d516935?w=500&auto=format&fit=crop&q=60', name: 'Car/Tesla (Vehicles)' },
-  { url: 'https://images.unsplash.com/photo-1516576882236-1634b8c6a6f6?w=500&auto=format&fit=crop&q=60', name: 'Cargo Van (Vehicles)' },
-  { url: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=500&auto=format&fit=crop&q=60', name: 'Scooter (Vehicles)' },
-  { url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500&auto=format&fit=crop&q=60', name: 'DSLR Camera (Equipment)' },
-  { url: 'https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=500&auto=format&fit=crop&q=60', name: 'Drone (Equipment)' },
-  { url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=500&auto=format&fit=crop&q=60', name: 'Office Room (Spaces)' },
-  { url: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=500&auto=format&fit=crop&q=60', name: 'Power Drill (Tools)' },
-  { url: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=500&auto=format&fit=crop&q=60', name: 'Garden Tools (Tools)' },
-];
+// Removed stock images array
 
 export default function CreateService() {
   const navigate = useNavigate();
@@ -124,7 +115,22 @@ export default function CreateService() {
     }
   };
 
-  const updateField = (field, value) => setForm(f => ({ ...f, [field]: value }));
+  const updateField = (field, value) => {
+    setForm(f => {
+      const updated = { ...f, [field]: value };
+      // Auto-calculate security deposit when price changes
+      if (field === 'pricePerUnit') {
+        const parsedPrice = parseFloat(value);
+        if (!isNaN(parsedPrice)) {
+          // Setting it to 1.5x price
+          updated.securityDeposit = (parsedPrice * 1.5).toFixed(2).toString();
+        } else {
+          updated.securityDeposit = '';
+        }
+      }
+      return updated;
+    });
+  };
 
   const fetchLocation = () => {
     if (!navigator.geolocation) {
@@ -237,25 +243,25 @@ export default function CreateService() {
                 type="number"
                 className="input-field"
                 placeholder="0.00"
-                min="0.01"
+                min="0"
                 step="0.01"
                 value={form.pricePerUnit}
                 onChange={(e) => updateField('pricePerUnit', e.target.value)}
+                onWheel={(e) => e.target.blur()}
                 required
               />
             </div>
 
             <div className="input-group">
-              <label>Security Deposit (INR)</label>
+              <label>Security Deposit (INR) <span className="text-xs text-brand font-medium">(Auto-calculated at 1.5x price)</span></label>
               <input
                 type="number"
-                className="input-field"
+                className="input-field opacity-60 bg-gray-50 cursor-not-allowed"
                 placeholder="0.00"
                 min="0"
                 step="0.01"
                 value={form.securityDeposit}
-                onChange={(e) => updateField('securityDeposit', e.target.value)}
-                required
+                disabled
               />
             </div>
           </div>
@@ -437,39 +443,7 @@ export default function CreateService() {
               </div>
             )}
 
-            {/* Stock Image Suggestions */}
-            <div style={{ marginTop: 'var(--space-sm)' }}>
-              <span style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>
-                Quick Add High-Quality Stock Photo:
-              </span>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(70px, 1fr))',
-                gap: '8px',
-                marginTop: '6px'
-              }}>
-                {stockImages.map((img) => (
-                  <button
-                    key={img.url}
-                    type="button"
-                    onClick={() => addImageString(img.url)}
-                    style={{
-                      padding: 0,
-                      border: '1px solid var(--glass-border)',
-                      borderRadius: 'var(--radius-md)',
-                      overflow: 'hidden',
-                      height: '50px',
-                      cursor: 'pointer',
-                      background: 'none',
-                      transition: 'transform 0.1s ease'
-                    }}
-                    title={img.name}
-                  >
-                    <img src={img.url} alt={img.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </button>
-                ))}
-              </div>
-            </div>
+            {/* Stock Image Suggestions Removed */}
           </div>
 
           <div className="input-group">
@@ -478,9 +452,11 @@ export default function CreateService() {
               type="number"
               className="input-field"
               min="1"
-              max="100"
+              max="500"
               value={form.serviceRadiusKm}
               onChange={(e) => updateField('serviceRadiusKm', Number(e.target.value) || 10)}
+              onWheel={(e) => e.target.blur()}
+              required
             />
           </div>
 

@@ -78,19 +78,19 @@ export default function ChatPage() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '80px', flexDirection: 'column', gap: '12px' }}>
-        <div style={{ width: 40, height: 40, border: '3px solid #f0f0f0', borderTopColor: '#fc8019', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
-        <p style={{ color: '#93959f', fontSize: '14px' }}>Loading messages...</p>
+      <div className="flex justify-center items-center flex-col gap-3 py-20">
+        <div className="w-10 h-10 border-4 border-gray-100 border-t-brand rounded-full animate-spin" />
+        <p className="text-gray-400 text-sm">Loading messages...</p>
       </div>
     );
   }
 
   if (conversations.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '80px 20px', background: '#fafafa', borderRadius: '20px', border: '2px dashed #e8e8e8' }}>
-        <div style={{ fontSize: '56px', marginBottom: '16px' }}>💬</div>
-        <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#1c1c1c', marginBottom: '8px' }}>No conversations yet</h3>
-        <p style={{ color: '#686b78', fontSize: '14px' }}>
+      <div className="text-center py-20 px-5 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+        <div className="text-6xl mb-4">💬</div>
+        <h3 className="text-lg font-black text-gray-900 mb-2">No conversations yet</h3>
+        <p className="text-gray-500 text-sm max-w-sm mx-auto">
           Conversations are created when you book a service. Each booking has its own chat thread.
         </p>
       </div>
@@ -101,131 +101,107 @@ export default function ChatPage() {
   const initials = (name) => name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?';
 
   return (
-    <div className="chat-shell">
-      {/* Left: Conversation list */}
-      <div style={{ background: '#fafafa', borderRight: '1px solid #f0f0f0', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #f0f0f0', background: '#fff' }}>
-          <h3 style={{ fontWeight: 800, fontSize: '15px', color: '#1c1c1c', letterSpacing: '-0.02em', margin: 0 }}>
+    <div className="flex flex-col md:flex-row h-[calc(100vh-140px)] md:h-[600px] bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden animate-in fade-in">
+      
+      {/* Left: Conversation list (Hidden on mobile if chat is active) */}
+      <div className={`w-full md:w-[320px] bg-gray-50 flex-col border-r border-gray-200 shrink-0 ${activeBookingId ? 'hidden md:flex' : 'flex'}`}>
+        <div className="p-4 border-b border-gray-200 bg-white">
+          <h3 className="font-extrabold text-[15px] text-gray-900 tracking-tight m-0">
             💬 Messages
           </h3>
-          <p style={{ fontSize: '12px', color: '#93959f', margin: '2px 0 0' }}>{conversations.length} conversation{conversations.length !== 1 ? 's' : ''}</p>
+          <p className="text-xs text-gray-500 mt-1 mb-0">{conversations.length} conversation{conversations.length !== 1 ? 's' : ''}</p>
         </div>
-        {conversations.map((conv) => {
-          const isActive = conv.bookingId === activeBookingId;
-          return (
-            <div
-              key={conv.bookingId}
-              onClick={() => setActiveBookingId(conv.bookingId)}
-              style={{
-                padding: '14px 16px',
-                cursor: 'pointer',
-                borderBottom: '1px solid #f5f5f5',
-                borderLeft: `3px solid ${isActive ? '#fc8019' : 'transparent'}`,
-                background: isActive ? 'rgba(252,128,25,0.06)' : 'transparent',
-                transition: 'all 0.15s ease',
-              }}
-              onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = '#f0f0f0'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = isActive ? 'rgba(252,128,25,0.06)' : 'transparent'; }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{
-                  width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
-                  background: isActive ? '#fc8019' : '#e8e8e8',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '13px', fontWeight: 800, color: isActive ? '#fff' : '#686b78',
-                  transition: 'all 0.15s ease',
-                }}>
-                  {initials(conv.otherPartyName)}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontWeight: isActive ? 700 : 600, fontSize: '13px', color: '#1c1c1c' }}>
-                      {conv.otherPartyName}
-                    </span>
-                    {conv.unreadCount > 0 && (
-                      <span style={{
-                        background: '#fc8019', color: '#fff',
-                        borderRadius: '999px', padding: '1px 6px',
-                        fontSize: '10px', fontWeight: 800,
-                      }}>
-                        {conv.unreadCount}
-                      </span>
-                    )}
+        <div className="overflow-y-auto flex-1">
+          {conversations.map((conv) => {
+            const isActive = conv.bookingId === activeBookingId;
+            return (
+              <div
+                key={conv.bookingId}
+                onClick={() => setActiveBookingId(conv.bookingId)}
+                className={`p-4 border-b border-gray-100 cursor-pointer transition-colors border-l-4 ${
+                  isActive 
+                    ? 'border-l-brand bg-brand/5' 
+                    : 'border-l-transparent bg-transparent hover:bg-gray-100'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-full shrink-0 flex items-center justify-center text-sm font-bold transition-colors ${
+                    isActive ? 'bg-brand text-white shadow-sm' : 'bg-gray-200 text-gray-500'
+                  }`}>
+                    {initials(conv.otherPartyName)}
                   </div>
-                  <p style={{ fontSize: '11px', color: '#fc8019', margin: '1px 0', fontWeight: 600 }}>
-                    {conv.serviceTitle}
-                  </p>
-                  <p style={{ fontSize: '11px', color: '#93959f', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0 }}>
-                    {conv.lastMessage}
-                  </p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-center">
+                      <span className={`font-bold text-[13px] text-gray-900 truncate pr-2`}>
+                        {conv.otherPartyName}
+                      </span>
+                      {conv.unreadCount > 0 && (
+                        <span className="bg-brand text-white rounded-full px-1.5 py-0.5 text-[10px] font-black shrink-0">
+                          {conv.unreadCount}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-brand m-0 mt-0.5 font-bold truncate">
+                      {conv.serviceTitle}
+                    </p>
+                    <p className="text-[11px] text-gray-500 truncate m-0 mt-0.5">
+                      {conv.lastMessage}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
-      {/* Right: Chat area */}
-      <div style={{ display: 'flex', flexDirection: 'column', background: '#fff', overflow: 'hidden' }}>
+      {/* Right: Chat area (Hidden on mobile if NO chat is active) */}
+      <div className={`flex-1 flex-col bg-white overflow-hidden relative ${!activeBookingId ? 'hidden md:flex' : 'flex'}`}>
+        
         {/* Chat header */}
-        <div style={{
-          padding: '14px 20px', borderBottom: '1px solid #f0f0f0',
-          background: '#fff', display: 'flex', alignItems: 'center', gap: '12px',
-          flexShrink: 0,
-        }}>
-          <div style={{
-            width: 40, height: 40, borderRadius: '50%',
-            background: 'linear-gradient(135deg, #fc8019, #ff9f43)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '14px', fontWeight: 800, color: '#fff',
-          }}>
+        <div className="p-3.5 md:p-4 border-b border-gray-100 bg-white flex items-center gap-3 shrink-0 z-10 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+          {/* Mobile back button */}
+          <button 
+            className="md:hidden w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-lg border-none mr-1 focus:outline-none"
+            onClick={() => setActiveBookingId(null)}
+          >
+            ←
+          </button>
+
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand to-brand-light flex items-center justify-center text-sm font-black text-white shrink-0 shadow-sm">
             {initials(activeConvo?.otherPartyName)}
           </div>
-          <div>
-            <p style={{ fontWeight: 700, fontSize: '14px', color: '#1c1c1c', margin: 0 }}>
+          <div className="flex-1 min-w-0">
+            <p className="font-bold text-sm text-gray-900 m-0 truncate">
               {activeConvo?.otherPartyName}
             </p>
-            <p style={{ fontSize: '12px', color: '#fc8019', margin: '2px 0 0', fontWeight: 600 }}>
+            <p className="text-xs text-brand m-0 mt-0.5 font-bold truncate">
               {activeConvo?.serviceTitle}
             </p>
           </div>
-          <div style={{
-            marginLeft: 'auto', padding: '4px 12px', borderRadius: '999px',
-            background: 'rgba(16,185,129,0.1)', color: '#10b981',
-            fontSize: '11px', fontWeight: 700,
-          }}>
+          <div className="hidden sm:block ml-auto px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[11px] font-bold shrink-0 border border-emerald-100">
             ● Active
           </div>
         </div>
 
         {/* Messages */}
-        <div style={{
-          flex: 1, overflowY: 'auto', padding: '20px',
-          display: 'flex', flexDirection: 'column', gap: '10px',
-          background: '#fafafa',
-        }}>
+        <div className="flex-1 overflow-y-auto p-4 md:p-5 flex flex-col gap-3 bg-gray-50/50">
           {messages.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '40px', color: '#93959f', fontSize: '14px' }}>
+            <div className="text-center p-10 text-gray-400 text-sm">
               Start the conversation! Say hello 👋
             </div>
           )}
           {messages.map((msg) => {
             const isMine = msg.senderId === user?.id;
             return (
-              <div key={msg.id} style={{ display: 'flex', justifyContent: isMine ? 'flex-end' : 'flex-start' }}>
-                <div style={{
-                  maxWidth: '70%',
-                  padding: '10px 16px',
-                  borderRadius: isMine ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
-                  background: isMine ? 'linear-gradient(135deg, #fc8019, #ff9f43)' : '#fff',
-                  color: isMine ? '#fff' : '#1c1c1c',
-                  fontSize: '14px', lineHeight: 1.5,
-                  boxShadow: isMine
-                    ? '0 4px 12px rgba(252,128,25,0.3)'
-                    : '0 1px 4px rgba(0,0,0,0.08)',
-                }}>
-                  <p style={{ margin: 0 }}>{msg.content}</p>
-                  <p style={{ fontSize: '10px', marginTop: '4px', opacity: 0.75, textAlign: 'right' }}>
+              <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[85%] md:max-w-[70%] px-4 py-2.5 text-sm leading-relaxed ${
+                  isMine 
+                    ? 'rounded-[18px_18px_4px_18px] bg-gradient-to-br from-brand to-brand-light text-white shadow-[0_4px_12px_rgba(252,128,25,0.25)]' 
+                    : 'rounded-[18px_18px_18px_4px] bg-white text-gray-900 border border-gray-100 shadow-sm'
+                }`}>
+                  <p className="m-0 break-words">{msg.content}</p>
+                  <p className={`text-[10px] mt-1 text-right ${isMine ? 'text-white/80' : 'text-gray-400 font-medium'}`}>
                     {new Date(msg.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
@@ -236,42 +212,32 @@ export default function ChatPage() {
         </div>
 
         {/* Input bar */}
-        <div style={{
-          padding: '14px 20px', borderTop: '1px solid #f0f0f0',
-          background: '#fff', display: 'flex', gap: '10px', alignItems: 'center',
-          flexShrink: 0,
-        }}>
-          <input
-            style={{
-              flex: 1, padding: '12px 16px',
-              borderRadius: '999px', border: '1.5px solid #e8e8e8',
-              fontSize: '14px', color: '#1c1c1c', outline: 'none',
-              background: '#fafafa', transition: 'all 0.15s ease',
-            }}
-            placeholder="Type a message..."
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={handleKeyPress}
-            onFocus={(e) => { e.target.style.borderColor = '#fc8019'; e.target.style.background = '#fff'; }}
-            onBlur={(e) => { e.target.style.borderColor = '#e8e8e8'; e.target.style.background = '#fafafa'; }}
-          />
-          <button
-            onClick={sendMessage}
-            disabled={sending || !newMessage.trim()}
-            style={{
-              width: 44, height: 44, borderRadius: '50%', border: 'none',
-              background: sending || !newMessage.trim() ? '#e8e8e8' : '#fc8019',
-              color: sending || !newMessage.trim() ? '#93959f' : '#fff',
-              fontSize: '18px', cursor: sending || !newMessage.trim() ? 'not-allowed' : 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'all 0.15s ease',
-              boxShadow: !sending && newMessage.trim() ? '0 4px 12px rgba(252,128,25,0.35)' : 'none',
-              flexShrink: 0,
-            }}
-          >
-            {sending ? '⏳' : '➤'}
-          </button>
-        </div>
+        {(activeConvo?.bookingStatus === 'COMPLETED' || activeConvo?.bookingStatus === 'CANCELLED') ? (
+          <div className="p-3.5 md:p-4 border-t border-gray-100 bg-gray-50 flex justify-center items-center shrink-0">
+            <p className="text-sm font-medium text-gray-500 m-0">Chat is closed as the booking is {activeConvo.bookingStatus.toLowerCase()}.</p>
+          </div>
+        ) : (
+          <div className="p-3.5 md:p-4 border-t border-gray-100 bg-white flex gap-3 items-center shrink-0">
+            <input
+              className="flex-1 px-4 py-3 rounded-full border-1.5 border-gray-200 text-sm text-gray-900 outline-none bg-gray-50 focus:bg-white focus:border-brand transition-colors"
+              placeholder="Type a message..."
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyDown={handleKeyPress}
+            />
+            <button
+              onClick={sendMessage}
+              disabled={sending || !newMessage.trim()}
+              className={`w-11 h-11 rounded-full border-none flex items-center justify-center text-lg transition-all shrink-0 focus:outline-none ${
+                sending || !newMessage.trim() 
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                  : 'bg-brand text-white cursor-pointer shadow-[0_4px_12px_rgba(252,128,25,0.35)] hover:bg-brand-dark hover:-translate-y-0.5'
+              }`}
+            >
+              {sending ? '⏳' : '➤'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

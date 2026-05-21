@@ -235,6 +235,19 @@ public class UserService {
         return toDTO(dbUser, balance);
     }
 
+    @Transactional
+    public void changePassword(User user, ChangePasswordRequest request) {
+        User dbUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        if (!passwordEncoder.matches(request.getCurrentPassword(), dbUser.getPassword())) {
+            throw new RuntimeException("Incorrect current password");
+        }
+        
+        dbUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(dbUser);
+    }
+
     private UserDTO toDTO(User user, BigDecimal walletBalance) {
         return UserDTO.builder()
                 .id(user.getId())
@@ -254,6 +267,9 @@ public class UserService {
                 .gstVerified(user.isGstVerified())
                 .gstNumber(user.getGstNumber())
                 .trustScore(user.getTrustScore())
+                .totalOrders(user.getTotalOrders())
+                .totalRatings(user.getTotalRatings())
+                .rating(user.getRating())
                 .createdAt(user.getCreatedAt())
                 .build();
     }

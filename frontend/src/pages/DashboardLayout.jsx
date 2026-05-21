@@ -3,7 +3,6 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import CustomerLayout from './CustomerLayout';
 import VendorLayout from './VendorLayout';
-import AdminLayout from './AdminLayout';
 
 export default function DashboardLayout() {
   const { isAuthenticated, loading, user } = useAuth();
@@ -28,9 +27,7 @@ export default function DashboardLayout() {
 
   const role = user?.role || 'CUSTOMER';
 
-  if (role === 'ADMIN') {
-    return <AdminLayout />;
-  } else if (role === 'VENDOR') {
+  if (role === 'VENDOR') {
     return <VendorLayout />;
   } else {
     return <CustomerLayout />;

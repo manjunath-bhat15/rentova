@@ -281,25 +281,25 @@ export default function EditService() {
                 type="number"
                 className="input-field"
                 placeholder="0.00"
-                min="0.01"
+                min="0"
                 step="0.01"
                 value={form.pricePerUnit}
                 onChange={(e) => updateField('pricePerUnit', e.target.value)}
+                onWheel={(e) => e.target.blur()}
                 required
               />
             </div>
 
             <div className="input-group">
-              <label>Security Deposit (INR)</label>
+              <label>Security Deposit (INR) <span className="text-xs text-brand font-medium">(Auto-calculated at 1.5x price)</span></label>
               <input
                 type="number"
-                className="input-field"
+                className="input-field opacity-60 bg-gray-50 cursor-not-allowed"
                 placeholder="0.00"
                 min="0"
                 step="0.01"
                 value={form.securityDeposit}
-                onChange={(e) => updateField('securityDeposit', e.target.value)}
-                required
+                disabled
               />
             </div>
           </div>
@@ -523,9 +523,11 @@ export default function EditService() {
               type="number"
               className="input-field"
               min="1"
-              max="100"
+              max="500"
               value={form.serviceRadiusKm}
               onChange={(e) => updateField('serviceRadiusKm', Number(e.target.value) || 10)}
+              onWheel={(e) => e.target.blur()}
+              required
             />
           </div>
 

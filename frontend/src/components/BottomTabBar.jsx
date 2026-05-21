@@ -11,10 +11,10 @@ const roleBottomNav = {
   ],
   VENDOR: [
     { path: '/dashboard',                    label: 'Console',  emoji: '🏠', exact: true },
-    { path: '/dashboard/services',           label: 'Listings', emoji: '🏪' },
+    { path: '/dashboard/services',           label: 'Listings', emoji: '📦' },
     { path: '/dashboard/services/create',    label: 'Add',      emoji: '➕' },
-    { path: '/dashboard/bookings',           label: 'Bookings', emoji: '📋' },
-    { path: '/dashboard/wallet',             label: 'Wallet',   emoji: '💰' },
+    { path: '/dashboard/bookings',           label: 'Bookings', emoji: '📅' },
+    { path: '/dashboard/analytics',          label: 'Stats',    emoji: '📈' },
   ],
   ADMIN: [
     { path: '/dashboard',                    label: 'HQ',       emoji: '⚡', exact: true },
@@ -31,48 +31,21 @@ export default function BottomTabBar() {
   const items = roleBottomNav[role] || roleBottomNav.CUSTOMER;
 
   return (
-    <nav style={{
-      position: 'fixed',
-      bottom: 0, left: 0, right: 0,
-      height: '64px',
-      background: 'rgba(255,255,255,0.98)',
-      backdropFilter: 'blur(16px)',
-      borderTop: '1px solid #f0f0f0',
-      alignItems: 'stretch',
-      zIndex: 100,
-      paddingBottom: 'env(safe-area-inset-bottom)',
-    }} className="bottom-tab-bar">
+    <nav className="bottom-tab-bar flex md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/98 backdrop-blur-2xl border-t border-gray-100 z-50 items-stretch pb-[env(safe-area-inset-bottom)]">
       {items.map(item => (
         <NavLink
           key={item.path}
           to={item.path}
           end={item.exact}
-          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
+          className="flex-1 flex flex-col items-center justify-center no-underline"
         >
           {({ isActive }) => (
-            <div style={{
-              display: 'flex', flexDirection: 'column',
-              alignItems: 'center', justifyContent: 'center',
-              gap: '2px', padding: '6px 4px',
-              borderRadius: '12px',
-              background: isActive ? 'rgba(252,128,25,0.08)' : 'transparent',
-              transition: 'all 0.15s ease',
-              minWidth: '44px', minHeight: '44px',
-              position: 'relative',
-            }}>
+            <div className={`flex flex-col items-center justify-center gap-0.5 px-1 py-1.5 rounded-xl transition-all duration-150 min-w-[44px] min-h-[44px] relative ${isActive ? 'bg-brand/10' : 'bg-transparent'}`}>
               {isActive && (
-                <div style={{
-                  position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
-                  width: '20px', height: '3px', borderRadius: '0 0 3px 3px',
-                  background: '#fc8019',
-                }} />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-5 h-1 rounded-b-[3px] bg-brand" />
               )}
-              <span style={{ fontSize: '20px', lineHeight: 1 }}>{item.emoji}</span>
-              <span style={{
-                fontSize: '10px', fontWeight: isActive ? 700 : 500,
-                color: isActive ? '#fc8019' : '#93959f',
-                letterSpacing: '0.01em',
-              }}>
+              <span className="text-xl leading-none">{item.emoji}</span>
+              <span className={`text-[10px] tracking-wide ${isActive ? 'font-bold text-brand' : 'font-medium text-gray-400'}`}>
                 {item.label}
               </span>
             </div>

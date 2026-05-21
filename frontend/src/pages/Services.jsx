@@ -49,76 +49,50 @@ export default function Services() {
   const isAdmin = user?.role === 'ADMIN';
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-in fade-in duration-300">
       {/* Page Header */}
-      <div style={{ marginBottom: '24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px', marginBottom: '20px' }}>
+      <div className="mb-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-5">
           <div>
-            <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--accent-primary)', marginBottom: '6px' }}>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-brand mb-1.5">
               {isVendor ? 'Manage' : 'Discover'}
             </p>
-            <h1 style={{ fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text-primary)', margin: 0 }}>
+            <h1 className="text-[clamp(1.6rem,3vw,2.2rem)] font-extrabold tracking-tight text-gray-900 m-0">
               {isVendor ? 'My Listings' : 'Browse Services'}
             </h1>
-            <p style={{ color: 'var(--text-secondary)', marginTop: '6px', fontSize: 'var(--font-sm)' }}>
+            <p className="text-gray-500 mt-1.5 text-sm">
               {isVendor ? 'Manage your service offerings' : `${services.length} services available near you`}
             </p>
           </div>
           {isVendor && (
-            <button className="btn btn-primary" onClick={() => navigate('/dashboard/services/create')} style={{ borderRadius: '12px', padding: '11px 22px' }}>
+            <button className="bg-brand hover:bg-brand-dark text-white font-bold text-sm px-5 py-2.5 rounded-xl transition-all shadow-[0_4px_14px_rgba(252,128,25,0.35)] shrink-0" onClick={() => navigate('/dashboard/services/create')}>
               + Add Listing
             </button>
           )}
         </div>
 
         {/* Search Bar */}
-        <div style={{ position: 'relative', marginBottom: '16px' }}>
-          <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', fontSize: '16px', pointerEvents: 'none' }}>🔍</span>
+        <div className="relative mb-4">
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base pointer-events-none">🔍</span>
           <input
-            className="input-field"
+            className="w-full pl-11 pr-4 h-12 rounded-xl text-sm bg-gray-50 border border-gray-200 text-gray-900 outline-none focus:bg-white focus:border-brand transition-colors placeholder-gray-400"
             placeholder="Search services, vendors..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={{ 
-              width: '100%', 
-              paddingLeft: '44px',
-              borderRadius: '14px',
-              height: '48px',
-              fontSize: 'var(--font-sm)',
-              background: 'var(--glass-bg)',
-              border: '1px solid var(--glass-border)',
-            }}
           />
         </div>
 
         {/* Swiggy-style horizontal scrollable category pills */}
-        <div style={{
-          display: 'flex',
-          gap: '8px',
-          overflowX: 'auto',
-          paddingBottom: '4px',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-          WebkitOverflowScrolling: 'touch',
-        }}>
+        <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              style={{
-                flexShrink: 0,
-                padding: '8px 18px',
-                borderRadius: '999px',
-                border: activeCategory === cat ? '2px solid var(--accent-primary)' : '1.5px solid var(--glass-border)',
-                background: activeCategory === cat ? 'var(--accent-primary)' : 'var(--glass-bg)',
-                color: activeCategory === cat ? '#ffffff' : 'var(--text-secondary)',
-                fontWeight: activeCategory === cat ? 700 : 500,
-                fontSize: '13px',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                whiteSpace: 'nowrap',
-                letterSpacing: '-0.01em',
-              }}
+              className={`shrink-0 px-4 py-2 rounded-full border-1.5 text-[13px] transition-all whitespace-nowrap focus:outline-none ${
+                activeCategory === cat 
+                  ? 'border-brand bg-brand text-white font-bold' 
+                  : 'border-gray-200 bg-gray-50 text-gray-500 font-medium hover:bg-gray-100 hover:text-gray-900'
+              }`}
             >
               {cat}
             </button>
@@ -128,30 +102,26 @@ export default function Services() {
 
       {/* Services Grid */}
       {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '80px' }}>
-          <div className="loading-spinner" />
+        <div className="flex justify-center py-20">
+          <div className="w-10 h-10 border-4 border-gray-100 border-t-brand rounded-full animate-spin" />
         </div>
       ) : services.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '80px 20px' }}>
-          <div style={{ fontSize: '56px', marginBottom: '16px' }}>🔍</div>
-          <h3 style={{ fontSize: 'var(--font-xl)', fontWeight: 700, marginBottom: '8px', letterSpacing: '-0.02em' }}>
+        <div className="text-center py-20 px-5 flex flex-col items-center">
+          <div className="text-6xl mb-4">🔍</div>
+          <h3 className="text-xl font-bold tracking-tight mb-2 text-gray-900">
             {isVendor ? 'No listings yet' : 'No services found'}
           </h3>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', fontSize: 'var(--font-sm)', maxWidth: '360px', margin: '0 auto 24px' }}>
+          <p className="text-gray-500 text-sm max-w-sm mb-6">
             {isVendor ? 'Create your first listing to start receiving bookings.' : 'Try adjusting your search or category filter.'}
           </p>
           {isVendor && (
-            <button className="btn btn-primary" onClick={() => navigate('/dashboard/services/create')} style={{ borderRadius: '12px' }}>
+            <button className="bg-brand hover:bg-brand-dark text-white font-bold text-sm px-6 py-3 rounded-xl transition-all shadow-[0_4px_14px_rgba(252,128,25,0.35)]" onClick={() => navigate('/dashboard/services/create')}>
               + Create Listing
             </button>
           )}
         </div>
       ) : (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: '20px',
-        }} className="stagger">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5 pb-6">
           {services.map((s) => (
             <ServiceCard
               key={s.id}

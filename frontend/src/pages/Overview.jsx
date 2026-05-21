@@ -80,49 +80,50 @@ export default function Overview() {
   const metricCards = isVendor ? [
     { label: t('activeBookings'), value: stats?.activeBookings || 0, detail: `${stats?.pendingBookings || 0} ${t('statusPending').toLowerCase()}` },
     { label: t('myListings'), value: stats?.totalServices || 0, detail: `${stats?.activeServices || 0} ${t('online').toLowerCase()}` },
-    { label: t('revenue'), value: `Rs ${Number(stats?.totalRevenue || 0).toFixed(2)}`, detail: t('statusCompleted') },
+    { label: t('revenue'), value: `₹ ${Number(stats?.totalRevenue || 0).toFixed(2)}`, detail: t('statusCompleted') },
   ] : [
     { label: t('activeBookings'), value: stats?.activeBookings || 0, detail: `${stats?.pendingBookings || 0} ${t('statusPending').toLowerCase()}` },
-    { label: t('walletBalance'), value: `Rs ${Number(stats?.walletBalance || 0).toFixed(2)}`, detail: t('wallet') },
+    { label: t('walletBalance'), value: `₹ ${Number(stats?.walletBalance || 0).toFixed(2)}`, detail: t('wallet') },
     { label: t('nearbyVendors'), value: nearby.length, detail: 'Within 10 km' },
   ];
 
   if (loading) {
     return (
-      <div className="center-loader">
-        <div className="loading-spinner" />
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="w-10 h-10 border-4 border-gray-100 border-t-brand rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-in fade-in duration-300">
       {/* Welcome Hero */}
-      <div className="workspace-hero stagger">
-        <div>
-          <p className="eyebrow" style={{ marginBottom: '6px' }}>
+      <div className="bg-gradient-to-br from-brand/10 to-brand-light/5 rounded-3xl p-6 md:p-10 mb-8 border border-brand/20 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/40 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3" />
+        
+        <div className="relative z-10">
+          <p className="text-brand font-black text-[11px] uppercase tracking-widest mb-1.5">
             {isVendor ? t('vendorOps') : t('custDashboard')}
           </p>
-          <h1>
+          <h1 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">
             {t('welcome')},{' '}
-            <span>{user?.name?.split(' ')[0]}</span> 👋
+            <span className="text-brand">{user?.name?.split(' ')[0]}</span> 👋
           </h1>
-          <p style={{ marginTop: '8px' }}>
+          <p className="text-sm md:text-base text-gray-600 mt-2 font-medium max-w-lg">
             {isVendor ? t('vendorHeroDesc') : t('custHeroDesc')}
           </p>
         </div>
-        <div className="hero-actions">
+
+        <div className="flex flex-col sm:flex-row gap-3 relative z-10">
           <button
-            className="btn btn-primary"
+            className="bg-brand hover:bg-brand-dark text-white font-bold text-[13px] px-6 py-3.5 rounded-xl shadow-[0_4px_14px_rgba(252,128,25,0.35)] transition-all duration-200 hover:-translate-y-0.5 focus:outline-none"
             onClick={() => navigate(isVendor ? '/dashboard/services/create' : '/dashboard/nearby')}
-            style={{ borderRadius: '12px', padding: '12px 24px' }}
           >
             {isVendor ? t('addListing') : t('findNearby')}
           </button>
           <button
-            className="btn btn-secondary"
+            className="bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 font-bold text-[13px] px-6 py-3.5 rounded-xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 focus:outline-none"
             onClick={() => navigate('/dashboard/bookings')}
-            style={{ borderRadius: '12px', padding: '12px 24px' }}
           >
             {t('viewBookings')}
           </button>
@@ -130,98 +131,90 @@ export default function Overview() {
       </div>
 
       {/* Metric Cards */}
-      <div className="metric-grid stagger">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
         {metricCards.map((metric, i) => (
-          <div className="metric-card" key={metric.label}>
-            <span>{metric.label}</span>
-            <strong>{metric.value}</strong>
-            <small>{metric.detail}</small>
+          <div className="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100 flex flex-col hover:shadow-md transition-shadow" key={metric.label}>
+            <span className="text-[13px] font-bold text-gray-500 mb-1">{metric.label}</span>
+            <strong className="text-3xl font-black text-gray-900 tracking-tight">{metric.value}</strong>
+            <small className="text-[11px] font-semibold text-gray-400 mt-1 uppercase tracking-wider">{metric.detail}</small>
           </div>
         ))}
       </div>
 
       {/* Two-column panels */}
-      <div className="split-panels">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-8">
         {/* Recent Bookings */}
-        <section className="panel-block">
-          <div className="panel-heading">
+        <section className="bg-white rounded-3xl p-5 md:p-7 shadow-sm border border-gray-100">
+          <div className="flex justify-between items-start mb-6">
             <div>
-              <h2>{t('recentBookings')}</h2>
-              <p>{t('latestActivity')}</p>
+              <h2 className="text-xl font-bold text-gray-900">{t('recentBookings')}</h2>
+              <p className="text-xs font-medium text-gray-500">{t('latestActivity')}</p>
             </div>
-            <button className="btn btn-ghost btn-sm" onClick={() => navigate('/dashboard/bookings')}
-              style={{ borderRadius: '999px', fontSize: '12px' }}
-            >
-              {t('openAll')} →
+            <button className="text-xs font-bold text-brand hover:text-brand-dark bg-brand/5 hover:bg-brand/10 px-4 py-2 rounded-full transition-colors focus:outline-none" onClick={() => navigate('/dashboard/bookings')}>
+              {t('openAll')} &rarr;
             </button>
           </div>
-          <div className="recent-list">
+
+          <div className="flex flex-col gap-2">
             {recentBookings.map((booking) => (
-              <button key={booking.id} onClick={() => navigate(`/dashboard/bookings/${booking.id}`)}>
-                <span>
-                  <strong>{booking.serviceTitle}</strong>
-                  <small>{isVendor ? booking.customerName : booking.vendorName}</small>
+              <button key={booking.id} onClick={() => navigate(`/dashboard/bookings/${booking.id}`)}
+                className="flex items-center justify-between p-4 rounded-2xl border border-gray-100 bg-white hover:bg-gray-50 transition-colors w-full text-left focus:outline-none"
+              >
+                <span className="flex flex-col overflow-hidden mr-4">
+                  <strong className="text-[14px] font-bold text-gray-900 truncate">{booking.serviceTitle}</strong>
+                  <small className="text-[12px] font-medium text-gray-500 truncate">{isVendor ? booking.customerName : booking.vendorName}</small>
                 </span>
-                <span style={{
-                  padding: '4px 10px',
-                  borderRadius: '999px',
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  background: booking.status === 'COMPLETED' ? 'rgba(16,185,129,0.1)'
-                    : booking.status === 'PENDING' ? 'rgba(252,128,25,0.1)'
-                    : booking.status === 'IN_PROGRESS' ? 'rgba(0,188,212,0.1)'
-                    : 'rgba(239,68,68,0.1)',
-                  color: booking.status === 'COMPLETED' ? '#10b981'
-                    : booking.status === 'PENDING' ? '#fc8019'
-                    : booking.status === 'IN_PROGRESS' ? '#00bcd4'
-                    : '#ef4444',
-                  whiteSpace: 'nowrap',
-                  flexShrink: 0,
-                }}>
+                <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold whitespace-nowrap shrink-0 ${
+                  booking.status === 'COMPLETED' ? 'bg-emerald-50 text-emerald-600' :
+                  booking.status === 'PENDING' ? 'bg-brand/10 text-brand' :
+                  booking.status === 'IN_PROGRESS' ? 'bg-cyan-50 text-cyan-600' :
+                  'bg-red-50 text-red-500'
+                }`}>
                   {booking.status}
                 </span>
               </button>
             ))}
             {recentBookings.length === 0 && (
-              <div className="empty-state">
-                <div style={{ fontSize: '36px', marginBottom: '12px' }}>📋</div>
-                <strong>{t('noBookings')}</strong>
-                <p style={{ marginTop: '6px', fontSize: 'var(--font-sm)' }}>{isVendor ? t('vendorEmptyDesc') : t('custEmptyDesc')}</p>
+              <div className="flex flex-col items-center justify-center p-8 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                <div className="text-4xl mb-3">📋</div>
+                <strong className="text-sm font-bold text-gray-900">{t('noBookings')}</strong>
+                <p className="text-xs text-gray-500 mt-1 max-w-[200px]">{isVendor ? t('vendorEmptyDesc') : t('custEmptyDesc')}</p>
               </div>
             )}
           </div>
         </section>
 
         {!isVendor && (
-          <section className="panel-block">
-            <div className="panel-heading">
+          <section className="bg-white rounded-3xl p-5 md:p-7 shadow-sm border border-gray-100">
+            <div className="flex justify-between items-start mb-6">
               <div>
-                <h2>{t('nearbyInventory')}</h2>
-                <p>{t('freshServices')}</p>
+                <h2 className="text-xl font-bold text-gray-900">{t('nearbyInventory')}</h2>
+                <p className="text-xs font-medium text-gray-500">{t('freshServices')}</p>
               </div>
-              <button className="btn btn-ghost btn-sm" onClick={() => navigate('/dashboard/nearby')}
-                style={{ borderRadius: '999px', fontSize: '12px' }}
-              >
-                {t('mapView')} →
+              <button className="text-xs font-bold text-brand hover:text-brand-dark bg-brand/5 hover:bg-brand/10 px-4 py-2 rounded-full transition-colors focus:outline-none" onClick={() => navigate('/dashboard/nearby')}>
+                {t('mapView')} &rarr;
               </button>
             </div>
-            <div className="recent-list">
+            
+            <div className="flex flex-col gap-2">
               {nearby.slice(0, 5).map((service) => (
-                <button key={service.id} onClick={() => navigate('/dashboard/nearby')}>
-                  <span>
-                    <strong>{service.title}</strong>
-                    <small>{service.vendorName}</small>
+                <button key={service.id} onClick={() => navigate('/dashboard/nearby')}
+                  className="flex items-center justify-between p-4 rounded-2xl border border-gray-100 bg-white hover:bg-gray-50 transition-colors w-full text-left focus:outline-none"
+                >
+                  <span className="flex flex-col overflow-hidden mr-4">
+                    <strong className="text-[14px] font-bold text-gray-900 truncate">{service.title}</strong>
+                    <small className="text-[12px] font-medium text-gray-500 truncate">{service.vendorName}</small>
                   </span>
-                  <span style={{ color: 'var(--accent-success)', fontWeight: 700, fontSize: 'var(--font-xs)', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                  <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full whitespace-nowrap shrink-0">
                     📍 {service.distanceKm} km
                   </span>
                 </button>
               ))}
               {nearby.length === 0 && (
-                <div className="empty-state">
-                  <div style={{ fontSize: '36px', marginBottom: '12px' }}>🗺️</div>
-                  <strong>{t('noNearbyListings')}</strong>
-                  <p style={{ marginTop: '6px', fontSize: 'var(--font-sm)' }}>{t('allowLocationDesc')}</p>
+                <div className="flex flex-col items-center justify-center p-8 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                  <div className="text-4xl mb-3">🗺️</div>
+                  <strong className="text-sm font-bold text-gray-900">{t('noNearbyListings')}</strong>
+                  <p className="text-xs text-gray-500 mt-1 max-w-[200px]">{t('allowLocationDesc')}</p>
                 </div>
               )}
             </div>
@@ -231,20 +224,18 @@ export default function Overview() {
 
       {/* Nearby Service Toast */}
       {nearbyPopup && (
-        <div className="nearby-toast">
-          <div style={{ flex: 1 }}>
-            <strong style={{ fontSize: 'var(--font-sm)', fontWeight: 700 }}>{t('newNearbyListing')}</strong>
-            <p>{nearbyPopup.title} by {nearbyPopup.vendorName}, {nearbyPopup.distanceKm} km away.</p>
+        <div className="fixed bottom-20 md:bottom-6 right-4 md:right-8 bg-gray-900 text-white p-4 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.2)] flex items-center gap-4 z-50 animate-in slide-in-from-bottom-8 duration-300 max-w-sm">
+          <div className="flex-1 min-w-0">
+            <strong className="text-[13px] font-bold block mb-1 text-emerald-400">{t('newNearbyListing')}</strong>
+            <p className="text-xs text-gray-300 m-0 truncate">
+              {nearbyPopup.title} by {nearbyPopup.vendorName}, {nearbyPopup.distanceKm} km away.
+            </p>
           </div>
-          <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
-            <button className="btn btn-primary btn-sm" onClick={() => navigate('/dashboard/nearby')}
-              style={{ borderRadius: '999px' }}
-            >
+          <div className="flex gap-2 shrink-0">
+            <button className="bg-brand hover:bg-brand-light text-white text-xs font-bold px-3 py-2 rounded-xl transition-colors focus:outline-none" onClick={() => navigate('/dashboard/nearby')}>
               {t('view')}
             </button>
-            <button className="btn btn-ghost btn-sm" onClick={dismissNearby}
-              style={{ borderRadius: '999px' }}
-            >
+            <button className="bg-white/10 hover:bg-white/20 text-white text-xs font-bold w-8 h-8 rounded-xl flex items-center justify-center transition-colors focus:outline-none" onClick={dismissNearby}>
               ✕
             </button>
           </div>

@@ -28,6 +28,7 @@ public class DevDataSeeder implements CommandLineRunner {
         seedUser("vendor@rentova.local", "Vendor Demo", Role.VENDOR, BigDecimal.ZERO, "password123");
         seedUser("admin@rentova.local", "Admin Demo", Role.ADMIN, BigDecimal.ZERO, "password123");
         seedUser("admin@rentova.com", "System Administrator", Role.ADMIN, BigDecimal.ZERO, "admin123");
+        seedUser("manjubhat8105@gmail.com", "Manju", Role.ADMIN, BigDecimal.ZERO, "admin123");
     }
 
     private void seedUser(String email, String name, Role role, BigDecimal balance, String plainPassword) {

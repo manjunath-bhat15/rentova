@@ -101,6 +101,7 @@ public class ChatService {
                     .lastMessage(lastMsg == null ? "Start the conversation" : lastMsg.getContent())
                     .lastMessageTime((lastMsg == null ? booking.getCreatedAt() : lastMsg.getCreatedAt()).toString())
                     .unreadCount(unread)
+                    .bookingStatus(booking.getStatus().name())
                     .build());
         }
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import StatusBadge from '../components/StatusBadge';
 
 export default function AdminOverview() {
   const navigate = useNavigate();
@@ -29,92 +30,90 @@ export default function AdminOverview() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', padding: '80px' }}>
-        <div className="loading-spinner" />
+      <div className="flex justify-center items-center py-20 flex-col gap-3">
+        <div className="w-10 h-10 border-4 border-gray-100 border-t-brand rounded-full animate-spin" />
+        <p className="text-gray-400 text-sm">Loading admin dashboard...</p>
       </div>
     );
   }
 
   return (
-    <div className="animate-fade-in">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-xl)' }}>
+    <div className="animate-in fade-in duration-300 pb-10">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
         <div>
-          <h1 style={{ fontSize: 'var(--font-2xl)', fontWeight: 800, marginBottom: 'var(--space-xs)' }}>
+          <h1 className="text-2xl md:text-3xl font-black text-gray-900 m-0 mb-1 tracking-tight">
             Admin Dashboard
           </h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Overview of platform metrics.</p>
+          <p className="text-gray-500 m-0 text-sm">Overview of platform metrics.</p>
         </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button className="btn btn-secondary" onClick={() => navigate('/dashboard/admin/users')}>
+        <div className="flex gap-3">
+          <button 
+            className="bg-white border-1.5 border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-bold text-sm cursor-pointer hover:bg-gray-50 transition-colors focus:outline-none" 
+            onClick={() => navigate('/dashboard/admin/users')}
+          >
             Manage Users
           </button>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-lg)', marginBottom: 'var(--space-2xl)' }}>
-        <div className="glass-card" style={{ padding: 'var(--space-xl)' }}>
-          <div style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 mb-8">
+        <div className="bg-white rounded-2xl p-5 md:p-6 border border-gray-100 shadow-sm flex flex-col gap-1">
+          <div className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
             Total Users
           </div>
-          <div style={{ fontSize: '32px', fontWeight: 800 }}>{stats?.totalUsers || 0}</div>
+          <div className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">{stats?.totalUsers || 0}</div>
         </div>
-        <div className="glass-card" style={{ padding: 'var(--space-xl)' }}>
-          <div style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>
+        <div className="bg-white rounded-2xl p-5 md:p-6 border border-gray-100 shadow-sm flex flex-col gap-1">
+          <div className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
             Total Bookings
           </div>
-          <div style={{ fontSize: '32px', fontWeight: 800 }}>{stats?.totalBookings || 0}</div>
+          <div className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">{stats?.totalBookings || 0}</div>
         </div>
-        <div className="glass-card" style={{ padding: 'var(--space-xl)' }}>
-          <div style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>
+        <div className="bg-white rounded-2xl p-5 md:p-6 border border-gray-100 shadow-sm flex flex-col gap-1">
+          <div className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
             Completed Revenue
           </div>
-          <div style={{ fontSize: '32px', fontWeight: 800, color: 'var(--accent-success)' }}>
+          <div className="text-3xl md:text-4xl font-black text-emerald-500 tracking-tight">
             ₹{(stats?.totalRevenue || 0).toLocaleString()}
           </div>
         </div>
       </div>
 
-      <h2 style={{ fontSize: 'var(--font-lg)', fontWeight: 700, marginBottom: 'var(--space-lg)' }}>Recent Bookings</h2>
+      <h2 className="text-lg md:text-xl font-extrabold text-gray-900 mb-5 tracking-tight">Recent Bookings</h2>
       {recentBookings.length === 0 ? (
-        <p style={{ color: 'var(--text-secondary)' }}>No bookings found.</p>
+        <div className="text-sm text-gray-500 italic p-4 bg-gray-50 rounded-xl border border-gray-100">No bookings found.</div>
       ) : (
-        <div className="glass-card" style={{ overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid var(--glass-border)', background: 'rgba(255,255,255,0.02)' }}>
-                <th style={{ padding: 'var(--space-md) var(--space-lg)', fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>ID</th>
-                <th style={{ padding: 'var(--space-md) var(--space-lg)', fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>Service</th>
-                <th style={{ padding: 'var(--space-md) var(--space-lg)', fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>Customer</th>
-                <th style={{ padding: 'var(--space-md) var(--space-lg)', fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>Vendor</th>
-                <th style={{ padding: 'var(--space-md) var(--space-lg)', fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>Amount</th>
-                <th style={{ padding: 'var(--space-md) var(--space-lg)', fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentBookings.map((booking) => (
-                <tr key={booking.id} style={{ borderBottom: '1px solid var(--glass-border)' }}>
-                  <td style={{ padding: 'var(--space-md) var(--space-lg)', fontSize: 'var(--font-xs)', color: 'var(--text-secondary)' }}>
-                    {booking.id.substring(0, 8)}
-                  </td>
-                  <td style={{ padding: 'var(--space-md) var(--space-lg)', fontWeight: 600 }}>{booking.serviceTitle}</td>
-                  <td style={{ padding: 'var(--space-md) var(--space-lg)' }}>{booking.customerName}</td>
-                  <td style={{ padding: 'var(--space-md) var(--space-lg)' }}>{booking.vendorName}</td>
-                  <td style={{ padding: 'var(--space-md) var(--space-lg)', fontWeight: 600 }}>₹{booking.amount * booking.quantity}</td>
-                  <td style={{ padding: 'var(--space-md) var(--space-lg)' }}>
-                    <span style={{
-                      padding: '4px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 700,
-                      background: booking.status === 'COMPLETED' ? 'rgba(0,184,148,0.1)' : 
-                                 booking.status === 'CANCELLED' ? 'rgba(255,107,107,0.1)' : 'rgba(255,122,0,0.1)',
-                      color: booking.status === 'COMPLETED' ? 'var(--accent-success)' : 
-                             booking.status === 'CANCELLED' ? 'var(--accent-danger)' : 'var(--accent-primary)',
-                    }}>
-                      {booking.status}
-                    </span>
-                  </td>
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[600px]">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-100">
+                  <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">ID</th>
+                  <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">Service</th>
+                  <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">Customer</th>
+                  <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">Vendor</th>
+                  <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">Amount</th>
+                  <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {recentBookings.map((booking) => (
+                  <tr key={booking.id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="p-4 text-xs font-mono text-gray-500 whitespace-nowrap">
+                      {booking.id.substring(0, 8)}
+                    </td>
+                    <td className="p-4 font-bold text-sm text-gray-900 truncate max-w-[200px]">{booking.serviceTitle}</td>
+                    <td className="p-4 text-sm text-gray-700 whitespace-nowrap">{booking.customerName}</td>
+                    <td className="p-4 text-sm text-gray-700 whitespace-nowrap">{booking.vendorName}</td>
+                    <td className="p-4 font-bold text-sm text-gray-900 whitespace-nowrap">₹{booking.amount * booking.quantity}</td>
+                    <td className="p-4 whitespace-nowrap">
+                      <StatusBadge status={booking.status} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

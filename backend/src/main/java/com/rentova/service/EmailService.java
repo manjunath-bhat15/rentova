@@ -2,6 +2,7 @@ package com.rentova.service;
 
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -12,6 +13,9 @@ public class EmailService {
 
     @Autowired(required = false)
     private JavaMailSender mailSender;
+
+    @Value("${spring.mail.username:manjubhat8105@gmail.com}")
+    private String fromEmail;
 
     /**
      * Sends an HTML email asynchronously so it never blocks API responses.
@@ -27,7 +31,7 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            helper.setFrom("admin.rentova@gmail.com", "Rentova");
+            helper.setFrom(fromEmail, "Rentova");
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(htmlContent, true);

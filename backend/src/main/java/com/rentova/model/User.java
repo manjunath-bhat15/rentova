@@ -76,6 +76,18 @@ public class User {
     @Builder.Default
     private int trustScore = 10;
     
+    @Column(nullable = false)
+    @Builder.Default
+    private int totalOrders = 0;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private int totalRatings = 0;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private double rating = 0.0;
+    
     @JsonIgnore
     private String otpCode;
 
