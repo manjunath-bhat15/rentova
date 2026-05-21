@@ -12,11 +12,14 @@ import CreateService from './pages/CreateService';
 import EditService from './pages/EditService';
 import Bookings from './pages/Bookings';
 import BookingDetail from './pages/BookingDetail';
+import CheckoutPage from './pages/CheckoutPage';
+import BookingConfirmation from './pages/BookingConfirmation';
 import WalletPage from './pages/WalletPage';
 import ChatPage from './pages/ChatPage';
 import NotificationsPage from './pages/NotificationsPage';
 import NearbyVendors from './pages/NearbyVendors';
 import AdminPanel from './pages/AdminPanel';
+import Profile from './pages/Profile';
 import './index.css';
 
 function RoleRedirect() {
@@ -51,10 +54,13 @@ export default function App() {
                 <Route path="services/edit/:id" element={<EditService />} />
                 <Route path="bookings" element={<Bookings />} />
                 <Route path="bookings/:id" element={<BookingDetail />} />
+                <Route path="checkout" element={<CheckoutPage />} />
+                <Route path="booking-confirmation" element={<BookingConfirmation />} />
                 <Route path="wallet" element={<WalletPage />} />
                 <Route path="chat" element={<ChatPage />} />
                 <Route path="nearby" element={<NearbyVendors />} />
                 <Route path="notifications" element={<NotificationsPage />} />
+                <Route path="profile" element={<Profile />} />
                 <Route path="admin" element={<AdminPanel />} />
                 <Route path="admin/users" element={<AdminPanel defaultTab="users" />} />
               </Route>

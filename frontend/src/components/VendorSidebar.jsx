@@ -1,5 +1,3 @@
-import NavigationDock from './NavigationDock';
-
 export default function VendorSidebar() {
-  return <NavigationDock />;
+  return null; // Navigation handled by TopNav + BottomTabBar
 }
