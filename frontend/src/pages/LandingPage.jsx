@@ -151,6 +151,22 @@ export default function LandingPage() {
 
         {/* Auth CTAs */}
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          {deferredPrompt && (
+            <button 
+              onClick={() => {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => setDeferredPrompt(null));
+              }}
+              style={{
+                background: '#f5f5f5', color: '#1c1c1c', border: 'none',
+                padding: '8px 14px', borderRadius: '999px',
+                fontWeight: 600, fontSize: '13px', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: '6px'
+              }}>
+              📱 Get App
+            </button>
+          )}
+          
           {isAuthenticated ? (
             <Link to="/dashboard" style={{
               background: '#fc8019', color: '#fff',
@@ -161,7 +177,7 @@ export default function LandingPage() {
             }}>Dashboard →</Link>
           ) : (
             <>
-              <Link to="/login" style={{
+              <Link to="/login" className="hide-on-mobile" style={{
                 color: '#1c1c1c', fontWeight: 600, fontSize: '14px',
                 textDecoration: 'none', padding: '9px 18px',
                 borderRadius: '999px', border: '1.5px solid #e8e8e8',
