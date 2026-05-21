@@ -5,19 +5,20 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${SPRING_MAIL_USERNAME:manjubhat8105@gmail.com}
-    password: ${SPRING_MAIL_PASSWORD:}
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+
     properties:
       mail:
         smtp:
           auth: true
-          connectiontimeout: 5000
-          timeout: 5000
-          writetimeout: 5000
           starttls:
             enable: true
+          connectiontimeout: 10000
+          timeout: 10000
+          writetimeout: 10000
 
-  # Default profile uses H2 in-memory database for local development
+  # Local Development Database (H2)
   datasource:
     url: jdbc:h2:mem:rentova
     driver-class-name: org.h2.Driver
@@ -43,43 +44,48 @@ spring:
 
 server:
   port: ${PORT:8080}
+
   tomcat:
     max-http-form-post-size: -1
 
-# JWT Configuration
+# Application Configuration
 app:
   name: Rentova
+
   jwt:
     secret: rentova-super-secret-key-that-is-at-least-256-bits-long-for-hs256-algorithm-security
-    expiration-ms: 86400000  # 24 hours
+    expiration-ms: 86400000
 
-# CORS Configuration
   cors:
     allowed-origins: http://localhost:5173,http://localhost:3000
 
 ---
-# Production profile - PostgreSQL (Neon)
+# =========================
+# PRODUCTION CONFIGURATION
+# =========================
 spring:
   config:
     activate:
       on-profile: prod
 
+  # Gmail SMTP
   mail:
     host: smtp.gmail.com
-    port: 465
-    username: ${SPRING_MAIL_USERNAME:manjubhat8105@gmail.com}
-    password: ${SPRING_MAIL_PASSWORD:}
-    protocol: smtps
+    port: 587
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+
     properties:
       mail:
         smtp:
           auth: true
+          starttls:
+            enable: true
           connectiontimeout: 10000
           timeout: 10000
           writetimeout: 10000
-          ssl:
-            enable: true
 
+  # PostgreSQL Database
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
@@ -93,12 +99,15 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
 
 app:
   jwt:
     secret: ${JWT_SECRET}
+
   cors:
     allowed-origins: ${CORS_ORIGINS}
