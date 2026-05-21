@@ -10,6 +10,7 @@ import com.rentova.repository.WalletRepository;
 import com.rentova.repository.ServiceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +21,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
+@Order(2) // Run AFTER DatabaseMigrationRunner
 public class DatabaseSeeder implements CommandLineRunner {
 
     private final UserRepository userRepository;
