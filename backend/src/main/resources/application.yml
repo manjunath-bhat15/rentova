@@ -5,7 +5,7 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${SPRING_MAIL_USERNAME}
+    username: ${SPRING_MAIL_USERNAME:manjubhat8105@gmail.com}
     password: ${SPRING_MAIL_PASSWORD}
 
     properties:
@@ -51,6 +51,7 @@ server:
 # Application Configuration
 app:
   name: Rentova
+  allow-otp-bypass: true  # Enables '123456' shortcut for rapid frontend development
 
   jwt:
     secret: rentova-super-secret-key-that-is-at-least-256-bits-long-for-hs256-algorithm-security
@@ -108,6 +109,7 @@ spring:
 app:
   jwt:
     secret: ${JWT_SECRET}
+  allow-otp-bypass: false # Hard constraint: completely disables testing backdoors in production
 
   cors:
     allowed-origins: ${CORS_ORIGINS}

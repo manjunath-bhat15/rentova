@@ -24,6 +24,9 @@ public class UserService {
     private final JwtTokenProvider tokenProvider;
     private final EmailService emailService;
 
+    @org.springframework.beans.factory.annotation.Value("${app.allow-otp-bypass:false}")
+    private boolean allowOtpBypass;
+
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         User user = userRepository.findByEmail(request.getEmail()).orElse(null);
@@ -113,7 +116,10 @@ public class UserService {
             throw new RuntimeException("User is already verified");
         }
 
-        if (!request.getOtp().equals(user.getOtpCode()) && !request.getOtp().equals("123456")) {
+        // Evaluate condition explicitly before throwing validation exception
+        boolean isBypassValid = allowOtpBypass && "123456".equals(request.getOtp());
+
+        if (!request.getOtp().equals(user.getOtpCode()) && !isBypassValid) {
             throw new RuntimeException("Invalid OTP");
         }
 
@@ -192,7 +198,11 @@ public class UserService {
     public UserDTO verifyPhone(User user, String otp) {
         User dbUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        if (dbUser.getOtpCode() == null || (!dbUser.getOtpCode().equals(otp) && !otp.equals("123456"))) {
+        
+        // Evaluate phone check matching condition explicitly
+        boolean isPhoneBypassValid = allowOtpBypass && "123456".equals(otp);
+
+        if (dbUser.getOtpCode() == null || (!dbUser.getOtpCode().equals(otp) && !isPhoneBypassValid)) {
             throw new RuntimeException("Invalid OTP code");
         }
         dbUser.setPhoneVerified(true);
