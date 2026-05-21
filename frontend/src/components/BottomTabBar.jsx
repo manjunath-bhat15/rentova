@@ -34,14 +34,12 @@ export default function BottomTabBar() {
     <nav style={{
       position: 'fixed',
       bottom: 0, left: 0, right: 0,
-      height: '60px',
+      height: '64px',
       background: 'rgba(255,255,255,0.98)',
       backdropFilter: 'blur(16px)',
       borderTop: '1px solid #f0f0f0',
-      display: 'flex',
       alignItems: 'stretch',
       zIndex: 100,
-      // iOS safe area
       paddingBottom: 'env(safe-area-inset-bottom)',
     }} className="bottom-tab-bar">
       {items.map(item => (

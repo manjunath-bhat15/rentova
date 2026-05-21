@@ -162,14 +162,17 @@ public class UserService {
 
     @Transactional
     public UserDTO updateProfile(User user, ProfileUpdateRequest request) {
-        user.setName(request.getName());
-        user.setAvatar(request.getAvatar());
-        user = userRepository.save(user);
+        User dbUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        dbUser.setName(request.getName());
+        if (request.getAvatar() != null) dbUser.setAvatar(request.getAvatar());
+        if (request.getPhone() != null) dbUser.setPhoneNumber(request.getPhone());
+        dbUser = userRepository.save(dbUser);
 
-        BigDecimal balance = walletRepository.findByUserId(user.getId())
+        BigDecimal balance = walletRepository.findByUserId(dbUser.getId())
                 .map(Wallet::getBalance)
                 .orElse(BigDecimal.ZERO);
-        return toDTO(user, balance);
+        return toDTO(dbUser, balance);
     }
 
     @Transactional
@@ -249,5 +252,16 @@ public class UserService {
                 .trustScore(user.getTrustScore())
                 .createdAt(user.getCreatedAt())
                 .build();
+    }
+
+    @Transactional
+    public UserDTO makeAdmin(User user) {
+        User dbUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        dbUser.setRole(Role.ADMIN);
+        dbUser = userRepository.save(dbUser);
+        BigDecimal balance = walletRepository.findByUserId(dbUser.getId())
+                .map(Wallet::getBalance).orElse(BigDecimal.ZERO);
+        return toDTO(dbUser, balance);
     }
 }

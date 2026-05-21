@@ -9,4 +9,7 @@ public class ProfileUpdateRequest {
     private String name;
 
     private String avatar;
+    private String phone;
+    private String bio;
+    private String address;
 }

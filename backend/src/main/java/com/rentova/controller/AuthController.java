@@ -134,4 +134,17 @@ public class AuthController {
         UserDTO response = userService.submitGst(user, gstNumber);
         return ResponseEntity.ok(response);
     }
+
+    /** Bootstrap endpoint: logged-in user can become ADMIN using secret key */
+    @PostMapping("/make-admin")
+    public ResponseEntity<?> makeAdmin(
+            @AuthenticationPrincipal User user,
+            @RequestBody Map<String, String> body) {
+        if (user == null) return ResponseEntity.status(401).build();
+        String secret = body.getOrDefault("secret", "");
+        if (!"RENTOVA_ADMIN_2025".equals(secret)) {
+            return ResponseEntity.status(403).body(Map.of("message", "Invalid secret"));
+        }
+        return ResponseEntity.ok(userService.makeAdmin(user));
+    }
 }
