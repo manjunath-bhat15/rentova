@@ -57,7 +57,7 @@ public class AdminController {
                 .map(booking -> booking.getAmount() == null ? BigDecimal.ZERO : booking.getAmount())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        long totalUsers = userRepository.count();
+        long totalUsers = userRepository.findAll().stream().filter(User::isVerified).count();
         long totalServices = serviceRepository.count();
         long activeServices = serviceRepository.findByIsActiveTrue().size();
 
@@ -80,6 +80,7 @@ public class AdminController {
     @GetMapping("/users")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<UserDTO> users = userRepository.findAll().stream()
+                .filter(User::isVerified)
                 .sorted(Comparator.comparing(User::getCreatedAt).reversed())
                 .map(this::toDTO)
                 .toList();
@@ -264,7 +265,7 @@ public class AdminController {
 
     private long countRole(Role role) {
         return userRepository.findAll().stream()
-                .filter(user -> user.getRole() == role)
+                .filter(user -> user.isVerified() && user.getRole() == role)
                 .count();
     }
 

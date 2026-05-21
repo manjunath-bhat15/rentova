@@ -165,6 +165,7 @@ public class EmailService {
     /**
      * Sends account verification OTP email.
      */
+    @Async
     public void sendVerificationOtp(String to, String otp) {
         String subject = "Verify your Rentova Account — " + otp;
         String html = getOtpEmailTemplate(
@@ -178,6 +179,7 @@ public class EmailService {
     /**
      * Sends phone verification OTP email.
      */
+    @Async
     public void sendPhoneVerificationOtp(String to, String otp) {
         String subject = "Link your Mobile Number to Rentova";
         String html = getOtpEmailTemplate(
@@ -191,6 +193,7 @@ public class EmailService {
     /**
      * Sends a simple booking notification email (plain text rendered as HTML).
      */
+    @Async
     public void sendBookingNotificationEmail(String to, String subject, String bodyText) {
         String html = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><style>" +
                 "body { background:#f5f5f5; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; padding:40px 16px; }" +

@@ -1,5 +1,6 @@
 package com.rentova.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +20,8 @@ public class UserDTO {
     private String bio;
     private String address;
     private BigDecimal walletBalance;
+    
+    @JsonProperty("isVerified")
     private boolean isVerified;
     private boolean phoneVerified;
     private String phoneNumber;
