@@ -1,13 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { useThemeLanguage } from '../contexts/ThemeLanguageContext';
-import StatusBadge from './StatusBadge';
 
 const statusConfig = {
-  PENDING:     { color: '#fc8019', bg: 'rgba(252,128,25,0.08)', label: 'Pending' },
-  CONFIRMED:   { color: '#3b82f6', bg: 'rgba(59,130,246,0.08)', label: 'Confirmed' },
-  IN_PROGRESS: { color: '#00bcd4', bg: 'rgba(0,188,212,0.08)', label: 'In Progress' },
-  COMPLETED:   { color: '#10b981', bg: 'rgba(16,185,129,0.08)', label: 'Completed' },
-  CANCELLED:   { color: '#ef4444', bg: 'rgba(239,68,68,0.08)', label: 'Cancelled' },
+  PENDING:     { color: '#f59e0b', bg: 'rgba(245,158,11,0.1)',   emoji: '⏳', label: 'Pending' },
+  CONFIRMED:   { color: '#3b82f6', bg: 'rgba(59,130,246,0.1)',   emoji: '✅', label: 'Confirmed' },
+  IN_PROGRESS: { color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)',  emoji: '🔄', label: 'In Progress' },
+  COMPLETED:   { color: '#10b981', bg: 'rgba(16,185,129,0.1)',   emoji: '🎉', label: 'Completed' },
+  CANCELLED:   { color: '#ef4444', bg: 'rgba(239,68,68,0.1)',    emoji: '❌', label: 'Cancelled' },
 };
 
 export default function BookingCard({ booking, userRole }) {
@@ -24,10 +23,11 @@ export default function BookingCard({ booking, userRole }) {
 
   return (
     <div
+      onClick={() => navigate(`/dashboard/bookings/${booking.id}`)}
       style={{
-        background: 'var(--glass-bg)',
-        borderRadius: '20px',
-        padding: '20px',
+        background: '#ffffff',
+        borderRadius: '16px',
+        padding: '18px 20px',
         cursor: 'pointer',
         display: 'flex',
         flexDirection: 'column',
@@ -35,83 +35,80 @@ export default function BookingCard({ booking, userRole }) {
         transition: 'all 0.2s ease',
         position: 'relative',
         overflow: 'hidden',
+        border: '1px solid #f0f0f0',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
       }}
-      className="glass-card"
-      onClick={() => navigate(`/dashboard/bookings/${booking.id}`)}
-      onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-3px)'; }}
-      onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'translateY(-3px)';
+        e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.1)';
+        e.currentTarget.style.borderColor = 'rgba(252,128,25,0.2)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
+        e.currentTarget.style.borderColor = '#f0f0f0';
+      }}
     >
-      {/* Accent left border */}
+      {/* Accent left stripe */}
       <div style={{
         position: 'absolute', top: 0, left: 0, bottom: 0, width: '4px',
-        background: cfg.color, borderRadius: '20px 0 0 20px',
+        background: cfg.color, borderRadius: '16px 0 0 16px',
       }} />
 
       {/* Top row — status + date */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '8px' }}>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
           <span style={{
-            padding: '4px 10px',
-            borderRadius: '999px',
-            fontSize: '11px',
-            fontWeight: 700,
-            background: cfg.bg,
-            color: cfg.color,
+            padding: '4px 10px', borderRadius: '999px',
+            fontSize: '11px', fontWeight: 700,
+            background: cfg.bg, color: cfg.color,
+            display: 'flex', alignItems: 'center', gap: '4px',
           }}>
-            {cfg.label}
+            {cfg.emoji} {cfg.label}
           </span>
           {booking.fulfillmentModel && (
             <span style={{
               fontSize: '11px',
               background: booking.fulfillmentModel === 'DELIVERY' ? 'rgba(16,185,129,0.1)' : 'rgba(59,130,246,0.1)',
               color: booking.fulfillmentModel === 'DELIVERY' ? '#10b981' : '#3b82f6',
-              padding: '3px 8px',
-              borderRadius: '999px',
-              fontWeight: 600,
+              padding: '3px 8px', borderRadius: '999px', fontWeight: 600,
             }}>
               {booking.fulfillmentModel === 'DELIVERY' ? '🚚 Delivery' : '🏪 Pickup'}
             </span>
           )}
         </div>
-        <span style={{ fontSize: '11px', color: 'var(--text-muted)', flexShrink: 0 }}>
+        <span style={{ fontSize: '11px', color: '#93959f', flexShrink: 0 }}>
           {new Date(booking.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
         </span>
       </div>
 
-      {/* Service title + other party */}
+      {/* Service title + party */}
       <div style={{ paddingLeft: '8px' }}>
-        <h3 style={{
-          fontSize: '15px',
-          fontWeight: 700,
-          color: 'var(--text-primary)',
-          margin: '0 0 4px',
-          letterSpacing: '-0.02em',
-          lineHeight: 1.3,
-        }}>
+        <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#1c1c1c', margin: '0 0 6px', letterSpacing: '-0.02em', lineHeight: 1.3 }}>
           {booking.serviceTitle}
         </h3>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{
+          <div style={{
             width: 20, height: 20, borderRadius: '50%',
-            background: 'var(--accent-gradient)',
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '8px', fontWeight: 800, color: 'white', flexShrink: 0,
+            background: 'linear-gradient(135deg, #fc8019, #ff9f43)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '9px', fontWeight: 800, color: '#fff', flexShrink: 0,
           }}>
             {otherParty.name?.[0]?.toUpperCase()}
-          </span>
-          <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-            {otherParty.label}: <span style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>{otherParty.name}</span>
+          </div>
+          <span style={{ fontSize: '12px', color: '#93959f' }}>
+            {otherParty.label}: <span style={{ color: '#686b78', fontWeight: 600 }}>{otherParty.name}</span>
           </span>
         </div>
       </div>
 
-      {/* Schedule badge */}
+      {/* Scheduled time */}
       {booking.scheduledAt && (
         <div style={{
           display: 'flex', alignItems: 'center', gap: '8px',
-          fontSize: '12px', color: 'var(--text-secondary)',
+          fontSize: '12px', color: '#686b78',
           padding: '8px 12px',
-          background: 'var(--bg-secondary)',
+          background: '#f8f8f8',
           borderRadius: '10px',
           marginLeft: '8px',
         }}>
@@ -122,38 +119,30 @@ export default function BookingCard({ booking, userRole }) {
         </div>
       )}
 
-      {/* Bottom — Price + CTA */}
+      {/* Bottom — price + CTA */}
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         paddingTop: '12px', paddingLeft: '8px',
-        borderTop: '1px solid var(--glass-border)',
+        borderTop: '1px solid #f5f5f5',
         marginTop: 'auto',
       }}>
         <div>
-          <div style={{
-            fontSize: '18px', fontWeight: 800,
-            color: 'var(--text-primary)',
-            letterSpacing: '-0.03em',
-            lineHeight: 1,
-          }}>
+          <div style={{ fontSize: '18px', fontWeight: 800, color: '#1c1c1c', letterSpacing: '-0.03em', lineHeight: 1 }}>
             ₹{total}
           </div>
           {parseFloat(depositAmt) > 0 && (
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+            <div style={{ fontSize: '11px', color: '#93959f', marginTop: '2px' }}>
               incl. ₹{depositAmt} deposit
             </div>
           )}
         </div>
         <span style={{
-          padding: '6px 16px',
-          borderRadius: '999px',
-          fontSize: '12px',
-          fontWeight: 600,
-          color: 'var(--accent-primary)',
-          background: 'rgba(252,128,25,0.08)',
-          border: '1px solid rgba(252,128,25,0.15)',
+          padding: '7px 16px', borderRadius: '999px',
+          fontSize: '12px', fontWeight: 700,
+          color: '#fc8019', background: 'rgba(252,128,25,0.08)',
+          border: '1.5px solid rgba(252,128,25,0.2)',
         }}>
-          {t('details')} →
+          View →
         </span>
       </div>
     </div>

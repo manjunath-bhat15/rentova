@@ -9,8 +9,9 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isAdminMode, setIsAdminMode] = useState(false);
+  const [showPw, setShowPw] = useState(false);
   const { login, logout } = useAuth();
-  const { lang, theme, toggleTheme, toggleLanguage, t } = useThemeLanguage();
+  const { t } = useThemeLanguage();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -37,124 +38,217 @@ export default function Login() {
   };
 
   return (
-    <div className="auth-page">
-      {/* Dynamic top action switcher bar - temporarily commented out
-      <div className="auth-top-actions" style={{ position: 'absolute', top: '16px', right: '16px', display: 'flex', gap: '8px', zIndex: 10 }}>
-        <button 
-          onClick={toggleLanguage}
-          className="theme-switcher-btn-class"
-          title="Switch Language"
-          style={{ padding: '6px 10px', fontSize: '0.75rem', height: '32px' }}
-        >
-          🌐 {lang === 'en' ? 'ಕನ್ನಡ' : 'English'}
-        </button>
-        <button 
-          onClick={toggleTheme}
-          className="theme-switcher-btn-class"
-          title="Toggle Theme"
-          style={{ minWidth: '32px', padding: '0 8px', justifyContent: 'center', height: '32px' }}
-        >
-          {theme === 'dark' ? '☀️' : '🌙'}
-        </button>
-      </div>
-      */}
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+      background: '#ffffff',
+    }}>
+      {/* Left panel — Orange brand */}
+      <div style={{
+        flex: '0 0 45%',
+        background: '#fc8019',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        padding: '60px 56px',
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        {/* Decorative circles */}
+        <div style={{ position: 'absolute', top: '-80px', right: '-80px', width: 300, height: 300, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-40px', left: '-40px', width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.06)', pointerEvents: 'none' }} />
 
-      <div className="glass-card auth-card">
-        <div style={{ display: 'flex', borderBottom: '1px solid var(--glass-border)', marginBottom: 'var(--space-md)' }}>
-          <button
-            type="button"
-            onClick={() => { setIsAdminMode(false); setError(''); }}
-            style={{
-              flex: 1,
-              padding: 'var(--space-sm) var(--space-md)',
-              background: 'transparent',
-              border: 'none',
-              borderBottom: !isAdminMode ? '2px solid var(--accent-primary)' : '2px solid transparent',
-              color: !isAdminMode ? 'var(--text-primary)' : 'var(--text-secondary)',
-              fontWeight: !isAdminMode ? 700 : 500,
-              cursor: 'pointer',
-              fontSize: 'var(--font-sm)',
-              transition: 'all var(--transition-fast)'
-            }}
-          >
-            Member Login
-          </button>
-          <button
-            type="button"
-            onClick={() => { setIsAdminMode(true); setError(''); }}
-            style={{
-              flex: 1,
-              padding: 'var(--space-sm) var(--space-md)',
-              background: 'transparent',
-              border: 'none',
-              borderBottom: isAdminMode ? '2px solid var(--accent-primary)' : '2px solid transparent',
-              color: isAdminMode ? 'var(--text-primary)' : 'var(--text-secondary)',
-              fontWeight: isAdminMode ? 700 : 500,
-              cursor: 'pointer',
-              fontSize: 'var(--font-sm)',
-              transition: 'all var(--transition-fast)'
-            }}
-          >
-            Admin Portal
-          </button>
+        {/* Logo */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '48px' }}>
+          <div style={{ width: 40, height: 40, borderRadius: 11, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 18, color: '#fc8019' }}>R</div>
+          <span style={{ fontWeight: 800, fontSize: '1.4rem', color: '#fff', letterSpacing: '-0.04em' }}>Rentova</span>
         </div>
 
-        <h1>{isAdminMode ? 'Admin Command Center' : t('loginTitle')}</h1>
-        <p>{isAdminMode ? 'Authorized personnel access only. Audit logs are active.' : t('loginSubtitle')}</p>
+        <h1 style={{ fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', fontWeight: 900, color: '#fff', lineHeight: 1.1, letterSpacing: '-0.04em', marginBottom: '16px' }}>
+          Rent anything.<br />Anytime. Anywhere.
+        </h1>
+        <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '15px', lineHeight: 1.7, marginBottom: '40px', maxWidth: '340px' }}>
+          Join 1.8k+ vendors and customers on India's fastest-growing peer-to-peer rental platform.
+        </p>
 
-        {isAdminMode && (
-          <div style={{
-            background: 'rgba(255,122,0,0.1)',
-            border: '1px solid var(--accent-primary)',
-            color: 'var(--accent-primary)',
-            padding: '8px 12px',
-            borderRadius: 'var(--radius-md)',
-            fontSize: 'var(--font-xs)',
-            marginBottom: 'var(--space-md)',
-            fontWeight: 600,
-            textAlign: 'center'
-          }}>
-            ⚠️ SECURE ADMINISTRATOR ACCESS ONLY
+        {/* Feature bullets */}
+        {[
+          { icon: '🔐', text: 'OTP-secured handoffs' },
+          { icon: '💰', text: 'Instant wallet payouts' },
+          { icon: '📍', text: 'Real-time tracking' },
+        ].map((f) => (
+          <div key={f.text} style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
+            <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', flexShrink: 0 }}>{f.icon}</div>
+            <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', fontWeight: 500 }}>{f.text}</span>
           </div>
-        )}
+        ))}
+      </div>
 
-        {error && <div className="error-message">{error}</div>}
+      {/* Right panel — Form */}
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '40px 48px',
+        background: '#ffffff',
+      }}>
+        <div style={{ width: '100%', maxWidth: '400px' }}>
+          {/* Tab switcher */}
+          <div style={{ display: 'flex', background: '#f5f5f5', borderRadius: '14px', padding: '4px', marginBottom: '32px' }}>
+            {[{ label: 'Member Login', admin: false }, { label: '⚡ Admin Portal', admin: true }].map((tab) => (
+              <button
+                key={tab.label}
+                type="button"
+                onClick={() => { setIsAdminMode(tab.admin); setError(''); }}
+                style={{
+                  flex: 1,
+                  padding: '9px',
+                  borderRadius: '11px',
+                  border: 'none',
+                  background: isAdminMode === tab.admin ? '#ffffff' : 'transparent',
+                  color: isAdminMode === tab.admin ? '#1c1c1c' : '#686b78',
+                  fontWeight: isAdminMode === tab.admin ? 700 : 500,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: isAdminMode === tab.admin ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-        <form className="auth-form" onSubmit={handleSubmit}>
-          <div className="input-group">
-            <label htmlFor="email">{t('emailLabel')}</label>
-            <input
-              id="email"
-              type="email"
-              className="input-field"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className="input-group">
-            <label htmlFor="password">{t('passwordLabel')}</label>
-            <input
-              id="password"
-              type="password"
-              className="input-field"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? t('loading') : (isAdminMode ? 'Authenticate & Enter' : t('loginBtn'))}
-          </button>
-        </form>
+          <h2 style={{ fontSize: '1.8rem', fontWeight: 900, color: '#1c1c1c', letterSpacing: '-0.04em', marginBottom: '6px' }}>
+            {isAdminMode ? 'Admin Access' : 'Welcome back'}
+          </h2>
+          <p style={{ color: '#686b78', fontSize: '14px', marginBottom: '28px' }}>
+            {isAdminMode ? 'Authorized personnel only. Audit logs active.' : 'Sign in to your Rentova account.'}
+          </p>
 
-        {!isAdminMode && (
-          <div className="auth-footer">
-            {t('noAccount')} <Link to="/register">{t('registerLink')}</Link>
-          </div>
-        )}
+          {isAdminMode && (
+            <div style={{
+              background: 'rgba(252,128,25,0.08)',
+              border: '1px solid rgba(252,128,25,0.2)',
+              color: '#fc8019',
+              padding: '10px 14px', borderRadius: '12px',
+              fontSize: '12px', fontWeight: 700,
+              marginBottom: '20px', textAlign: 'center',
+            }}>
+              ⚠️ SECURE ADMINISTRATOR ACCESS ONLY
+            </div>
+          )}
+
+          {error && (
+            <div style={{
+              background: 'rgba(239,68,68,0.06)',
+              border: '1px solid rgba(239,68,68,0.2)',
+              color: '#ef4444',
+              padding: '10px 14px', borderRadius: '12px',
+              fontSize: '13px', fontWeight: 500,
+              marginBottom: '20px',
+            }}>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div>
+              <label style={{ fontSize: '13px', fontWeight: 600, color: '#1c1c1c', display: 'block', marginBottom: '6px' }}>Email address</label>
+              <input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                style={{
+                  width: '100%',
+                  padding: '13px 16px',
+                  borderRadius: '12px',
+                  border: '1.5px solid #e8e8e8',
+                  fontSize: '14px',
+                  color: '#1c1c1c',
+                  outline: 'none',
+                  transition: 'border-color 0.2s ease',
+                  boxSizing: 'border-box',
+                  background: '#fafafa',
+                }}
+                onFocus={(e) => { e.target.style.borderColor = '#fc8019'; e.target.style.background = '#fff'; }}
+                onBlur={(e) => { e.target.style.borderColor = '#e8e8e8'; e.target.style.background = '#fafafa'; }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '13px', fontWeight: 600, color: '#1c1c1c', display: 'block', marginBottom: '6px' }}>Password</label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  id="password"
+                  type={showPw ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '13px 44px 13px 16px',
+                    borderRadius: '12px',
+                    border: '1.5px solid #e8e8e8',
+                    fontSize: '14px',
+                    color: '#1c1c1c',
+                    outline: 'none',
+                    transition: 'border-color 0.2s ease',
+                    boxSizing: 'border-box',
+                    background: '#fafafa',
+                  }}
+                  onFocus={(e) => { e.target.style.borderColor = '#fc8019'; e.target.style.background = '#fff'; }}
+                  onBlur={(e) => { e.target.style.borderColor = '#e8e8e8'; e.target.style.background = '#fafafa'; }}
+                />
+                <button type="button" onClick={() => setShowPw(v => !v)} style={{
+                  position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',
+                  background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', color: '#93959f',
+                }}>
+                  {showPw ? '🙈' : '👁️'}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                width: '100%',
+                padding: '14px',
+                borderRadius: '12px',
+                border: 'none',
+                background: loading ? '#ffc895' : '#fc8019',
+                color: '#fff',
+                fontSize: '15px',
+                fontWeight: 700,
+                cursor: loading ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: '0 4px 14px rgba(252,128,25,0.35)',
+                letterSpacing: '-0.01em',
+              }}
+              onMouseEnter={(e) => { if (!loading) e.currentTarget.style.transform = 'translateY(-1px)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
+            >
+              {loading ? '⏳ Signing in...' : (isAdminMode ? 'Authenticate & Enter →' : 'Sign In →')}
+            </button>
+          </form>
+
+          {!isAdminMode && (
+            <p style={{ textAlign: 'center', marginTop: '24px', fontSize: '14px', color: '#686b78' }}>
+              New to Rentova?{' '}
+              <Link to="/register" style={{ color: '#fc8019', fontWeight: 700, textDecoration: 'none' }}>
+                Create account →
+              </Link>
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

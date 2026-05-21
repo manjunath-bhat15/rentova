@@ -1,20 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useThemeLanguage } from '../contexts/ThemeLanguageContext';
-import { Icon } from '../components/Icon';
 import api from '../services/api';
 
 const typeConfig = {
-  TOP_UP: { labelKey: 'topUp', iconName: 'TOP_UP', color: 'var(--accent-success)', sign: '+' },
-  BOOKING_PAYMENT: { labelKey: 'bookingPayment', iconName: 'BOOKING_PAYMENT', color: 'var(--accent-danger)', sign: '' },
-  BOOKING_PAYOUT: { labelKey: 'bookingPayout', iconName: 'BOOKING_PAYOUT', color: 'var(--accent-success)', sign: '+' },
-  REFUND: { labelKey: 'refund', iconName: 'REFUND', color: 'var(--accent-warning)', sign: '+' },
-  TRANSFER: { labelKey: 'transfer', iconName: 'TRANSFER', color: 'var(--accent-primary)', sign: '' },
+  TOP_UP:          { emoji: '💰', label: 'Top Up',          color: '#10b981', sign: '+' },
+  BOOKING_PAYMENT: { emoji: '💳', label: 'Booking Payment', color: '#ef4444', sign: '-' },
+  BOOKING_PAYOUT:  { emoji: '💸', label: 'Booking Payout',  color: '#10b981', sign: '+' },
+  REFUND:          { emoji: '↩️', label: 'Refund',           color: '#f59e0b', sign: '+' },
+  TRANSFER:        { emoji: '🔁', label: 'Transfer',         color: '#3b82f6', sign: '' },
 };
+
+const quickAmounts = [10, 25, 50, 100, 250, 500];
 
 export default function WalletPage() {
   const { user } = useAuth();
-  const { t, lang } = useThemeLanguage();
+  const { t } = useThemeLanguage();
   const [wallet, setWallet] = useState(null);
   const [loading, setLoading] = useState(true);
   const [topUpAmount, setTopUpAmount] = useState('');
@@ -33,16 +34,11 @@ export default function WalletPage() {
     }
   }, []);
 
-  useEffect(() => {
-    loadWallet();
-  }, [loadWallet]);
+  useEffect(() => { loadWallet(); }, [loadWallet]);
 
   const handleTopUp = async () => {
     const amount = parseFloat(topUpAmount);
-    if (!amount || amount < 1) {
-      setError(t('minTopUp'));
-      return;
-    }
+    if (!amount || amount < 1) { setError('Minimum top-up amount is ₹1'); return; }
     setError('');
     setTopUpLoading(true);
     try {
@@ -50,134 +46,154 @@ export default function WalletPage() {
       setWallet(res.data);
       setTopUpAmount('');
       setShowTopUp(false);
-    } catch (err) {
-      setError(t('topUpFailed'));
+    } catch {
+      setError('Top-up failed. Please try again.');
     } finally {
       setTopUpLoading(false);
     }
   };
 
-  const quickAmounts = [10, 25, 50, 100, 250, 500];
-
-  const getTxnLabel = (type) => {
-    if (lang === 'kn') {
-      if (type === 'TOP_UP') return 'ಹಣ ಸೇರ್ಪಡೆ';
-      if (type === 'BOOKING_PAYMENT') return 'ಬುಕಿಂಗ್ ಪಾವತಿ';
-      if (type === 'BOOKING_PAYOUT') return 'ಬುಕಿಂಗ್ ಜಮೆ';
-      if (type === 'REFUND') return 'ಮರುಪಾವತಿ';
-      if (type === 'TRANSFER') return 'ವರ್ಗಾವಣೆ';
-    }
-    const config = typeConfig[type];
-    return config ? (config.labelKey === 'topUp' ? t('topUp') : type.replace('_', ' ')) : type;
-  };
+  const transactions = wallet?.recentTransactions || [];
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', padding: '80px' }}>
-        <div className="loading-spinner" />
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '80px', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ width: 40, height: 40, border: '3px solid #f0f0f0', borderTopColor: '#fc8019', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
       </div>
     );
   }
 
-  const transactions = wallet?.recentTransactions || [];
-
   return (
-    <div className="animate-fade-in">
-      {/* Balance Card */}
-      <div
-        className="glass-card"
-        style={{
-          padding: 'var(--space-xl)',
-          marginBottom: 'var(--space-xl)',
-          background: 'linear-gradient(135deg, rgba(255,122,0,0.08), rgba(0,206,201,0.06)), var(--glass-bg)',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Decorative circles */}
-        <div style={{
-          position: 'absolute', top: -40, right: -40, width: 160, height: 160,
-          borderRadius: '50%', background: 'rgba(255,122,0,0.06)',
-        }} />
-        <div style={{
-          position: 'absolute', bottom: -30, right: 80, width: 100, height: 100,
-          borderRadius: '50%', background: 'rgba(0,206,201,0.05)',
-        }} />
+    <div style={{ fontFamily: "'Inter', -apple-system, sans-serif" }}>
+
+      {/* Balance hero card */}
+      <div style={{
+        background: 'linear-gradient(135deg, #1c1c1c 0%, #2d2d2d 100%)',
+        borderRadius: '20px', padding: '32px',
+        marginBottom: '24px', position: 'relative', overflow: 'hidden',
+      }}>
+        {/* Decorative */}
+        <div style={{ position: 'absolute', top: '-60px', right: '-60px', width: 200, height: 200, borderRadius: '50%', background: 'rgba(252,128,25,0.15)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-30px', left: '20%', width: 120, height: 120, borderRadius: '50%', background: 'rgba(255,255,255,0.03)', pointerEvents: 'none' }} />
 
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <p style={{ fontSize: 'var(--font-sm)', color: 'var(--text-muted)', marginBottom: '8px', fontWeight: 500 }}>
-            {t('availableBalance')}
-          </p>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: 'var(--space-lg)' }}>
-            <span style={{ fontSize: '14px', color: 'var(--text-secondary)', fontWeight: 500 }}>₹</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
+            <span style={{ fontSize: '24px' }}>💰</span>
+            <div>
+              <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>
+                Rentova Wallet
+              </p>
+              <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: 0 }}>
+                {user?.name}
+              </p>
+            </div>
+          </div>
+
+          <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>Available Balance</p>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '28px' }}>
+            <span style={{ fontSize: '16px', color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>₹</span>
             <span style={{
-              fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 800,
-              background: 'var(--accent-gradient)',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              lineHeight: 1,
+              fontSize: 'clamp(2.5rem, 6vw, 4rem)', fontWeight: 900,
+              color: '#fc8019', lineHeight: 1, letterSpacing: '-0.03em',
             }}>
               {wallet?.balance?.toFixed(2) || '0.00'}
             </span>
           </div>
-          <div style={{ display: 'flex', gap: 'var(--space-md)' }}>
-            <button className="btn btn-primary" onClick={() => setShowTopUp(true)}>
-              💳 {t('topUp')}
+
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setShowTopUp(true)}
+              style={{
+                padding: '12px 24px', borderRadius: '12px', border: 'none',
+                background: '#fc8019', color: '#fff',
+                fontWeight: 700, fontSize: '14px', cursor: 'pointer',
+                boxShadow: '0 4px 14px rgba(252,128,25,0.4)',
+                display: 'flex', alignItems: 'center', gap: '8px',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            >
+              💳 Add Money
             </button>
+
+            {/* Mini stats */}
+            <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
+              {[
+                { label: 'Earned', val: `₹${(transactions.filter(t => parseFloat(t.amount) > 0).reduce((s, t) => s + parseFloat(t.amount), 0)).toFixed(0)}` },
+                { label: 'Spent', val: `₹${Math.abs(transactions.filter(t => parseFloat(t.amount) < 0).reduce((s, t) => s + parseFloat(t.amount), 0)).toFixed(0)}` },
+              ].map(stat => (
+                <div key={stat.label} style={{
+                  background: 'rgba(255,255,255,0.08)', borderRadius: '12px',
+                  padding: '10px 16px', textAlign: 'center', minWidth: '80px',
+                }}>
+                  <div style={{ fontSize: '16px', fontWeight: 800, color: '#fff' }}>{stat.val}</div>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>{stat.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Top Up Modal */}
+      {/* Top-Up Modal */}
       {showTopUp && (
         <div
-          className="scrollable-modal-overlay"
-          onClick={() => setShowTopUp(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 1000,
+            background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px',
+          }}
+          onClick={() => { setShowTopUp(false); setError(''); }}
         >
           <div
-            className="scrollable-modal-card"
             onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#fff', borderRadius: '20px', padding: '28px',
+              width: '100%', maxWidth: '420px',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+              animation: 'slideUp 0.3s ease',
+            }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-md)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <div>
-                <h2 style={{ fontSize: 'var(--font-xl)', fontWeight: 700 }}>
-                  💳 {t('topUp')}
+                <h2 style={{ fontSize: '1.3rem', fontWeight: 900, color: '#1c1c1c', margin: '0 0 2px', letterSpacing: '-0.03em' }}>
+                  💳 Add Money
                 </h2>
-                <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-sm)', marginTop: '4px' }}>
-                  {t('addFunds')}
+                <p style={{ fontSize: '13px', color: '#686b78', margin: 0 }}>
+                  Top up your Rentova wallet
                 </p>
               </div>
               <button
-                className="btn btn-ghost btn-sm"
                 onClick={() => { setShowTopUp(false); setError(''); }}
-                style={{ borderRadius: '999px', fontSize: '18px', padding: '6px 12px' }}
+                style={{ width: 32, height: 32, borderRadius: '50%', border: 'none', background: '#f5f5f5', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               >
                 ✕
               </button>
             </div>
 
-            {error && <div className="error-message" style={{ marginBottom: 'var(--space-md)' }}>{error}</div>}
+            {error && (
+              <div style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', padding: '10px 14px', borderRadius: '12px', fontSize: '13px', marginBottom: '16px' }}>
+                {error}
+              </div>
+            )}
 
-            {/* Quick Amounts */}
-            <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)', marginBottom: '10px' }}>Quick Select</p>
-            <div style={{
-              display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: 'var(--space-sm)', marginBottom: 'var(--space-md)',
-            }}>
+            {/* Quick amounts */}
+            <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#93959f', marginBottom: '10px' }}>
+              Quick Select
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '20px' }}>
               {quickAmounts.map((amt) => (
                 <button
                   key={amt}
                   onClick={() => setTopUpAmount(String(amt))}
                   style={{
-                    padding: '10px',
-                    borderRadius: '12px',
-                    border: parseFloat(topUpAmount) === amt ? '2px solid var(--accent-primary)' : '1.5px solid var(--glass-border)',
-                    background: parseFloat(topUpAmount) === amt ? 'rgba(252,128,25,0.08)' : 'var(--glass-bg)',
-                    color: parseFloat(topUpAmount) === amt ? 'var(--accent-primary)' : 'var(--text-primary)',
+                    padding: '12px 8px', borderRadius: '12px',
+                    border: `2px solid ${parseFloat(topUpAmount) === amt ? '#fc8019' : '#e8e8e8'}`,
+                    background: parseFloat(topUpAmount) === amt ? 'rgba(252,128,25,0.08)' : '#fafafa',
+                    color: parseFloat(topUpAmount) === amt ? '#fc8019' : '#1c1c1c',
                     fontWeight: parseFloat(topUpAmount) === amt ? 700 : 500,
-                    fontSize: 'var(--font-sm)',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
+                    fontSize: '14px', cursor: 'pointer', transition: 'all 0.15s ease',
                   }}
                 >
                   ₹{amt}
@@ -185,111 +201,113 @@ export default function WalletPage() {
               ))}
             </div>
 
-            <div className="input-group" style={{ marginBottom: 'var(--space-lg)' }}>
-              <label>{t('quickAmount')}</label>
-              <div style={{ position: 'relative' }}>
-                <span style={{
-                  position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)',
-                  color: 'var(--text-muted)', fontWeight: 600,
-                }}>₹</span>
-                <input
-                  type="number"
-                  className="input-field"
-                  style={{ paddingLeft: '30px', borderRadius: '12px' }}
-                  placeholder="0.00"
-                  min="1"
-                  step="0.01"
-                  value={topUpAmount}
-                  onChange={(e) => setTopUpAmount(e.target.value)}
-                />
-              </div>
+            {/* Custom amount */}
+            <div style={{ position: 'relative', marginBottom: '20px' }}>
+              <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#93959f', fontWeight: 700, fontSize: '15px' }}>₹</span>
+              <input
+                type="number"
+                placeholder="Enter amount"
+                min="1"
+                step="1"
+                value={topUpAmount}
+                onChange={(e) => setTopUpAmount(e.target.value)}
+                style={{
+                  width: '100%', padding: '13px 16px 13px 30px',
+                  borderRadius: '12px', border: '1.5px solid #e8e8e8',
+                  fontSize: '15px', fontWeight: 600, color: '#1c1c1c',
+                  outline: 'none', boxSizing: 'border-box', background: '#fafafa',
+                }}
+                onFocus={(e) => { e.target.style.borderColor = '#fc8019'; e.target.style.background = '#fff'; }}
+                onBlur={(e) => { e.target.style.borderColor = '#e8e8e8'; e.target.style.background = '#fafafa'; }}
+              />
             </div>
 
-            <div style={{ display: 'flex', gap: 'var(--space-md)' }}>
-              <button className="btn btn-secondary" style={{ flex: 1, borderRadius: '12px' }} onClick={() => { setShowTopUp(false); setError(''); }}>
-                {t('dismiss')}
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button
+                onClick={() => { setShowTopUp(false); setError(''); }}
+                style={{ flex: 1, padding: '13px', borderRadius: '12px', border: '1.5px solid #e8e8e8', background: '#fff', color: '#686b78', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
+              >
+                Cancel
               </button>
-              <button className="btn btn-primary" style={{ flex: 2, borderRadius: '12px' }} disabled={topUpLoading} onClick={handleTopUp}>
-                {topUpLoading ? t('loading') : `Add ₹${topUpAmount || '0'} to Wallet`}
+              <button
+                onClick={handleTopUp}
+                disabled={topUpLoading || !topUpAmount}
+                style={{
+                  flex: 2, padding: '13px', borderRadius: '12px', border: 'none',
+                  background: topUpLoading ? '#ffc895' : '#fc8019',
+                  color: '#fff', fontWeight: 700, fontSize: '14px',
+                  cursor: topUpLoading ? 'not-allowed' : 'pointer',
+                  boxShadow: '0 4px 14px rgba(252,128,25,0.35)',
+                }}
+              >
+                {topUpLoading ? '⏳ Processing...' : `Add ₹${topUpAmount || '0'} →`}
               </button>
             </div>
           </div>
         </div>
       )}
 
-
-      {/* Transaction History */}
+      {/* Transaction history */}
       <div>
-        <h2 style={{ fontSize: 'var(--font-xl)', fontWeight: 600, marginBottom: 'var(--space-md)' }}>
-          {t('recentTransactions')}
-        </h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#1c1c1c', margin: 0, letterSpacing: '-0.02em' }}>
+            Transaction History
+          </h2>
+          <span style={{ fontSize: '12px', color: '#93959f' }}>{transactions.length} transactions</span>
+        </div>
 
         {transactions.length === 0 ? (
-          <div className="glass-card" style={{ padding: 'var(--space-2xl)', textAlign: 'center' }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>💳</div>
-            <h3 style={{ fontSize: 'var(--font-lg)', marginBottom: '8px' }}>{t('noTransactions')}</h3>
-            <p style={{ color: 'var(--text-secondary)' }}>
-              {t('custEmptyDesc')}
-            </p>
+          <div style={{
+            textAlign: 'center', padding: '60px 20px',
+            background: '#fafafa', borderRadius: '16px',
+            border: '2px dashed #e8e8e8',
+          }}>
+            <div style={{ fontSize: '48px', marginBottom: '12px' }}>💳</div>
+            <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#1c1c1c', margin: '0 0 6px' }}>No transactions yet</h3>
+            <p style={{ color: '#686b78', fontSize: '13px' }}>Add money or make a booking to see your transaction history.</p>
           </div>
         ) : (
-          <div className="glass-card" style={{ overflow: 'hidden' }}>
+          <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #f0f0f0', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}>
             {transactions.map((txn, i) => {
-              const config = typeConfig[txn.type] || { iconName: 'wallet', color: 'var(--text-secondary)' };
-              const isPositive = parseFloat(txn.amount) > 0;
-
+              const cfg = typeConfig[txn.type] || { emoji: '💱', label: txn.type, color: '#686b78', sign: '' };
+              const amount = parseFloat(txn.amount);
+              const isPositive = amount > 0;
               return (
                 <div
                   key={txn.id}
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: 'var(--space-md) var(--space-lg)',
-                    borderBottom: i < transactions.length - 1 ? '1px solid var(--glass-border)' : 'none',
-                    transition: 'background var(--transition-fast)',
+                    display: 'flex', alignItems: 'center', gap: '14px',
+                    padding: '16px 20px',
+                    borderBottom: i < transactions.length - 1 ? '1px solid #f5f5f5' : 'none',
+                    transition: 'background 0.15s ease',
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = 'var(--glass-bg)'}
+                  onMouseEnter={(e) => e.currentTarget.style.background = '#fafafa'}
                   onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
-                    <div style={{
-                      width: 44,
-                      height: 44,
-                      borderRadius: 'var(--radius-md)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      background: config.color + '15',
-                      color: config.color,
-                      flexShrink: 0,
-                    }}>
-                      <Icon name={config.iconName} style={{ width: '18px', height: '18px' }} />
-                    </div>
-                    <div>
-                      <p style={{ fontWeight: 600, fontSize: 'var(--font-sm)' }}>{getTxnLabel(txn.type)}</p>
-                      <p style={{ fontSize: 'var(--font-xs)', color: 'var(--text-muted)' }}>
-                        {txn.counterpartyName
-                          ? `${txn.type === 'BOOKING_PAYMENT' ? (lang === 'kn' ? 'ಗೆ' : 'To') : (lang === 'kn' ? 'ಇಂದ' : 'From')}: ${txn.counterpartyName}`
-                          : txn.description}
-                      </p>
-                    </div>
+                  <div style={{
+                    width: 44, height: 44, borderRadius: '12px', flexShrink: 0,
+                    background: `${cfg.color}15`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '20px',
+                  }}>
+                    {cfg.emoji}
                   </div>
-
-                  <div style={{ textAlign: 'right' }}>
-                    <p style={{
-                      fontWeight: 700, fontSize: 'var(--font-sm)',
-                      color: isPositive ? 'var(--accent-success)' : 'var(--accent-danger)',
-                    }}>
-                      {isPositive ? '+' : ''}₹{Math.abs(parseFloat(txn.amount)).toFixed(2)}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontWeight: 600, fontSize: '14px', color: '#1c1c1c', margin: '0 0 2px' }}>
+                      {cfg.label}
                     </p>
-                    <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-                      Bal: ₹{parseFloat(txn.balanceAfter).toFixed(2)}
+                    <p style={{ fontSize: '12px', color: '#93959f', margin: 0 }}>
+                      {txn.counterpartyName
+                        ? `${isPositive ? 'From' : 'To'}: ${txn.counterpartyName}`
+                        : txn.description}
                     </p>
-                    <p style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
-                      {new Date(txn.createdAt).toLocaleDateString('en-US', {
-                        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
-                      })}
+                  </div>
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <p style={{ fontWeight: 800, fontSize: '15px', color: isPositive ? '#10b981' : '#ef4444', margin: '0 0 2px' }}>
+                      {isPositive ? '+' : '-'}₹{Math.abs(amount).toFixed(2)}
+                    </p>
+                    <p style={{ fontSize: '11px', color: '#93959f', margin: 0 }}>
+                      {new Date(txn.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
                 </div>

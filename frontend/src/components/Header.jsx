@@ -7,9 +7,9 @@ import { Icon } from './Icon';
 import api from '../services/api';
 
 export default function Header({ title }) {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const { connected, subscribe } = useSocket();
-  const { lang, theme, toggleTheme, toggleLanguage, t } = useThemeLanguage();
+  const { t } = useThemeLanguage();
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
 
@@ -19,10 +19,8 @@ export default function Header({ title }) {
     const sub = subscribe('/user/queue/notifications', () => {
       setUnreadCount((prev) => prev + 1);
     });
-
     const handleSync = () => loadUnreadCount();
     window.addEventListener('notificationSync', handleSync);
-
     return () => {
       if (sub) sub.unsubscribe();
       window.removeEventListener('notificationSync', handleSync);
@@ -38,95 +36,130 @@ export default function Header({ title }) {
     }
   };
 
+  const getTranslatedTitle = (originalTitle) => {
+    if (originalTitle === 'Overview') return t('overview');
+    if (['Services', 'Listings', 'My Listings'].includes(originalTitle)) return t('myListings');
+    if (['Create Service', 'Add Listing'].includes(originalTitle)) return t('addListing');
+    if (['Bookings', 'My Bookings', 'Orders'].includes(originalTitle)) return t('myBookings');
+    if (['Wallet', 'Payouts'].includes(originalTitle)) return t('wallet');
+    if (['Chat', 'Messages'].includes(originalTitle)) return t('messages');
+    if (originalTitle === 'Nearby Vendors') return t('nearbyVendors');
+    if (originalTitle === 'Notifications') return t('notifications');
+    if (['Admin Command Center', 'Command Center'].includes(originalTitle)) return t('commandCenter');
+    if (['User Management', 'Users'].includes(originalTitle)) return t('users');
+    return originalTitle;
+  };
+
   const initials = user?.name
     ?.split(' ')
-    .map((name) => name[0])
+    .map((n) => n[0])
     .join('')
     .toUpperCase()
     .slice(0, 2) || '?';
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
-
-  const getWorkspaceKicker = () => {
-    if (user?.role === 'ADMIN') return t('adminWorkspace');
-    if (user?.role === 'VENDOR') return t('vendorWorkspace');
-    return t('customerWorkspace');
-  };
-
-  const getTranslatedTitle = (originalTitle) => {
-    if (originalTitle === 'Overview') return t('overview');
-    if (originalTitle === 'Services' || originalTitle === 'Listings' || originalTitle === 'My Listings') return t('myListings');
-    if (originalTitle === 'Create Service' || originalTitle === 'Add Listing') return t('addListing');
-    if (originalTitle === 'Bookings' || originalTitle === 'My Bookings' || originalTitle === 'Orders') return t('myBookings');
-    if (originalTitle === 'Wallet' || originalTitle === 'Payouts') return t('wallet');
-    if (originalTitle === 'Chat' || originalTitle === 'Messages') return t('messages');
-    if (originalTitle === 'Nearby Vendors') return t('nearbyVendors');
-    if (originalTitle === 'Notifications') return t('notifications');
-    if (originalTitle === 'Admin Command Center' || originalTitle === 'Command Center') return t('commandCenter');
-    if (originalTitle === 'User Management' || originalTitle === 'Users') return t('users');
-    return originalTitle;
-  };
-
   return (
-    <header className="header">
-      <div className="header-left">
+    <header style={{
+      position: 'fixed',
+      top: 0,
+      left: '240px',
+      right: 0,
+      height: '60px',
+      background: 'rgba(255,255,255,0.97)',
+      backdropFilter: 'blur(12px)',
+      WebkitBackdropFilter: 'blur(12px)',
+      borderBottom: '1px solid #f0f0f0',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '0 24px',
+      zIndex: 40,
+      boxShadow: '0 1px 8px rgba(0,0,0,0.04)',
+    }}>
+      {/* Left: Page title */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         <div>
-          <p className="header-kicker">{getWorkspaceKicker()}</p>
-          <h2>{getTranslatedTitle(title || 'Dashboard')}</h2>
+          <h2 style={{ fontSize: '16px', fontWeight: 800, color: '#1c1c1c', margin: 0, letterSpacing: '-0.02em' }}>
+            {getTranslatedTitle(title || 'Dashboard')}
+          </h2>
         </div>
-        <span className={`live-pill ${connected ? 'online' : ''}`}>
-          {connected ? t('online') : t('offline')}
+        <span style={{
+          padding: '3px 10px',
+          borderRadius: '999px',
+          fontSize: '10px',
+          fontWeight: 700,
+          background: connected ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
+          color: connected ? '#10b981' : '#ef4444',
+          letterSpacing: '0.04em',
+          textTransform: 'uppercase',
+        }}>
+          {connected ? '● Live' : '○ Offline'}
         </span>
       </div>
 
-      <div className="header-right">
-        {/* Language Switcher - Temporarily commented out
-        <button 
-          onClick={toggleLanguage}
-          className="theme-switcher-btn-class"
-          title="Switch Language"
-        >
-          🌐 {lang === 'en' ? 'ಕನ್ನಡ' : 'English'}
-        </button>
-        */}
-        
-        {/* Theme Switcher - Temporarily commented out
-        <button 
-          onClick={toggleTheme}
-          className="theme-switcher-btn-class"
-          title="Toggle Theme"
-          style={{ minWidth: '40px', justifyContent: 'center' }}
-        >
-          {theme === 'dark' ? '☀️' : '🌙'}
-        </button>
-        */}
-
+      {/* Right: notification + user */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        {/* Notification bell */}
         <button
-          className="notification-bell"
           onClick={() => navigate('/dashboard/notifications')}
           aria-label="Open notifications"
+          style={{
+            position: 'relative',
+            width: 38, height: 38,
+            borderRadius: '10px',
+            border: '1.5px solid #f0f0f0',
+            background: '#fff',
+            cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '16px',
+            transition: 'all 0.15s ease',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = '#fff3e8'; e.currentTarget.style.borderColor = 'rgba(252,128,25,0.3)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#f0f0f0'; }}
         >
-          <Icon name="bell" style={{ width: '18px', height: '18px' }} />
-          {unreadCount > 0 && <span className="badge-count">{unreadCount > 9 ? '9+' : unreadCount}</span>}
+          🔔
+          {unreadCount > 0 && (
+            <span style={{
+              position: 'absolute', top: '-4px', right: '-4px',
+              background: '#fc8019', color: '#fff',
+              fontSize: '9px', fontWeight: 800,
+              width: 16, height: 16, borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              border: '2px solid #fff',
+            }}>
+              {unreadCount > 9 ? '9+' : unreadCount}
+            </span>
+          )}
         </button>
-        
-        <div className="user-chip">
-          <div className="header-avatar">
-            {user?.avatar ? <img src={user.avatar} alt="Avatar" /> : initials}
+
+        {/* User avatar chip */}
+        <div
+          onClick={() => navigate('/dashboard/profile')}
+          style={{
+            display: 'flex', alignItems: 'center', gap: '8px',
+            padding: '5px 12px 5px 5px',
+            borderRadius: '999px',
+            border: '1.5px solid #f0f0f0',
+            background: '#fff',
+            cursor: 'pointer',
+            transition: 'all 0.15s ease',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#fc8019'; e.currentTarget.style.background = '#fff8f3'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#f0f0f0'; e.currentTarget.style.background = '#fff'; }}
+        >
+          <div style={{
+            width: 28, height: 28, borderRadius: '50%',
+            background: 'linear-gradient(135deg, #fc8019, #ff9f43)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '11px', fontWeight: 800, color: '#fff', flexShrink: 0,
+            overflow: 'hidden',
+          }}>
+            {user?.avatar ? <img src={user.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : initials}
           </div>
-          <div className="user-chip-text">
-            <div className="user-chip-name">{user?.name}</div>
-            <div className="user-chip-role">{user?.email}</div>
-          </div>
+          <span style={{ fontSize: '13px', fontWeight: 600, color: '#1c1c1c', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {user?.name?.split(' ')[0]}
+          </span>
+          <span style={{ fontSize: '11px', color: '#93959f' }}>▾</span>
         </div>
-        
-        <button className="btn btn-ghost btn-sm" onClick={handleLogout} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-          <Icon name="logout" style={{ width: '14px', height: '14px' }} />
-          <span>{t('logout')}</span>
-        </button>
       </div>
     </header>
   );
