@@ -31,10 +31,10 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (!userRepository.existsByEmail("manjubhat8105@gmail.com")) {
+        if (!userRepository.existsByEmail("admin@rentova.local")) {
             User admin = new User();
             admin.setName("System Admin");
-            admin.setEmail("manjubhat8105@gmail.com");
+            admin.setEmail("admin@rentova.local");
             admin.setPassword(passwordEncoder.encode("admin123"));
             admin.setRole(Role.ADMIN);
             admin.setVerified(true);

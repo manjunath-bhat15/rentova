@@ -17,12 +17,23 @@ public class EmailService {
     @Value("${spring.mail.username:manjubhat8105@gmail.com}")
     private String fromEmail;
 
+    @Value("${app.email.resend-api-key:}")
+    private String resendApiKey;
+
+    @Value("${app.email.from-email:Rentova <onboarding@resend.dev>}")
+    private String resendFromEmail;
+
     /**
      * Sends an HTML email asynchronously so it never blocks API responses.
      * Logs success and full exception details on failure.
      */
     @Async
     public void sendHtmlEmail(String to, String subject, String htmlContent) {
+        if (resendApiKey != null && !resendApiKey.trim().isEmpty()) {
+            sendViaResend(to, subject, htmlContent);
+            return;
+        }
+
         if (mailSender == null) {
             System.err.println("[EmailService] JavaMailSender is not configured. Skipping email to: " + to);
             return;
@@ -40,6 +51,33 @@ public class EmailService {
             System.out.println("[EmailService] ✅ Email sent successfully to: " + to + " | Subject: " + subject);
         } catch (Exception e) {
             System.err.println("[EmailService] ❌ Failed to send email to: " + to);
+            System.err.println("[EmailService] Error type: " + e.getClass().getName());
+            System.err.println("[EmailService] Error message: " + e.getMessage());
+            if (e.getCause() != null) {
+                System.err.println("[EmailService] Root cause: " + e.getCause().getMessage());
+            }
+        }
+    }
+
+    private void sendViaResend(String to, String subject, String htmlContent) {
+        try {
+            org.springframework.web.client.RestTemplate restTemplate = new org.springframework.web.client.RestTemplate();
+            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+            headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
+            headers.set("Authorization", "Bearer " + resendApiKey);
+
+            java.util.Map<String, Object> body = java.util.Map.of(
+                "from", resendFromEmail,
+                "to", java.util.List.of(to),
+                "subject", subject,
+                "html", htmlContent
+            );
+
+            org.springframework.http.HttpEntity<java.util.Map<String, Object>> request = new org.springframework.http.HttpEntity<>(body, headers);
+            String response = restTemplate.postForObject("https://api.resend.com/emails", request, String.class);
+            System.out.println("[EmailService] ✅ Email sent via Resend API successfully to: " + to + " | Response: " + response);
+        } catch (Exception e) {
+            System.err.println("[EmailService] ❌ Failed to send email via Resend API to: " + to);
             System.err.println("[EmailService] Error type: " + e.getClass().getName());
             System.err.println("[EmailService] Error message: " + e.getMessage());
             if (e.getCause() != null) {
