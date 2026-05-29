@@ -8,6 +8,7 @@
 backend/target/
 backend/build/
 backend/.mvn/wrapper/maven-wrapper.jar
+backend/src/main/resources/application-local.yml
 
 # Frontend
 frontend/node_modules/

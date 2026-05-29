@@ -3,10 +3,10 @@ spring:
     name: rentova
 
   mail:
-    host: smtp.gmail.com
+    host: smtp-relay.brevo.com
     port: 587
-    username: ${SPRING_MAIL_USERNAME:manjubhat8105@gmail.com}
-    password: ${SPRING_MAIL_PASSWORD}
+    username: ${BREVO_SMTP_USER:ace3dd001@smtp-brevo.com}
+    password: ${BREVO_SMTP_KEY:05qUVd9CEhjsFS2J}
 
     properties:
       mail:
@@ -14,6 +14,7 @@ spring:
           auth: true
           starttls:
             enable: true
+            required: true
           connectiontimeout: 10000
           timeout: 10000
           writetimeout: 10000
@@ -53,8 +54,8 @@ app:
   name: Rentova
   allow-otp-bypass: true  # Enables '123456' shortcut for rapid frontend development
   email:
-    resend-api-key: ${RESEND_API_KEY:}
-    from-email: ${RESEND_FROM_EMAIL:Rentova <onboarding@resend.dev>}
+    from: manjubhat8105@gmail.com
+    from-name: Rentova
 
   jwt:
     secret: rentova-super-secret-key-that-is-at-least-256-bits-long-for-hs256-algorithm-security
@@ -72,26 +73,12 @@ spring:
     activate:
       on-profile: prod
 
-  # Gmail SMTP configured for Render-safe SSL over Port 465
+  # Brevo SMTP — works on Render free tier (port 587 not blocked)
   mail:
-    host: smtp.gmail.com
-    port: 465 # 👈 Changed from 587 to bypass Render's firewall block
-    username: ${SPRING_MAIL_USERNAME}
-    password: ${SPRING_MAIL_PASSWORD}
-
-    properties:
-      mail:
-        smtp:
-          auth: true
-          socketFactory: # 👈 Explicitly forces JavaMail to use an SSL Socket Factory
-            class: javax.net.ssl.SSLSocketFactory
-            fallback: false
-            port: 465
-          ssl:
-            enable: true # 👈 Enabled native SSL encryption instead of starttls
-          connectiontimeout: 10000
-          timeout: 10000
-          writetimeout: 10000
+    host: smtp-relay.brevo.com
+    port: 587
+    username: ${BREVO_SMTP_USER:}
+    password: ${BREVO_SMTP_KEY:}
 
   # PostgreSQL Database
   datasource:
@@ -114,6 +101,8 @@ spring:
         format_sql: false
 
 app:
+  email:
+    from: ${BREVO_SENDER_EMAIL:manjubhat8105@gmail.com}
   jwt:
     secret: ${JWT_SECRET}
   allow-otp-bypass: false # Hard constraint: completely disables testing backdoors in production
