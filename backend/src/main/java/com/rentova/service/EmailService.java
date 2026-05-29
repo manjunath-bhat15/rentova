@@ -15,7 +15,9 @@ import java.util.Map;
 @Service
 public class EmailService {
 
-    private static final String RENTOVA_TEMPLATE = "email/rentova-product-highlights.html";
+    private static final String TEMPLATE_HIGHLIGHTS = "email/rentova-product-highlights.html";
+    private static final String TEMPLATE_OTP = "email/rentova-otp.html";
+    private static final String TEMPLATE_NOTIFICATION = "email/rentova-notification.html";
     private static final String BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 
     private final RestTemplate restTemplate = new RestTemplate();
@@ -81,20 +83,14 @@ public class EmailService {
     @Async
     public void sendVerificationOtp(String to, String otp) {
         String subject = "Verify your Rentova account - " + otp;
-        String html = renderRentovaTemplate(Map.ofEntries(
-                Map.entry("preheader", "Your Rentova verification code is " + otp),
-                Map.entry("eyebrow", "Secure account verification"),
-                Map.entry("headline", "Verify your Rentova email"),
-                Map.entry("intro", "Use this one-time code to finish setting up your Rentova account."),
-                Map.entry("primaryCtaText", "Open Rentova"),
-                Map.entry("primaryCtaUrl", frontendUrl + "/register"),
-                Map.entry("secondaryText", "This code is valid for 10 minutes. If you did not request it, you can ignore this email."),
-                Map.entry("featureOneTitle", "Your verification code"),
-                Map.entry("featureOneBody", "<span class=\"otp-code\">" + escapeHtml(otp) + "</span>"),
-                Map.entry("featureTwoTitle", "Secure rentals"),
-                Map.entry("featureTwoBody", "Book nearby vendors with wallet-backed payment and verified booking status."),
-                Map.entry("featureThreeTitle", "Real-time support"),
-                Map.entry("featureThreeBody", "Chat with vendors and track booking updates from your dashboard.")
+        String html = renderRentovaTemplate(TEMPLATE_OTP, Map.of(
+                "eyebrow", "Secure account verification",
+                "headline", "Verify your Rentova email",
+                "intro", "Use this one-time code to finish setting up your Rentova account.",
+                "otpCode", otp,
+                "primaryCtaText", "Open Rentova",
+                "primaryCtaUrl", frontendUrl + "/register",
+                "secondaryText", "This code is valid for 10 minutes. If you did not request it, you can ignore this email."
         ));
         sendHtmlEmail(to, subject, html);
     }
@@ -105,20 +101,14 @@ public class EmailService {
     @Async
     public void sendPhoneVerificationOtp(String to, String otp) {
         String subject = "Link your mobile number to Rentova";
-        String html = renderRentovaTemplate(Map.ofEntries(
-                Map.entry("preheader", "Confirm your phone number with code " + otp),
-                Map.entry("eyebrow", "Trust score verification"),
-                Map.entry("headline", "Link your mobile number"),
-                Map.entry("intro", "Enter this code in Rentova to attach your mobile number to your account."),
-                Map.entry("primaryCtaText", "Open Profile"),
-                Map.entry("primaryCtaUrl", frontendUrl + "/dashboard/profile"),
-                Map.entry("secondaryText", "Phone verification helps customers and vendors transact with more confidence."),
-                Map.entry("featureOneTitle", "Your verification code"),
-                Map.entry("featureOneBody", "<span class=\"otp-code\">" + escapeHtml(otp) + "</span>"),
-                Map.entry("featureTwoTitle", "Higher trust"),
-                Map.entry("featureTwoBody", "Verified profiles stand out across marketplace conversations and bookings."),
-                Map.entry("featureThreeTitle", "Safer handoffs"),
-                Map.entry("featureThreeBody", "Use verified contact details when coordinating service start and completion.")
+        String html = renderRentovaTemplate(TEMPLATE_OTP, Map.of(
+                "eyebrow", "Trust score verification",
+                "headline", "Link your mobile number",
+                "intro", "Enter this code in Rentova to attach your mobile number to your account.",
+                "otpCode", otp,
+                "primaryCtaText", "Open Profile",
+                "primaryCtaUrl", frontendUrl + "/dashboard/profile",
+                "secondaryText", "Phone verification helps customers and vendors transact with more confidence."
         ));
         sendHtmlEmail(to, subject, html);
     }
@@ -128,20 +118,13 @@ public class EmailService {
      */
     @Async
     public void sendBookingNotificationEmail(String to, String subject, String bodyText) {
-        String html = renderRentovaTemplate(Map.ofEntries(
-                Map.entry("preheader", subject),
-                Map.entry("eyebrow", "Booking update"),
-                Map.entry("headline", subject),
-                Map.entry("intro", escapeHtml(bodyText).replace("\n", "<br>")),
-                Map.entry("primaryCtaText", "View booking"),
-                Map.entry("primaryCtaUrl", frontendUrl + "/dashboard/bookings"),
-                Map.entry("secondaryText", "You can manage status, wallet activity, maps, and chat from your Rentova dashboard."),
-                Map.entry("featureOneTitle", "Booking control"),
-                Map.entry("featureOneBody", "Confirm, start, complete, or cancel bookings with role-based actions."),
-                Map.entry("featureTwoTitle", "Maps and nearby vendors"),
-                Map.entry("featureTwoBody", "Coordinate pickup or service delivery with saved customer and vendor locations."),
-                Map.entry("featureThreeTitle", "Live chat"),
-                Map.entry("featureThreeBody", "Keep customer-vendor communication attached to each booking thread.")
+        String html = renderRentovaTemplate(TEMPLATE_NOTIFICATION, Map.of(
+                "eyebrow", "Booking update",
+                "headline", subject,
+                "intro", escapeHtml(bodyText).replace("\n", "<br>"),
+                "primaryCtaText", "View booking",
+                "primaryCtaUrl", frontendUrl + "/dashboard/bookings",
+                "secondaryText", "You can manage status, wallet activity, maps, and chat from your Rentova dashboard."
         ));
         sendHtmlEmail(to, subject, html);
     }
@@ -152,7 +135,7 @@ public class EmailService {
     @Async
     public void sendProductHighlightsEmail(String to) {
         String subject = "Discover what is new on Rentova";
-        String html = renderRentovaTemplate(Map.ofEntries(
+        String html = renderRentovaTemplate(TEMPLATE_HIGHLIGHTS, Map.ofEntries(
                 Map.entry("preheader", "Nearby rentals, vendor listings, wallet payments, and admin control."),
                 Map.entry("eyebrow", "Rentova product highlights"),
                 Map.entry("headline", "Rent smarter with nearby vendors"),
@@ -170,8 +153,8 @@ public class EmailService {
         sendHtmlEmail(to, subject, html);
     }
 
-    private String renderRentovaTemplate(Map<String, String> values) {
-        String html = loadTemplate();
+    private String renderRentovaTemplate(String templatePath, Map<String, String> values) {
+        String html = loadTemplate(templatePath);
         Map<String, String> defaults = Map.of(
                 "mirrorUrl", frontendUrl,
                 "facebookUrl", frontendUrl,
@@ -192,11 +175,11 @@ public class EmailService {
         return html;
     }
 
-    private String loadTemplate() {
-        try (InputStream input = new ClassPathResource(RENTOVA_TEMPLATE).getInputStream()) {
+    private String loadTemplate(String templatePath) {
+        try (InputStream input = new ClassPathResource(templatePath).getInputStream()) {
             return new String(input.readAllBytes(), StandardCharsets.UTF_8);
         } catch (Exception e) {
-            throw new IllegalStateException("Unable to load email template: " + RENTOVA_TEMPLATE, e);
+            throw new IllegalStateException("Unable to load email template: " + templatePath, e);
         }
     }
 
