@@ -1,23 +1,8 @@
 spring:
   application:
     name: rentova
-
-  mail:
-    host: smtp-relay.brevo.com
-    port: 587
-    username: ${BREVO_SMTP_USER:ace3dd001@smtp-brevo.com}
-    password: ${BREVO_SMTP_KEY:05qUVd9CEhjsFS2J}
-
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            required: true
-          connectiontimeout: 10000
-          timeout: 10000
-          writetimeout: 10000
+  profiles:
+    active: local
 
   # Local Development Database (H2)
   datasource:
@@ -56,6 +41,7 @@ app:
   email:
     from: manjubhat8105@gmail.com
     from-name: Rentova
+    brevo-api-key: ${BREVO_API_KEY:}
 
   jwt:
     secret: rentova-super-secret-key-that-is-at-least-256-bits-long-for-hs256-algorithm-security
@@ -72,13 +58,6 @@ spring:
   config:
     activate:
       on-profile: prod
-
-  # Brevo SMTP — works on Render free tier (port 587 not blocked)
-  mail:
-    host: smtp-relay.brevo.com
-    port: 587
-    username: ${BREVO_SMTP_USER:}
-    password: ${BREVO_SMTP_KEY:}
 
   # PostgreSQL Database
   datasource:
@@ -103,6 +82,7 @@ spring:
 app:
   email:
     from: ${BREVO_SENDER_EMAIL:manjubhat8105@gmail.com}
+    brevo-api-key: ${BREVO_API_KEY}
   jwt:
     secret: ${JWT_SECRET}
   allow-otp-bypass: false # Hard constraint: completely disables testing backdoors in production

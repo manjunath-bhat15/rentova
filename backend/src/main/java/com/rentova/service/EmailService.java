@@ -1,24 +1,27 @@
 package com.rentova.service;
 
-import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class EmailService {
 
     private static final String RENTOVA_TEMPLATE = "email/rentova-product-highlights.html";
+    private static final String BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 
-    @Autowired(required = false)
-    private JavaMailSender mailSender;
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    @Value("${app.email.brevo-api-key:}")
+    private String brevoApiKey;
 
     @Value("${app.email.from:manjubhat8105@gmail.com}")
     private String fromEmail;
@@ -30,27 +33,40 @@ public class EmailService {
     private String frontendUrl;
 
     /**
-     * Sends an HTML email asynchronously so it never blocks API responses.
+     * Sends an HTML email asynchronously via Brevo HTTP API.
+     * Uses HTTPS (port 443) which is NOT blocked by Render free tier.
      */
     @Async
     public void sendHtmlEmail(String to, String subject, String htmlContent) {
-        if (mailSender == null) {
-            System.err.println("[EmailService] JavaMailSender not configured. Skipping email to: " + to);
+        if (brevoApiKey == null || brevoApiKey.isBlank()) {
+            System.err.println("[EmailService] ⚠️ Brevo API key not configured. Skipping email to: " + to);
             return;
         }
         try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("api-key", brevoApiKey);
 
-            helper.setFrom(fromEmail, fromName);
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(htmlContent, true);
+            Map<String, Object> body = Map.of(
+                    "sender", Map.of("name", fromName, "email", fromEmail),
+                    "to", List.of(Map.of("email", to)),
+                    "subject", subject,
+                    "htmlContent", htmlContent
+            );
 
-            mailSender.send(message);
-            System.out.println("[EmailService] Email sent to: " + to + " | Subject: " + subject);
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+            ResponseEntity<String> response = restTemplate.exchange(
+                    BREVO_API_URL, HttpMethod.POST, request, String.class
+            );
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                System.out.println("[EmailService] ✅ Email sent to: " + to + " | Subject: " + subject);
+            } else {
+                System.err.println("[EmailService] ❌ Brevo API returned: " + response.getStatusCode());
+                System.err.println("[EmailService] Response body: " + response.getBody());
+            }
         } catch (Exception e) {
-            System.err.println("[EmailService] Failed to send email to: " + to);
+            System.err.println("[EmailService] ❌ Failed to send email to: " + to);
             System.err.println("[EmailService] Error type: " + e.getClass().getName());
             System.err.println("[EmailService] Error message: " + e.getMessage());
             if (e.getCause() != null) {
@@ -177,10 +193,7 @@ public class EmailService {
     }
 
     private String loadTemplate() {
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream(RENTOVA_TEMPLATE)) {
-            if (input == null) {
-                throw new IllegalStateException("Email template not found: " + RENTOVA_TEMPLATE);
-            }
+        try (InputStream input = new ClassPathResource(RENTOVA_TEMPLATE).getInputStream()) {
             return new String(input.readAllBytes(), StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new IllegalStateException("Unable to load email template: " + RENTOVA_TEMPLATE, e);
