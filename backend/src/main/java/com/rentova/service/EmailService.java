@@ -31,7 +31,7 @@ public class EmailService {
     @Value("${app.email.from-name:Rentova}")
     private String fromName;
 
-    @Value("${app.frontend-url:http://localhost:5173}")
+    @Value("${app.frontend-url:https://rentova.vercel.app}")
     private String frontendUrl;
 
     /**

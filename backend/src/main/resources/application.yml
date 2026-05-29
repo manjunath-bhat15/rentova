@@ -38,7 +38,6 @@ server:
 app:
   name: Rentova
   allow-otp-bypass: true  # Enables '123456' shortcut for rapid frontend development
-  frontend-url: http://localhost:5173
   email:
     from: manjubhat8105@gmail.com
     from-name: Rentova
@@ -87,7 +86,6 @@ app:
   jwt:
     secret: ${JWT_SECRET}
   allow-otp-bypass: false # Hard constraint: completely disables testing backdoors in production
-  frontend-url: https://rentova.vercel.app
 
   cors:
     allowed-origins: ${CORS_ORIGINS}
